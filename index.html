@@ -1,0 +1,2619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>まるもちSQL | 初心者からのSQL学習アプリ</title>
+  <!-- sql.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+  <style>
+    :root {
+      --bg-cream: #FDFBF7;
+      --bg-card: #FFFFFF;
+      --primary-brown: #6F4E37;
+      --primary-brown-dark: #4A3323;
+      --primary-brown-light: #8E6E53;
+      --accent-warm: #E2725B;
+      --accent-soft: #F5EBE1;
+      --accent-green: #2E7D32;
+      --accent-green-light: #E8F5E9;
+      --accent-amber: #D97706;
+      --accent-amber-light: #FEF3C7;
+      --accent-red: #DC2626;
+      --accent-red-light: #FEE2E2;
+      --text-main: #2C241E;
+      --text-muted: #73675E;
+      --border-color: #E8DFD5;
+      --border-dark: #C9BBAE;
+      --shadow-sm: 0 2px 5px rgba(111, 78, 55, 0.06);
+      --shadow-md: 0 4px 14px rgba(111, 78, 55, 0.09);
+      --shadow-lg: 0 8px 24px rgba(111, 78, 55, 0.14);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --font-mono: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      line-height: 1.65;
+      font-size: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ヘッダー */
+    header {
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* まるもちミニキャラ (CSS表現) */
+    .marumochi-avatar {
+      width: 40px;
+      height: 36px;
+      background: #FFFFFF;
+      border: 2px solid var(--primary-brown);
+      border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+      position: relative;
+      box-shadow: 0 2px 0 var(--border-dark);
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+    .marumochi-avatar:hover {
+      transform: scale(1.08) rotate(-4deg);
+    }
+    .marumochi-avatar .eye {
+      width: 4px;
+      height: 4px;
+      background: var(--text-main);
+      border-radius: 50%;
+      position: absolute;
+      top: 14px;
+    }
+    .marumochi-avatar .eye.left { left: 9px; }
+    .marumochi-avatar .eye.right { right: 9px; }
+    .marumochi-avatar .cheek {
+      width: 7px;
+      height: 4px;
+      background: #FFAAA6;
+      border-radius: 50%;
+      position: absolute;
+      top: 18px;
+      opacity: 0.85;
+    }
+    .marumochi-avatar .cheek.left { left: 5px; }
+    .marumochi-avatar .cheek.right { right: 5px; }
+    .marumochi-avatar .mouth {
+      width: 5px;
+      height: 3px;
+      border-bottom: 2px solid var(--text-main);
+      border-radius: 0 0 50% 50%;
+      position: absolute;
+      top: 17px;
+      left: 16px;
+    }
+
+    .app-title-group h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary-brown);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: -0.02em;
+    }
+    .app-title-group .sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav {
+      background: var(--accent-soft);
+      border: 1px solid var(--border-dark);
+      color: var(--primary-brown);
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-nav:hover {
+      background: var(--primary-brown);
+      color: #FFFFFF;
+      border-color: var(--primary-brown);
+    }
+
+    /* メインコンテナ */
+    main {
+      flex: 1;
+      max-width: 680px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 16px 60px 16px;
+    }
+
+    /* 進行度バー */
+    .progress-bar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--primary-brown);
+    }
+    .progress-track {
+      height: 10px;
+      background: var(--accent-soft);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-warm), var(--primary-brown));
+      border-radius: var(--radius-full);
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* まるもちメッセージ吹き出し */
+    .marumochi-speech {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .marumochi-big {
+      width: 52px;
+      height: 46px;
+      background: #FFFFFF;
+      border: 2.5px solid var(--primary-brown);
+      border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+      position: relative;
+      box-shadow: 0 3px 0 var(--border-dark);
+      flex-shrink: 0;
+      margin-top: 4px;
+      animation: bob 3s infinite ease-in-out;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .marumochi-big .eye {
+      width: 5px;
+      height: 5px;
+      background: var(--text-main);
+      border-radius: 50%;
+      position: absolute;
+      top: 18px;
+    }
+    .marumochi-big .eye.left { left: 13px; }
+    .marumochi-big .eye.right { right: 13px; }
+    .marumochi-big .cheek {
+      width: 8px;
+      height: 5px;
+      background: #FFAAA6;
+      border-radius: 50%;
+      position: absolute;
+      top: 24px;
+      opacity: 0.85;
+    }
+    .marumochi-big .cheek.left { left: 8px; }
+    .marumochi-big .cheek.right { right: 8px; }
+    .marumochi-big .mouth {
+      width: 6px;
+      height: 4px;
+      border-bottom: 2.5px solid var(--text-main);
+      border-radius: 0 0 50% 50%;
+      position: absolute;
+      top: 23px;
+      left: 21px;
+    }
+    .speech-bubble {
+      background: #FFFFFF;
+      border: 2px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      position: relative;
+      flex: 1;
+      box-shadow: var(--shadow-sm);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -9px;
+      top: 18px;
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-right: 8px solid var(--border-dark);
+    }
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      left: -6px;
+      top: 19px;
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-right: 7px solid #FFFFFF;
+    }
+    .speech-name {
+      font-weight: 800;
+      font-size: 0.8rem;
+      color: var(--primary-brown);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ステージカード */
+    .stage-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      margin-bottom: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .stage-card.locked {
+      opacity: 0.75;
+      background: #FAF7F4;
+    }
+    .stage-card-header {
+      padding: 14px 18px;
+      background: var(--accent-soft);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stage-card-title {
+      font-weight: 800;
+      color: var(--primary-brown-dark);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+    }
+    .badge-active {
+      background: var(--accent-green-light);
+      color: var(--accent-green);
+      border: 1px solid #A3D9A5;
+    }
+    .badge-locked {
+      background: #E5E7EB;
+      color: #6B7280;
+    }
+    .stage-lessons-list {
+      padding: 6px 8px;
+    }
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .lesson-item:hover {
+      background: var(--accent-soft);
+      transform: translateX(3px);
+    }
+    .lesson-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .lesson-status-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .status-completed {
+      background: var(--accent-green);
+      color: #FFFFFF;
+    }
+    .status-uncompleted {
+      background: #E8E0D5;
+      color: var(--text-muted);
+    }
+    .lesson-info {
+      min-width: 0;
+    }
+    .lesson-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--primary-brown-light);
+      letter-spacing: 0.02em;
+    }
+    .lesson-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lesson-check-mark {
+      color: var(--accent-green);
+      font-weight: 800;
+      font-size: 0.92rem;
+      flex-shrink: 0;
+    }
+    .lesson-pending-mark {
+      color: #C9BBAE;
+      font-weight: 400;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .stage-progress-box {
+      padding: 8px 16px 12px 16px;
+      background: #FCFAF7;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .stage-progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary-brown);
+      margin-bottom: 6px;
+    }
+    .stage-progress-track {
+      height: 6px;
+      background: var(--accent-soft);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .stage-progress-fill {
+      height: 100%;
+      background: var(--accent-green);
+      border-radius: var(--radius-full);
+      transition: width 0.3s ease;
+    }
+    .lesson-arrow {
+      color: var(--border-dark);
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    /* レッスン画面 */
+    .view-container {
+      display: none;
+    }
+    .view-container.active {
+      display: block;
+    }
+
+    .lesson-nav-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .btn-back {
+      background: none;
+      border: none;
+      color: var(--primary-brown);
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 6px 0;
+    }
+    .lesson-step-indicator {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--primary-brown);
+      background: var(--accent-soft);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-dark);
+    }
+
+    .lesson-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+    }
+
+    .lesson-header-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-brown-dark);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .lesson-explain {
+      font-size: 0.96rem;
+      color: var(--text-main);
+      line-height: 1.75;
+      margin-bottom: 16px;
+      background: #FDFBF8;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--primary-brown);
+    }
+
+    /* 例題ブロック */
+    .example-block {
+      background: #F7F5F0;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 8px;
+    }
+    .block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .block-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--primary-brown);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .example-sql {
+      font-family: var(--font-mono);
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      color: #24292E;
+      margin-bottom: 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .example-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .btn-run-example {
+      background: var(--accent-soft);
+      border: 1px solid var(--primary-brown);
+      color: var(--primary-brown);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .btn-run-example:hover {
+      background: var(--primary-brown);
+      color: #FFFFFF;
+    }
+
+    /* 問題カード */
+    .question-card {
+      background: #FFFFFF;
+      border: 2px solid var(--primary-brown);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-md);
+    }
+    .question-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .question-badge {
+      background: var(--primary-brown);
+      color: #FFFFFF;
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+    }
+    .question-text {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    /* テーブルスキーマ＆中身プレビュー（問題文の直下に配置） */
+    .table-preview-card {
+      background: #FDFBF8;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    .table-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .table-tag {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: var(--accent-soft);
+      color: var(--primary-brown);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-dark);
+    }
+    .schema-columns-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .col-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 2px 6px;
+      color: var(--text-muted);
+    }
+    .col-pill strong {
+      color: var(--primary-brown-dark);
+    }
+    .table-scroll {
+      overflow-x: auto;
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: #FFFFFF;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      text-align: left;
+    }
+    .data-table th {
+      background: #F4EFEA;
+      color: var(--primary-brown-dark);
+      font-weight: 700;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #F0EAE1;
+      white-space: nowrap;
+      background: #FFFFFF;
+    }
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+    .data-table tr:nth-child(even) td {
+      background: #FCFAF8;
+    }
+
+    /* 選択式問題UI */
+    .choice-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .choice-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: #FAF8F5;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+    .choice-item:hover {
+      border-color: var(--primary-brown);
+      background: #FFFFFF;
+    }
+    .choice-item.selected {
+      border-color: var(--primary-brown);
+      background: var(--accent-soft);
+      color: var(--primary-brown-dark);
+    }
+    .choice-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .choice-item.selected .choice-radio {
+      border-color: var(--primary-brown);
+    }
+    .choice-item.selected .choice-radio::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary-brown);
+    }
+
+    /* SQLエディタエリア */
+    .editor-wrapper {
+      margin-bottom: 12px;
+    }
+    .editor-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary-brown);
+      margin-bottom: 6px;
+    }
+    .sql-input {
+      width: 100%;
+      min-height: 105px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      padding: 12px;
+      border: 2px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      background: #FFFDFB;
+      color: #1F2937;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .sql-input:focus {
+      border-color: var(--primary-brown);
+      box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.15);
+    }
+
+    /* クイックキーワードボタン */
+    .keyword-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .btn-kw {
+      background: #FFFFFF;
+      border: 1px solid var(--border-dark);
+      color: var(--primary-brown);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: all 0.1s;
+    }
+    .btn-kw:active {
+      transform: translateY(1px);
+      background: var(--accent-soft);
+    }
+
+    /* アクションボタン（実行・判定） */
+    .btn-group-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .btn-primary {
+      flex: 1;
+      background: var(--primary-brown);
+      color: #FFFFFF;
+      border: none;
+      padding: 13px 18px;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 3px 6px rgba(111, 78, 55, 0.25);
+      transition: all 0.15s;
+    }
+    .btn-primary:hover {
+      background: var(--primary-brown-dark);
+    }
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 3px rgba(111, 78, 55, 0.25);
+    }
+
+    /* ヒントセクション（3段階） */
+    .hints-container {
+      background: var(--bg-cream);
+      border: 1px dashed var(--border-dark);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .hints-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .hints-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent-amber);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hint-step-box {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: #FFFFFF;
+      border-left: 3px solid var(--accent-amber);
+      font-size: 0.88rem;
+    }
+    .hint-step-title {
+      font-weight: 800;
+      font-size: 0.78rem;
+      color: var(--accent-amber);
+      margin-bottom: 3px;
+    }
+    .btn-hint-unlock {
+      background: var(--accent-amber-light);
+      border: 1px solid #FCD34D;
+      color: #92400E;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-hint-unlock:hover {
+      background: #FDE68A;
+    }
+
+    /* 判定結果パネル */
+    .result-panel {
+      margin-top: 14px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: none;
+    }
+    .result-panel.active {
+      display: block;
+    }
+
+    /* 成功時 */
+    .panel-success {
+      background: var(--accent-green-light);
+      border: 2px solid var(--accent-green);
+      padding: 16px;
+      border-radius: var(--radius-md);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.96); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .success-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-green);
+      margin-bottom: 8px;
+    }
+    .after-note-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin: 12px 0;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      border-left: 3px solid var(--accent-green);
+    }
+    .btn-next-lesson {
+      background: var(--accent-green);
+      color: #FFFFFF;
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 3px 6px rgba(46, 125, 50, 0.3);
+      margin-top: 10px;
+    }
+
+    /* 不一致時 */
+    .panel-mismatch {
+      background: #FFFBEB;
+      border: 2px solid #F59E0B;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      margin-top: 14px;
+    }
+    .mismatch-title {
+      font-weight: 800;
+      color: #B45309;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    /* SQLエラー時 */
+    .panel-error {
+      background: var(--accent-red-light);
+      border: 2px solid var(--accent-red);
+      padding: 14px;
+      border-radius: var(--radius-md);
+      margin-top: 14px;
+    }
+    .error-title {
+      font-weight: 800;
+      color: var(--accent-red);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+    }
+    .error-friendly-msg {
+      font-size: 0.9rem;
+      color: #7F1D1D;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .error-raw-msg {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: rgba(255,255,255,0.8);
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      color: #991B1B;
+      word-break: break-all;
+    }
+
+    /* クエリ結果ラッパー */
+    .query-result-wrapper {
+      margin-top: 10px;
+    }
+    .query-result-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* 自由練習モード（Sandbox） */
+    .sandbox-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .sandbox-table-list {
+      background: var(--accent-soft);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+    }
+
+    /* レッスン画面・Sandbox画面の下部ナビゲーションボタン */
+    .lesson-bottom-nav {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+    .btn-lesson-nav {
+      flex: 1;
+      min-height: 48px;
+      padding: 10px 6px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: all 0.15s ease;
+      border: 1.5px solid var(--border-dark);
+      background: #FFFFFF;
+      color: var(--primary-brown);
+      box-shadow: var(--shadow-sm);
+      line-height: 1.3;
+      user-select: none;
+    }
+    .btn-lesson-nav:hover:not(:disabled) {
+      background: var(--accent-soft);
+      border-color: var(--primary-brown);
+    }
+    .btn-lesson-nav:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+    .btn-lesson-nav:disabled,
+    .btn-lesson-nav.disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+      background: #F3EFEA;
+      border-color: #E2D8CC;
+      color: #9C8E80;
+      box-shadow: none;
+      pointer-events: none;
+    }
+    .btn-lesson-nav.btn-nav-home {
+      background: var(--accent-soft);
+      border-color: var(--border-dark);
+      color: var(--primary-brown-dark);
+    }
+    .btn-lesson-nav.btn-nav-home:hover {
+      background: #ECE0D2;
+    }
+    /* 完了済みレッスンへのナビゲーションボタンスタイル */
+    .btn-lesson-nav.is-completed {
+      background: var(--accent-green-light);
+      border-color: #81C784;
+      color: var(--accent-green);
+    }
+    .btn-lesson-nav.is-completed:hover:not(:disabled) {
+      background: #C8E6C9;
+      border-color: var(--accent-green);
+    }
+
+    /* レッスン画面上部の完了／未完了ステータスバッジ */
+    .lesson-status-badge {
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      line-height: 1.2;
+    }
+    .lesson-status-badge.badge-done {
+      background: var(--accent-green-light);
+      color: var(--accent-green);
+      border: 1px solid #A3D9A5;
+    }
+    .lesson-status-badge.badge-pending {
+      background: #F3EFEA;
+      color: var(--text-muted);
+      border: 1px solid #D8CFC5;
+    }
+    .sandbox-bottom-nav {
+      margin-top: 16px;
+      margin-bottom: 24px;
+    }
+
+    /* フッター */
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 24px 16px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      background: #FFFFFF;
+    }
+    .footer-actions {
+      margin-top: 8px;
+    }
+    .btn-reset-data {
+      background: none;
+      border: none;
+      color: #A3968B;
+      font-size: 0.75rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .btn-reset-data:hover {
+      color: var(--accent-red);
+    }
+
+    /* ロード画面 / 初期化中 */
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-cream);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      gap: 16px;
+    }
+    .loading-spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid var(--accent-soft);
+      border-top-color: var(--primary-brown);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .mt-2 { margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <!-- ローディング -->
+  <div id="loading-overlay">
+    <div class="marumochi-big">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+      <div class="cheek left"></div>
+      <div class="cheek right"></div>
+      <div class="mouth"></div>
+    </div>
+    <div class="loading-spinner"></div>
+    <p style="font-weight: 800; color: var(--primary-brown);">まるもちSQLを準備中...</p>
+    <p style="font-size: 0.8rem; color: var(--text-muted);">データベースエンジン（SQLite WebAssembly）を起動しています</p>
+  </div>
+
+  <!-- ヘッダー -->
+  <header>
+    <div class="header-inner">
+      <a class="logo-area" onclick="app.showHome()">
+        <div class="marumochi-avatar">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="cheek left"></div>
+          <div class="cheek right"></div>
+          <div class="mouth"></div>
+        </div>
+        <div class="app-title-group">
+          <h1>まるもちSQL</h1>
+          <span class="sub">ゼロから始める実務データ学習</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button class="btn-nav" onclick="app.showSandbox()">
+          <span>🧪</span> 自由練習
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- 全体進行度 -->
+    <div class="progress-bar-card">
+      <div class="progress-header">
+        <span>全体の進捗状況</span>
+        <span id="progress-text">0 / 16 完了 (0%)</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- VIEW 1: ホーム（ステージ地図） -->
+    <section id="view-home" class="view-container active">
+      <div class="marumochi-speech">
+        <div class="marumochi-big">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="cheek left"></div>
+          <div class="cheek right"></div>
+          <div class="mouth"></div>
+        </div>
+        <div class="speech-bubble">
+          <div class="speech-name">まるもち</div>
+          <div>ようこそ！ここは「まるもち」のスタンプ売上データを扱いながら、SQLをゼロから学べる場所だよ。まずはプロローグから気楽にのぞいてみてね！</div>
+        </div>
+      </div>
+
+      <div id="stages-container">
+        <!-- JSでステージ一覧を動的生成 -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: レッスン画面 -->
+    <section id="view-lesson" class="view-container">
+      <div class="lesson-nav-top">
+        <button class="btn-back" onclick="app.showHome()">
+          ← ステージ一覧に戻る
+        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="lesson-status-badge badge-pending" id="lesson-status-badge">未完了</span>
+          <span class="lesson-step-indicator" id="lesson-step-badge">Lesson p-01</span>
+        </div>
+      </div>
+
+      <!-- まるもち吹き出し（レッスン導入） -->
+      <div class="marumochi-speech" id="lesson-marumochi-box">
+        <div class="marumochi-big">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="cheek left"></div>
+          <div class="cheek right"></div>
+          <div class="mouth"></div>
+        </div>
+        <div class="speech-bubble">
+          <div class="speech-name">まるもち</div>
+          <div id="lesson-marumochi-msg">一緒にがんばろう！</div>
+        </div>
+      </div>
+
+      <!-- レッスン本文カード -->
+      <div class="lesson-card">
+        <h2 class="lesson-header-title" id="lesson-title">レッスンタイトル</h2>
+        <div class="lesson-explain" id="lesson-explain">解説文</div>
+
+        <!-- 例題ブロック（SQL問題の場合のみ） -->
+        <div class="example-block" id="example-block">
+          <div class="block-header">
+            <span class="block-title">💡 例題の書き方</span>
+          </div>
+          <div class="example-sql" id="example-sql">SELECT * FROM stamp_sales;</div>
+          <div class="example-note" id="example-note">実行して結果を見てみよう</div>
+          <button class="btn-run-example" onclick="app.runExample()">
+            <span>▶ 実行して結果を見る</span>
+          </button>
+          <div class="query-result-wrapper" id="example-result" style="display: none;">
+            <!-- 例題の実行結果プレビュー -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 問題カード -->
+      <div class="question-card">
+        <div class="question-header">
+          <span class="question-badge">問題</span>
+          <span style="font-size: 0.82rem; font-weight: 700; color: var(--primary-brown);" id="question-type-badge">選択式</span>
+        </div>
+        <div class="question-text" id="question-text">問題文がここに入ります</div>
+
+        <!-- テーブル定義・中身プレビュー（問題文の直下に配置） -->
+        <div class="table-preview-card" id="table-preview-card" style="display: none;">
+          <div class="table-preview-header">
+            <div>
+              <span class="table-tag" id="table-preview-name">stamp_sales</span>
+              <span style="font-size: 0.8rem; font-weight: bold; margin-left: 6px; color: var(--primary-brown);">テーブル（先頭プレビュー）</span>
+            </div>
+            <span class="table-schema-info" id="table-schema-info" style="font-size: 0.75rem; color: var(--text-muted);">4列・全5行</span>
+          </div>
+          <!-- スキーマ（列名と型） -->
+          <div class="schema-columns-pills" id="schema-columns-pills">
+            <span class="col-pill"><strong>date</strong> TEXT</span>
+            <span class="col-pill"><strong>stamp_name</strong> TEXT</span>
+            <span class="col-pill"><strong>units</strong> INTEGER</span>
+            <span class="col-pill"><strong>amount</strong> INTEGER</span>
+          </div>
+          <!-- データテーブル -->
+          <div class="table-scroll">
+            <table class="data-table" id="preview-table">
+              <!-- JSで先頭プレビューをレンダリング -->
+            </table>
+          </div>
+        </div>
+
+        <!-- 選択式問題UI -->
+        <div class="choice-container" id="choice-container" style="display: none;">
+          <!-- 選択肢を動的生成 -->
+        </div>
+
+        <!-- SQL入力問題UI -->
+        <div id="sql-input-area" style="display: none;">
+          <div class="editor-wrapper">
+            <div class="editor-label">
+              <span>SQL入力欄</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">大文字・小文字はどちらでもOK</span>
+            </div>
+            <textarea id="user-sql" class="sql-input" placeholder="ここにSQLを入力してください..." spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+          </div>
+
+          <!-- クイックキーワードボタン -->
+          <div class="keyword-bar">
+            <button class="btn-kw" onclick="app.insertKeyword('SELECT ')">SELECT</button>
+            <button class="btn-kw" onclick="app.insertKeyword('* ')">*</button>
+            <button class="btn-kw" onclick="app.insertKeyword('FROM ')">FROM</button>
+            <button class="btn-kw" onclick="app.insertKeyword('stamp_sales ')">stamp_sales</button>
+            <button class="btn-kw" onclick="app.insertKeyword('WHERE ')">WHERE</button>
+            <button class="btn-kw" onclick="app.insertKeyword('AND ')">AND</button>
+            <button class="btn-kw" onclick="app.insertKeyword('OR ')">OR</button>
+            <button class="btn-kw" onclick="app.insertKeyword('IN (')">IN ( )</button>
+            <button class="btn-kw" onclick="app.insertKeyword('LIKE ')">LIKE</button>
+            <button class="btn-kw" onclick="app.insertKeyword('ORDER BY ')">ORDER BY</button>
+            <button class="btn-kw" onclick="app.insertKeyword('LIMIT ')">LIMIT</button>
+            <button class="btn-kw" onclick="app.insertKeyword('; ')">;</button>
+          </div>
+        </div>
+
+        <!-- 実行・回答ボタン -->
+        <div class="btn-group-actions">
+          <button class="btn-primary" id="btn-submit" onclick="app.submitAnswer()">
+            <span>✨ 判定する</span>
+          </button>
+        </div>
+
+        <!-- 3段階ヒント（アコーディオン） -->
+        <div class="hints-container" id="hints-container">
+          <div class="hints-header">
+            <span class="hints-title">🔍 段階ヒント</span>
+            <button class="btn-hint-unlock" id="btn-unlock-hint" onclick="app.unlockNextHint()">ヒント1を開く</button>
+          </div>
+          <div id="hints-body">
+            <!-- 開放されたヒントがここに表示 -->
+          </div>
+        </div>
+
+        <!-- 判定結果パネル -->
+        <div class="result-panel" id="result-panel">
+          <!-- 正解時 -->
+          <div class="panel-success" id="panel-success" style="display: none;">
+            <div class="success-badge">
+              <span>🎉 大正解！素晴らしい！</span>
+            </div>
+            <div id="model-answer-box" style="margin-top: 8px;">
+              <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-green);">模範解答:</span>
+              <div class="example-sql" id="model-sql-text" style="margin-top: 4px;"></div>
+            </div>
+            <div class="after-note-box" id="after-note-text">
+              ひとこと解説
+            </div>
+            <button class="btn-next-lesson" onclick="app.goNextLesson()">
+              <span>次のレッスンへ進む →</span>
+            </button>
+          </div>
+
+          <!-- 不一致時 -->
+          <div class="panel-mismatch" id="panel-mismatch" style="display: none;">
+            <div class="mismatch-title">
+              <span>🤔 おしい！求めている結果と少し違うみたい</span>
+            </div>
+            <div id="mismatch-detail" style="font-size: 0.85rem; color: #78350F; margin-bottom: 8px;">
+              抽出された行や列、並び順を確認してみてね。
+            </div>
+            <div class="query-result-wrapper">
+              <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">あなたのSQLの実行結果:</span>
+              <div class="table-scroll mt-2" id="user-result-table-box"></div>
+            </div>
+          </div>
+
+          <!-- エラー時 -->
+          <div class="panel-error" id="panel-error" style="display: none;">
+            <div class="error-title">
+              <span>⚠️ SQLでエラーが発生しました</span>
+            </div>
+            <div class="error-friendly-msg" id="error-friendly-msg">
+              テーブル名や列名が間違っていないか確認してね
+            </div>
+            <div class="error-raw-msg" id="error-raw-msg">
+              no such table: xxx
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 下部ナビゲーションバー（前へ／地図へ戻る／次へ） -->
+      <div class="lesson-bottom-nav">
+        <button id="btn-prev-lesson" class="btn-lesson-nav" onclick="app.goPrevLesson()">
+          <span>← 前のレッスン</span>
+        </button>
+        <button class="btn-lesson-nav btn-nav-home" onclick="app.showHome()">
+          <span>ステージ地図へ戻る</span>
+        </button>
+        <button id="btn-next-lesson-nav" class="btn-lesson-nav" onclick="app.goNextLessonNav()">
+          <span>次のレッスン →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 3: 自由練習モード（Sandbox） -->
+    <section id="view-sandbox" class="view-container">
+      <div class="lesson-nav-top">
+        <button class="btn-back" onclick="app.showHome()">
+          ← ステージ一覧に戻る
+        </button>
+        <span class="lesson-step-indicator">自由練習 Sandbox</span>
+      </div>
+
+      <div class="marumochi-speech">
+        <div class="marumochi-big">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="cheek left"></div>
+          <div class="cheek right"></div>
+          <div class="mouth"></div>
+        </div>
+        <div class="speech-bubble">
+          <div class="speech-name">まるもち</div>
+          <div>ここでは好きなSQLを自由に実行して試せるよ！壊れる心配はないから、色々書き換えて遊んでみてね。</div>
+        </div>
+      </div>
+
+      <div class="sandbox-card">
+        <div class="sandbox-table-list">
+          <div style="font-weight: 800; color: var(--primary-brown-dark); margin-bottom: 6px;">利用できるテーブル:</div>
+          <div style="font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 4px;">
+            <strong>stamp_sales</strong> (まるもちのスタンプ売上)
+          </div>
+          <div class="schema-columns-pills">
+            <span class="col-pill"><strong>date</strong> TEXT</span>
+            <span class="col-pill"><strong>stamp_name</strong> TEXT</span>
+            <span class="col-pill"><strong>units</strong> INTEGER</span>
+            <span class="col-pill"><strong>amount</strong> INTEGER</span>
+          </div>
+        </div>
+
+        <div class="editor-wrapper">
+          <div class="editor-label">
+            <span>SQL入力</span>
+            <button class="btn-nav" style="padding: 2px 8px; font-size: 0.72rem;" onclick="app.setSandboxPreset()">基本のSELECTをセット</button>
+          </div>
+          <textarea id="sandbox-sql" class="sql-input" style="min-height: 110px;" placeholder="SELECT * FROM stamp_sales;">SELECT * FROM stamp_sales;</textarea>
+        </div>
+
+        <div class="keyword-bar">
+          <button class="btn-kw" onclick="app.insertSandboxKw('SELECT ')">SELECT</button>
+          <button class="btn-kw" onclick="app.insertSandboxKw('* ')">*</button>
+          <button class="btn-kw" onclick="app.insertSandboxKw('FROM ')">FROM</button>
+          <button class="btn-kw" onclick="app.insertSandboxKw('stamp_sales ')">stamp_sales</button>
+          <button class="btn-kw" onclick="app.insertSandboxKw('WHERE ')">WHERE</button>
+          <button class="btn-kw" onclick="app.insertSandboxKw('ORDER BY ')">ORDER BY</button>
+          <button class="btn-kw" onclick="app.insertSandboxKw('LIMIT ')">LIMIT</button>
+        </div>
+
+        <button class="btn-primary" onclick="app.runSandbox()">
+          <span>▶ SQLを実行する</span>
+        </button>
+
+        <div class="result-panel active" id="sandbox-result-area" style="margin-top: 16px;">
+          <!-- 自由練習の実行結果 -->
+        </div>
+      </div>
+
+      <!-- 自由練習画面の下部ナビゲーション -->
+      <div class="sandbox-bottom-nav">
+        <button class="btn-lesson-nav btn-nav-home" style="width: 100%;" onclick="app.showHome()">
+          <span>ステージ地図へ戻る</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- フッター -->
+  <footer>
+    <div>まるもちSQL v2 — 知識ゼロから実務レベルへ</div>
+    <div class="footer-actions">
+      <button class="btn-reset-data" onclick="app.resetProgress()">進捗データをリセット</button>
+    </div>
+  </footer>
+
+  <!-- アプリケーション本体スクリプト -->
+  <script>
+    /* ==========================================================================
+       1. 練習DBの初期データ定義
+       ========================================================================== */
+    const INIT_DB_SQL = `
+      DROP TABLE IF EXISTS stamp_sales;
+      CREATE TABLE stamp_sales (
+        date TEXT,
+        stamp_name TEXT,
+        units INTEGER,
+        amount INTEGER
+      );
+
+      INSERT INTO stamp_sales (date, stamp_name, units, amount) VALUES
+      ('2026-11-06', '癒しのまるもち', 1, 190),
+      ('2026-11-08', '癒しのまるもち', 2, 380),
+      ('2026-11-10', '動く！癒しのまるもち', 1, 250),
+      ('2026-11-10', '癒しのまるもち', 3, 570),
+      ('2026-11-12', 'あけおめ！まるもち2027', 0, 0);
+    `;
+
+    /* ==========================================================================
+       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問)
+       ========================================================================== */
+    const LESSON_STAGES = [
+      { id: "prologue", stageNum: -1, name: "プロローグ: 超入門", desc: "そもそもSQLって何？専門用語ゼロでイメージをつかむ章" },
+      { id: "stage0", stageNum: 0, name: "Stage 0: 導入", desc: "SQLと友達になる。テーブルの考え方と最初の実行" },
+      { id: "stage1", stageNum: 1, name: "Stage 1: 入門：取り出す（基礎文法）", desc: "SELECT / WHERE / LIKE / ORDER BY など基本の抽出" },
+      { id: "stage2", stageNum: 2, name: "Stage 2: 集計：数える・合計する", desc: "COUNT / SUM / GROUP BY / HAVING など（近日公開）", locked: true },
+      { id: "stage3", stageNum: 3, name: "Stage 3: 結合：テーブルをつなぐ", desc: "INNER JOIN / LEFT JOIN / 複数結合（近日公開）", locked: true },
+      { id: "stage4", stageNum: 4, name: "Stage 4: 応用文法：入れ子と分岐", desc: "サブクエリ / CASE式 / WITH句（近日公開）", locked: true },
+      { id: "stage5", stageNum: 5, name: "Stage 5: 実務操作：データを変える", desc: "INSERT / UPDATE / DELETE / 安全の型（近日公開）", locked: true },
+      { id: "stage6", stageNum: 6, name: "Stage 6: 上級：分析と速さ", desc: "ウィンドウ関数 / インデックス / 実行計画（近日公開）", locked: true },
+      { id: "stage7", stageNum: 7, name: "Stage 7: 実務再現：卒業編", desc: "仕様書から自力で書く総合演習（近日公開）", locked: true }
+    ];
+
+    const LESSONS = [
+      // ----------------------------------------------------
+      // プロローグ 超入門（5問）
+      // ----------------------------------------------------
+      {
+        id: "p-01",
+        stage: -1,
+        title: "データベースってなに？",
+        marumochiMsg: "いらっしゃい！まずは気楽に「データベース」の正体を知ろう。",
+        explain: "データベース（DB）と聞くとなんだか難しそうに感じますが、中身は住所録や連絡帳、在庫表と同じ「きれいに整理された表の集まり」にすぎません。\n\nExcelで1枚のシートに名簿を作るのと同じように、パソコンの中に「大事なデータを整理して入れておく引き出し」がある、とイメージしてみてください！",
+        type: "choice",
+        question: "「データベース」のイメージとして、もっとも近いものはどれでしょう？",
+        choices: [
+          "整理整頓された表（住所録や在庫表）の集まり",
+          "ゲームを操作するためのコントローラー",
+          "パソコンの電源ボタンの回路"
+        ],
+        correctChoice: 0,
+        hint1: "住所録や在庫表のように、行と列できれいに並べられたデータを想像してみてね。",
+        hint2: "データを整理して保存しておく場所のことだよ。",
+        hint3: "一番上の「整理整頓された表...」を選んでみてね！",
+        afterNote: "大正解！データベースは「きれいに整理された表の保管庫」です。これさえ分かればもう怖くありません！"
+      },
+      {
+        id: "p-02",
+        stage: -1,
+        title: "なぜSQLがいるの？",
+        marumochiMsg: "Excelがあるのに、なぜわざわざ「SQL」を使うのかな？",
+        explain: "たとえば10行くらいの表なら、目で見て探してもすぐ終わります。でも、これが「1万行」「100万行」あったらどうでしょう？\n\n目で探すのは大変ですし、パソコンもフリーズしてしまいます。\nそこで活躍するのが「SQL」！「今月の売上だけ持ってきて！」とお願いの言葉を一筆書くだけで、一瞬で取り出してくれる魔法の道具なのです。",
+        type: "choice",
+        question: "手作業（Excelを目で探す）と比べて、SQLを使う最大のメリットは何でしょう？",
+        choices: [
+          "大量のデータからでも、お願い文を1本書くだけで一瞬でほしい行を取り出せる",
+          "キーボードを一切使わずに画面を眺めるだけで仕事が終わる",
+          "文字をカラフルにして可愛い表を飾ることができる"
+        ],
+        correctChoice: 0,
+        hint1: "1万行の中から「お願い文」で一瞬で探せるパワーがSQLの魅力です。",
+        hint2: "手作業だと時間がかかる作業を、一瞬で終わらせることができます。",
+        hint3: "「大量のデータからでも...」が正解だよ！",
+        afterNote: "その通り！人間が何時間もかけて目で探す作業を、SQLなら0.01秒で正確に終わらせてくれます。"
+      },
+      {
+        id: "p-03",
+        stage: -1,
+        title: "SQLは「お願い文」",
+        marumochiMsg: "プログラミングというより、図書館の司書さんにお願いする感覚だよ！",
+        explain: "SQLは、コンピュータに「こうして計算して、これをループして...」と細かく命令する言語ではありません。\n\n図書館の司書さんに「この条件の本を持ってきてください」と頼むように、「これとこれをください！」とお願いの条件を書くだけです。\nその一番代表的な言葉が『SELECT（セレクト）』。「〜を選んでください」という意味です。",
+        type: "choice",
+        question: "SQLで「このデータをください」とお願いするときに使う、一番基本となる単語はどれ？",
+        choices: [
+          "SELECT （セレクト：選んでください）",
+          "PLEASE （プリーズ：お願いします）",
+          "BRING_ME （ブリング・ミー：持ってきて）"
+        ],
+        correctChoice: 0,
+        hint1: "英語で「選ぶ」という意味の単語だよ。",
+        hint2: "お買い物でも「セレクトショップ」って言うよね。",
+        hint3: "「SELECT」を選んでみてね！",
+        afterNote: "バッチリ！SQLの基本は「SELECT（ください）」。これだけ覚えておけば、もうSQLの半分は理解したも同然です！"
+      },
+      {
+        id: "p-04",
+        stage: -1,
+        title: "テーブルを眺めてみよう",
+        marumochiMsg: "本物のテーブルを見てみよう！行と列を数えられるかな？",
+        explain: "これが、このアプリで使うまるもちの「スタンプ売上表（stamp_sales）」です。\n\n横の並びを「行（レコード：1件1件のデータ）」、縦の項目を「列（カラム：日付や名前など）」と呼びます。\n下の表を観察して、列（縦の項目）がいくつあるか数えてみましょう！",
+        tables: ["stamp_sales"],
+        type: "choice",
+        question: "下の表「stamp_sales」には、縦の項目（列・カラム）がいくつありますか？",
+        choices: [
+          "4列 （date, stamp_name, units, amount）",
+          "2列 （date, stamp_name だけ）",
+          "10列"
+        ],
+        correctChoice: 0,
+        hint1: "表の見出し部分（一番上の行）を見てみてね。",
+        hint2: "date, stamp_name, units, amount の4つがあるね。",
+        hint3: "「4列」を選んでね！",
+        afterNote: "完璧！縦の項目が4つ（列）、横のデータが5つ（行）ありますね。表の形が見えるようになりました！"
+      },
+      {
+        id: "p-05",
+        stage: -1,
+        title: "初めての実行体験",
+        marumochiMsg: "さあ、いよいよ本物のSQLを動かしてみよう！ボタンを押すだけでOKだよ。",
+        explain: "下に用意されたSQLは、売上が1個以上（units >= 1）の行だけを取り出すお願い文です。\n\nまずはそのまま「判定する」を押して実行してみてね！その後、数字を「2」に変えて再実行してみると、結果が変わる体験もできます。",
+        tables: ["stamp_sales"],
+        type: "edit_run",
+        defaultSql: "SELECT * FROM stamp_sales WHERE units >= 1;",
+        question: "あらかじめ入力されているSQLの「判定する」ボタンを押して、本物のSQL実行を体験してみよう！",
+        answerSql: "SELECT * FROM stamp_sales WHERE units >= 1;",
+        alternativeSqls: [
+          "SELECT * FROM stamp_sales WHERE units >= 2;",
+          "SELECT * FROM stamp_sales WHERE units >= 1;"
+        ],
+        orderMatters: false,
+        hint1: "入力欄にすでに入っているSQLをそのまま「✨ 判定する」ボタンで実行してみてね。",
+        hint2: "もし書き換えてしまったら「SELECT * FROM stamp_sales WHERE units >= 1;」に戻そう。",
+        hint3: "「判定する」ボタンをポチッと押すだけで合格だよ！",
+        afterNote: "おめでとう！！これがSQLの実行です！条件に合う行だけが瞬時に抜き出されましたね。プロローグ完了です！"
+      },
+
+      // ----------------------------------------------------
+      // Stage 0 導入（3問）
+      // ----------------------------------------------------
+      {
+        id: "s0-01",
+        stage: 0,
+        title: "SQLってなに？（全件の取得体験）",
+        marumochiMsg: "Stage 0へようこそ！ここから少しずつSQLの言葉を覚えていこう。",
+        explain: "テーブルの中身を「ぜんぶ見せて！」とお願いするときは、記号の「 * （アスタリスク）」を使います。\n* は「すべての列」という意味です。\n\n「SELECT * FROM stamp_sales;」\n＝ stamp_sales テーブルから すべての列をください、という意味になります。",
+        example: {
+          sql: "SELECT * FROM stamp_sales;",
+          note: "例題の「実行して結果を見る」を押してみよう"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        defaultSql: "SELECT * FROM stamp_sales;",
+        question: "stamp_sales テーブルからすべての列を取り出すSQL「SELECT * FROM stamp_sales;」を実行してみよう！",
+        answerSql: "SELECT * FROM stamp_sales;",
+        orderMatters: false,
+        hint1: "下のキーワードボタンを活用して「SELECT」「*」「FROM」「stamp_sales」「;」を並べてみてね。",
+        hint2: "SELECT のあとに半角スペース、* のあとに半角スペースを入れてね。",
+        hint3: "「SELECT * FROM stamp_sales;」と入力欄に書いて実行しよう！",
+        afterNote: "素晴らしい！「SELECT * FROM テーブル名;」は、実務でテーブルの中身をざっと確認するときに毎日使う超基本の呪文です。"
+      },
+      {
+        id: "s0-02",
+        stage: 0,
+        title: "テーブルを見てみよう",
+        marumochiMsg: "もう一度、自分の手で書いて慣れてみよう！",
+        explain: "SQLでは、文の最後に「 ; （セミコロン）」をつけるのがお約束です。「ここで文が終わりますよ」という句読点（。）のような役割をします。\n\n大文字と小文字はどちらでも動きますが、キーワード（SELECTやFROM）は大文字で書くと読みやすくなります。",
+        example: {
+          sql: "SELECT * FROM stamp_sales;",
+          note: "最後のセミコロンをお忘れなく！"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "もう一度、stamp_sales テーブルの全データを取得するSQLを書いてみましょう。",
+        answerSql: "SELECT * FROM stamp_sales;",
+        orderMatters: false,
+        hint1: "「SELECT * FROM stamp_sales;」です。",
+        hint2: "stamp_sales のスペルに注意してね。",
+        hint3: "SELECT * FROM stamp_sales; を入力して判定ボタンを押そう！",
+        afterNote: "Good！すっかり手になじんできましたね。セミコロンもバッチリです。"
+      },
+      {
+        id: "s0-03",
+        stage: 0,
+        title: "結果の読み方と行数",
+        marumochiMsg: "実行結果の表はどう読むのか、しっかり整理しておこう！",
+        explain: "SQLを実行すると、表形式で結果が返ってきます。\n一番上の太字が「列の名前（カラム名）」、その下に並んでいるのが「各行のデータ（レコード）」です。\n\n何件データが取れたか（行数）を意識できるようになると、一人前のデータ作業者に一歩近づきます！",
+        example: {
+          sql: "SELECT * FROM stamp_sales;",
+          note: "実行すると、5件のデータが表示されます"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "stamp_sales の全データを取り出して、結果に何行表示されるか確認してみよう！（SELECT * FROM stamp_sales;）",
+        answerSql: "SELECT * FROM stamp_sales;",
+        orderMatters: false,
+        hint1: "これまでと同じように、全件取得のSQLを書けばOKです。",
+        hint2: "SELECT * FROM stamp_sales;",
+        hint3: "入力欄に「SELECT * FROM stamp_sales;」と入れて実行してね！",
+        afterNote: "見事に全5行が取れましたね！これで導入ステージはクリア。いよいよ本格的な「データの取り出し」に進みましょう！"
+      },
+
+      // ----------------------------------------------------
+      // Stage 1 入門：取り出す（基礎文法）（8問）
+      // ----------------------------------------------------
+      {
+        id: "s1-01",
+        stage: 1,
+        title: "列を選んで取り出す（SELECT 列 FROM）",
+        marumochiMsg: "全部じゃなくて「必要な列だけ」を選んでみよう！",
+        explain: "実務では、100列もある大きなテーブルから「名前と売上だけ見たい」ということがよくあります。\n\n列を指定したいときは、* の代わりに「列名」を書きます。\n2つ以上の列を取り出したいときは、カンマ（,）で区切ります。\n例：SELECT stamp_name, units FROM stamp_sales;",
+        example: {
+          sql: "SELECT stamp_name, units FROM stamp_sales;",
+          note: "スタンプ名と売上個数の2列だけを取り出す例"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "stamp_sales テーブルから、「stamp_name」と「units」の2つの列だけを取り出してみよう！",
+        answerSql: "SELECT stamp_name, units FROM stamp_sales;",
+        orderMatters: false,
+        hint1: "SELECTのうしろに「stamp_name, units」と書くよ。",
+        hint2: "カンマの後には半角スペースを入れると綺麗です。",
+        hint3: "「SELECT stamp_name, units FROM stamp_sales;」と書いてみてね！",
+        afterNote: "正解！必要な列だけを取り出すことで、画面も見やすくなり、パソコンの通信量も大幅に節約できます。"
+      },
+      {
+        id: "s1-02",
+        stage: 1,
+        title: "条件でしぼる（WHERE、= ）",
+        marumochiMsg: "ここからがSQLの真骨頂！欲しい行だけにしぼり込もう。",
+        explain: "「このスタンプの売上だけ見たい！」というときは、文のうしろに「WHERE（ウェア）」をつけます。\n\n文字（テキスト）を条件にするときは、値をシングルクォーテーション「 ' 」で囲むのが決まりです！\n例：WHERE stamp_name = '癒しのまるもち'",
+        example: {
+          sql: "SELECT * FROM stamp_sales WHERE stamp_name = '癒しのまるもち';",
+          note: "癒しのまるもち の行だけが抜き出されます"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "stamp_name が「癒しのまるもち」である行だけを、すべての列（*）で取り出してみよう！",
+        answerSql: "SELECT * FROM stamp_sales WHERE stamp_name = '癒しのまるもち';",
+        orderMatters: false,
+        hint1: "WHERE stamp_name = '癒しのまるもち' を使おう。",
+        hint2: "文字の前後はシングルクォーテーション「 ' 」で囲んでね。",
+        hint3: "「SELECT * FROM stamp_sales WHERE stamp_name = '癒しのまるもち';」",
+        afterNote: "大正解！WHERE をつければ、何万行の中からでもピンポイントで欲しいデータを取り出せます。"
+      },
+      {
+        id: "s1-03",
+        stage: 1,
+        title: "数値の条件（>= と <= ）",
+        marumochiMsg: "数字の大小で絞り込んでみよう！",
+        explain: "「売上が2個以上のもの」「金額が500円未満のもの」など、数値の比較には記号を使います。\n\n・「 >= 」：以上（その数を含む）\n・「 <= 」：以下（その数を含む）\n・「 > 」：より大きい（その数は含まない）\n・「 < 」：未満（その数は含まない）\n※数値にはシングルクォーテーションをつけません！",
+        example: {
+          sql: "SELECT * FROM stamp_sales WHERE amount >= 300;",
+          note: "売上金額が300円以上の行を取り出す例"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "売上数（units）が 2個以上 の行を、すべての列（*）で取り出してみよう！",
+        answerSql: "SELECT * FROM stamp_sales WHERE units >= 2;",
+        orderMatters: false,
+        hint1: "WHERE units >= 2 を使います。",
+        hint2: "数字の 2 には「 ' 」を付けないのがポイント！",
+        hint3: "「SELECT * FROM stamp_sales WHERE units >= 2;」と書いてみよう。",
+        afterNote: "ナイス！数値条件が書けるようになると、「売上〇〇円以上のお客様」といった実務の抽出が一気にできるようになります。"
+      },
+      {
+        id: "s1-04",
+        stage: 1,
+        title: "条件を組み合わせる（AND）",
+        marumochiMsg: "「これ」かつ「あれ」！条件を合体させてみよう。",
+        explain: "2つ以上の条件を両方とも満たす行を探したいときは「AND（アンド）」でつなぎます。\n\n例：WHERE stamp_name = '癒しのまるもち' AND units >= 2\n（スタンプ名が癒しのまるもち、かつ、個数が2個以上）",
+        example: {
+          sql: "SELECT * FROM stamp_sales WHERE stamp_name = '癒しのまるもち' AND amount >= 300;",
+          note: "名前が一致し、さらに金額が300円以上の行"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "stamp_name が「癒しのまるもち」で、かつ units が 2個以上 の行をすべて（*）取り出してみよう！",
+        answerSql: "SELECT * FROM stamp_sales WHERE stamp_name = '癒しのまるもち' AND units >= 2;",
+        orderMatters: false,
+        hint1: "WHEREの後に1つ目の条件、AND、2つ目の条件の順に書くよ。",
+        hint2: "stamp_name = '癒しのまるもち' AND units >= 2",
+        hint3: "「SELECT * FROM stamp_sales WHERE stamp_name = '癒しのまるもち' AND units >= 2;」",
+        afterNote: "素晴らしい！AND を使えば、より細かく条件を絞り込んだデータ抽出が自由自在です。"
+      },
+      {
+        id: "s1-05",
+        stage: 1,
+        title: "どちらか一方（OR と括弧）",
+        marumochiMsg: "「これ」または「あれ」、どちらかを満たせばOK！",
+        explain: "「売上が0個、または3個のもの」のように、どちらか一方でも当てはまればよいときは「OR（オア）」を使います。\n\n例：WHERE units = 0 OR units = 3",
+        example: {
+          sql: "SELECT * FROM stamp_sales WHERE units = 0 OR units = 3;",
+          note: "0個か3個の行だけを取り出します"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "units が 0 または units が 3 の行を、すべて（*）取り出してみよう！",
+        answerSql: "SELECT * FROM stamp_sales WHERE units = 0 OR units = 3;",
+        orderMatters: false,
+        hint1: "WHERE units = 0 OR units = 3 を指定します。",
+        hint2: "OR の両側でちゃんと「units =」を書いてあげてね。",
+        hint3: "「SELECT * FROM stamp_sales WHERE units = 0 OR units = 3;」",
+        afterNote: "バッチリ！OR は「どちらか一方」を見つけたいときに大活躍します。"
+      },
+      {
+        id: "s1-06",
+        stage: 1,
+        title: "リストで指定（IN）",
+        marumochiMsg: "ORがたくさん並ぶときは「IN」を使うとスッキリ！",
+        explain: "「units = 1 OR units = 2 OR units = 3...」と書くのは大変ですよね。\nそんなときは「IN（イン）」を使うと、候補をカッコの中に並べるだけで済みます！\n\n例：WHERE units IN (1, 3)\n（unitsが 1 または 3 のいずれかに当てはまるもの）",
+        example: {
+          sql: "SELECT * FROM stamp_sales WHERE units IN (1, 3);",
+          note: "1か3のどちらかを持つデータが取れます"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "「IN」を使って、units が 1 または 3 の行をすべて（*）取り出してみよう！",
+        answerSql: "SELECT * FROM stamp_sales WHERE units IN (1, 3);",
+        orderMatters: false,
+        hint1: "WHERE units IN (1, 3) と書くよ。",
+        hint2: "カッコの中はカンマ区切りで数字を並べます。",
+        hint3: "「SELECT * FROM stamp_sales WHERE units IN (1, 3);」と書いてみよう！",
+        afterNote: "お見事！実務でも「特定のID一覧で絞り込みたい」ときに IN は必須のテクニックです。"
+      },
+      {
+        id: "s1-07",
+        stage: 1,
+        title: "あいまい検索（LIKE と %）",
+        marumochiMsg: "「〜を含む名前」を探したいときは LIKE の出番！",
+        explain: "「名前の一部しか覚えていない...」というときは「LIKE（ライク）」と「 %（パーセント）」を使います。\n% は「何文字でもOK（0文字以上）」という意味のワイルドカード記号です。\n\n・'%まるもち'：末尾が まるもち で終わるもの\n・'まるもち%'：先頭が まるもち で始まるもの\n・'%まるもち%'：途中に まるもち を含むもの（部分一致）",
+        example: {
+          sql: "SELECT * FROM stamp_sales WHERE stamp_name LIKE '%動く%';",
+          note: "名前に「動く」が含まれるスタンプを取り出す例"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "stamp_name に「あけおめ」という文字を含む行を、すべて（*）取り出してみよう！",
+        answerSql: "SELECT * FROM stamp_sales WHERE stamp_name LIKE '%あけおめ%';",
+        orderMatters: false,
+        hint1: "LIKE '%あけおめ%' を使ってみよう。",
+        hint2: "シングルクォーテーションの中で % で挟むよ。",
+        hint3: "「SELECT * FROM stamp_sales WHERE stamp_name LIKE '%あけおめ%';」",
+        afterNote: "完璧！あいまい検索ができると、商品名やユーザー名の検索機能が簡単に作れるようになります。"
+      },
+      {
+        id: "s1-08",
+        stage: 1,
+        title: "並べ替える（ORDER BY）＋ 上位N件（LIMIT）",
+        marumochiMsg: "Stage 1の最終ボス！ランキングを作ってみよう！",
+        explain: "データを並べ替えるには「ORDER BY（オーダー・バイ）」を使います。\n・大きい順（降順・ランキング順）：DESC（ディスク）\n・小さい順（昇順）：ASC（アスク）※省略するとASCになります\n\nさらに末尾に「LIMIT 3」とつけると、上位3件だけを取り出すことができます！",
+        example: {
+          sql: "SELECT * FROM stamp_sales ORDER BY amount DESC LIMIT 3;",
+          note: "売上金額（amount）が高い順に並べて、上位3件を取り出す"
+        },
+        tables: ["stamp_sales"],
+        type: "sql",
+        question: "売上金額（amount）が大きい順（DESC）に並べ替えて、上位 3件 だけを取り出してみよう！",
+        answerSql: "SELECT * FROM stamp_sales ORDER BY amount DESC LIMIT 3;",
+        orderMatters: true,
+        hint1: "ORDER BY amount DESC と書いたあとに LIMIT 3 をつけよう。",
+        hint2: "SELECT * FROM stamp_sales ORDER BY amount DESC LIMIT 3;",
+        hint3: "「SELECT * FROM stamp_sales ORDER BY amount DESC LIMIT 3;」と書いてみてね！",
+        afterNote: "おめでとうございます！！Stage 1 入門編を見事に完走しました！「取り出し・条件・並び替え」というSQLの最重要基礎が身につきましたよ！"
+      }
+    ];
+
+    /* ==========================================================================
+       3. アプリケーション状態管理
+       ========================================================================== */
+    const STORAGE_KEY = "sql_marumochi_progress_v1";
+
+    class MarumochiSQLApp {
+      constructor() {
+        this.db = null;
+        this.currentLesson = null;
+        this.currentView = "home";
+        this.selectedChoiceIndex = null;
+        this.unlockedHintLevel = 0;
+        this.progress = this.loadProgress();
+      }
+
+      loadProgress() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (e) {
+          console.error("Failed to load progress:", e);
+        }
+        return { completed: [] };
+      }
+
+      saveProgress() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.progress));
+        } catch (e) {
+          console.error("Failed to save progress:", e);
+        }
+      }
+
+      isLessonCompleted(id) {
+        return this.progress.completed.includes(id);
+      }
+
+      markLessonCompleted(id) {
+        if (!this.progress.completed.includes(id)) {
+          this.progress.completed.push(id);
+          this.saveProgress();
+          this.updateGlobalProgressUI();
+        }
+      }
+
+      resetProgress() {
+        if (confirm("これまでの学習進捗をすべてリセットしますか？")) {
+          this.progress = { completed: [] };
+          this.saveProgress();
+          this.updateGlobalProgressUI();
+          this.renderStageList();
+          alert("進捗をリセットしました！");
+        }
+      }
+
+      /* ==========================================================================
+         4. データベース初期化 (sql.js)
+         ========================================================================== */
+      async initDB() {
+        try {
+          const SQL = await initSqlJs({
+            locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+          });
+          this.db = new SQL.Database();
+          this.db.run(INIT_DB_SQL);
+          console.log("Marumochi Database initialized successfully.");
+          
+          // ローディング非表示
+          document.getElementById("loading-overlay").style.display = "none";
+          this.updateGlobalProgressUI();
+          this.renderStageList();
+        } catch (err) {
+          console.error("Database initialization failed:", err);
+          document.getElementById("loading-overlay").innerHTML = `
+            <div style="padding: 20px; text-align: center; color: #DC2626;">
+              <h2>⚠️ データベースの起動に失敗しました</h2>
+              <p style="margin-top: 10px; font-size: 0.9rem;">インターネット接続環境を確認するか、ページを再読み込みしてください。</p>
+              <pre style="margin-top: 10px; font-size: 0.8rem; background: #eee; padding: 10px; border-radius: 6px;">${err.message || err}</pre>
+            </div>
+          `;
+        }
+      }
+
+      /* ==========================================================================
+         5. 画面切り替えとUI更新
+         ========================================================================== */
+      switchView(viewName) {
+        this.currentView = viewName;
+        document.querySelectorAll(".view-container").forEach(el => el.classList.remove("active"));
+        document.getElementById(`view-${viewName}`).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      showHome() {
+        this.renderStageList();
+        this.updateGlobalProgressUI();
+        this.switchView("home");
+      }
+
+      showSandbox() {
+        this.switchView("sandbox");
+      }
+
+      updateGlobalProgressUI() {
+        const total = LESSONS.length; // 16問
+        const done = this.progress.completed.length;
+        const pct = Math.round((done / total) * 100);
+
+        document.getElementById("progress-text").textContent = `${done} / ${total} 完了 (${pct}%)`;
+        document.getElementById("progress-fill").style.width = `${pct}%`;
+      }
+
+      renderStageList() {
+        const container = document.getElementById("stages-container");
+        container.innerHTML = "";
+
+        LESSON_STAGES.forEach(stage => {
+          const card = document.createElement("div");
+          card.className = `stage-card ${stage.locked ? "locked" : ""}`;
+
+          // このステージに属するレッスン
+          const stageLessons = LESSONS.filter(l => l.stage === stage.stageNum);
+          const stageDoneCount = stageLessons.filter(l => this.isLessonCompleted(l.id)).length;
+          const stagePct = stageLessons.length > 0 ? Math.round((stageDoneCount / stageLessons.length) * 100) : 0;
+
+          let badgeHtml = "";
+          let progressBoxHtml = "";
+          if (stage.locked) {
+            badgeHtml = `<span class="badge badge-locked">🔒 近日公開</span>`;
+          } else {
+            const isAllDone = stageLessons.length > 0 && stageDoneCount === stageLessons.length;
+            badgeHtml = `<span class="badge badge-active">${isAllDone ? "✨ 完了！" : `${stageDoneCount} / ${stageLessons.length} 完了`}</span>`;
+            progressBoxHtml = `
+              <div class="stage-progress-box">
+                <div class="stage-progress-info">
+                  <span>進捗</span>
+                  <span>${stageDoneCount} / ${stageLessons.length} 完了</span>
+                </div>
+                <div class="stage-progress-track">
+                  <div class="stage-progress-fill" style="width: ${stagePct}%;"></div>
+                </div>
+              </div>
+            `;
+          }
+
+          let lessonsHtml = "";
+          if (!stage.locked) {
+            lessonsHtml = `<div class="stage-lessons-list">` + stageLessons.map(lesson => {
+              const isDone = this.isLessonCompleted(lesson.id);
+              return `
+                <div class="lesson-item" onclick="app.loadLesson('${lesson.id}')">
+                  <div class="lesson-item-left">
+                    <div class="lesson-status-icon ${isDone ? "status-completed" : "status-uncompleted"}">
+                      ${isDone ? "✓" : "○"}
+                    </div>
+                    <div class="lesson-info">
+                      <div class="lesson-tag">${lesson.id.toUpperCase()}</div>
+                      <div class="lesson-title">
+                        <span>${lesson.title}</span>
+                        ${isDone ? '<span class="lesson-check-mark">✓</span>' : '<span class="lesson-pending-mark">○</span>'}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="lesson-arrow">›</div>
+                </div>
+              `;
+            }).join("") + `</div>`;
+          } else {
+            lessonsHtml = `
+              <div style="padding: 14px 18px; font-size: 0.85rem; color: var(--text-muted);">
+                ${stage.desc}
+              </div>
+            `;
+          }
+
+          card.innerHTML = `
+            <div class="stage-card-header">
+              <div class="stage-card-title">
+                <span>${stage.name}</span>
+              </div>
+              ${badgeHtml}
+            </div>
+            ${progressBoxHtml}
+            ${lessonsHtml}
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      /* ==========================================================================
+         6. レッスン画面の表示・ロード
+         ========================================================================== */
+      loadLesson(lessonId) {
+        const lesson = LESSONS.find(l => l.id === lessonId);
+        if (!lesson) return;
+
+        this.currentLesson = lesson;
+        this.selectedChoiceIndex = null;
+        this.unlockedHintLevel = 0;
+
+        // ヘッダー・解説
+        document.getElementById("lesson-step-badge").textContent = `Lesson ${lesson.id.toUpperCase()}`;
+        document.getElementById("lesson-title").textContent = lesson.title;
+        document.getElementById("lesson-marumochi-msg").textContent = lesson.marumochiMsg || "一緒にがんばろう！";
+        document.getElementById("lesson-explain").innerHTML = lesson.explain.replace(/\n/g, "<br>");
+
+        // 現在のレッスンの状態バッジ（✓ 完了済み / 未完了）
+        this.updateCurrentLessonBadge();
+
+        // 例題ブロック
+        const exampleBlock = document.getElementById("example-block");
+        if (lesson.example) {
+          exampleBlock.style.display = "block";
+          document.getElementById("example-sql").textContent = lesson.example.sql;
+          document.getElementById("example-note").textContent = lesson.example.note || "";
+          document.getElementById("example-result").style.display = "none";
+        } else {
+          exampleBlock.style.display = "none";
+        }
+
+        // 問題文
+        document.getElementById("question-text").textContent = lesson.question;
+
+        // テーブルプレビュー（問題文の下）
+        this.renderTablePreview(lesson);
+
+        // 選択式 or SQL入力
+        const choiceContainer = document.getElementById("choice-container");
+        const sqlInputArea = document.getElementById("sql-input-area");
+        const qTypeBadge = document.getElementById("question-type-badge");
+
+        // 判定パネルリセット
+        this.hideResultPanels();
+
+        // ヒントリセット
+        this.resetHintsUI();
+
+        if (lesson.type === "choice") {
+          qTypeBadge.textContent = "選択式";
+          choiceContainer.style.display = "flex";
+          sqlInputArea.style.display = "none";
+          this.renderChoices(lesson.choices);
+        } else {
+          qTypeBadge.textContent = lesson.type === "edit_run" ? "実行体験" : "SQL入力";
+          choiceContainer.style.display = "none";
+          sqlInputArea.style.display = "block";
+
+          const userSqlInput = document.getElementById("user-sql");
+          if (lesson.defaultSql) {
+            userSqlInput.value = lesson.defaultSql;
+          } else {
+            userSqlInput.value = "";
+          }
+        }
+
+        this.updateBottomNavButtons();
+        this.switchView("lesson");
+      }
+
+      renderChoices(choices) {
+        const container = document.getElementById("choice-container");
+        container.innerHTML = "";
+        choices.forEach((choice, index) => {
+          const item = document.createElement("div");
+          item.className = "choice-item";
+          item.id = `choice-${index}`;
+          item.innerHTML = `
+            <div class="choice-radio"></div>
+            <span>${choice}</span>
+          `;
+          item.onclick = () => {
+            document.querySelectorAll(".choice-item").forEach(el => el.classList.remove("selected"));
+            item.classList.add("selected");
+            this.selectedChoiceIndex = index;
+          };
+          container.appendChild(item);
+        });
+      }
+
+      renderTablePreview(lesson) {
+        const tableCard = document.getElementById("table-preview-card");
+        if (!lesson.tables || lesson.tables.length === 0) {
+          tableCard.style.display = "none";
+          return;
+        }
+
+        try {
+          const res = this.db.exec("SELECT * FROM stamp_sales LIMIT 5;");
+          if (res.length > 0) {
+            tableCard.style.display = "block";
+            const cols = res[0].columns;
+            const values = res[0].values;
+
+            let html = "<thead><tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr></thead><tbody>";
+            values.forEach(row => {
+              html += "<tr>" + row.map(v => `<td>${v !== null ? v : "<em>NULL</em>"}</td>`).join("") + "</tr>";
+            });
+            html += "</tbody>";
+            document.getElementById("preview-table").innerHTML = html;
+          }
+        } catch (e) {
+          console.error("Preview render error:", e);
+        }
+      }
+
+      runExample() {
+        if (!this.currentLesson || !this.currentLesson.example) return;
+        const resBox = document.getElementById("example-result");
+        try {
+          const result = this.db.exec(this.currentLesson.example.sql);
+          resBox.style.display = "block";
+          resBox.innerHTML = `
+            <span style="font-size: 0.75rem; font-weight: bold; color: var(--primary-brown);">実行結果プレビュー:</span>
+            <div class="table-scroll mt-2">${this.formatResultTable(result)}</div>
+          `;
+        } catch (err) {
+          resBox.style.display = "block";
+          resBox.innerHTML = `<span style="color: var(--accent-red); font-size: 0.8rem;">エラー: ${err.message}</span>`;
+        }
+      }
+
+      insertKeyword(kw) {
+        const textarea = document.getElementById("user-sql");
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const val = textarea.value;
+        textarea.value = val.substring(0, start) + kw + val.substring(end);
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + kw.length;
+      }
+
+      /* ==========================================================================
+         7. ヒントシステム（3段階）
+         ========================================================================== */
+      resetHintsUI() {
+        this.unlockedHintLevel = 0;
+        document.getElementById("hints-body").innerHTML = "";
+        document.getElementById("btn-unlock-hint").style.display = "inline-block";
+        document.getElementById("btn-unlock-hint").textContent = "ヒント1を開く";
+      }
+
+      unlockNextHint() {
+        if (!this.currentLesson) return;
+        this.unlockedHintLevel++;
+
+        const hintsBody = document.getElementById("hints-body");
+        const btn = document.getElementById("btn-unlock-hint");
+
+        if (this.unlockedHintLevel === 1) {
+          hintsBody.innerHTML += `
+            <div class="hint-step-box">
+              <div class="hint-step-title">💡 ヒント1：考え方</div>
+              <div>${this.currentLesson.hint1 || "問題文をよく読んで、必要な条件を整理してみよう！"}</div>
+            </div>
+          `;
+          btn.textContent = "ヒント2を開く";
+        } else if (this.unlockedHintLevel === 2) {
+          hintsBody.innerHTML += `
+            <div class="hint-step-box">
+              <div class="hint-step-title">🔑 ヒント2：キーワード</div>
+              <div>${this.currentLesson.hint2 || "使う言葉を確認してみてね。"}</div>
+            </div>
+          `;
+          btn.textContent = "ヒント3を開く（骨組み）";
+        } else if (this.unlockedHintLevel === 3) {
+          hintsBody.innerHTML += `
+            <div class="hint-step-box">
+              <div class="hint-step-title">🧩 ヒント3：骨組み</div>
+              <div>${this.currentLesson.hint3 || "もうすぐ答えが見つかるよ！"}</div>
+            </div>
+          `;
+          btn.style.display = "none";
+        }
+      }
+
+      /* ==========================================================================
+         8. 回答の実行と判定ロジック
+         ========================================================================== */
+      hideResultPanels() {
+        document.getElementById("result-panel").classList.remove("active");
+        document.getElementById("panel-success").style.display = "none";
+        document.getElementById("panel-mismatch").style.display = "none";
+        document.getElementById("panel-error").style.display = "none";
+      }
+
+      submitAnswer() {
+        this.hideResultPanels();
+        const lesson = this.currentLesson;
+        if (!lesson) return;
+
+        // 選択式問題の場合
+        if (lesson.type === "choice") {
+          if (this.selectedChoiceIndex === null) {
+            alert("選択肢をどれか1つ選んでね！");
+            return;
+          }
+          if (this.selectedChoiceIndex === lesson.correctChoice) {
+            this.handleSuccess(null);
+          } else {
+            this.handleChoiceMismatch();
+          }
+          return;
+        }
+
+        // SQL問題または体験問題
+        const userSql = document.getElementById("user-sql").value.trim();
+        if (!userSql) {
+          alert("SQLを入力してください！");
+          return;
+        }
+
+        try {
+          // ユーザーSQL実行
+          const userResult = this.db.exec(userSql);
+
+          // 模範SQL実行
+          const expectedResult = this.db.exec(lesson.answerSql);
+
+          // 結果の比較
+          let isMatch = this.compareSqlResults(userResult, expectedResult, lesson.orderMatters);
+
+          // 別解SQLがある場合（例: p-05でunits >= 2 または >= 1）
+          if (!isMatch && lesson.alternativeSqls && lesson.alternativeSqls.length > 0) {
+            for (const altSql of lesson.alternativeSqls) {
+              const altResult = this.db.exec(altSql);
+              if (this.compareSqlResults(userResult, altResult, lesson.orderMatters)) {
+                isMatch = true;
+                break;
+              }
+            }
+          }
+
+          if (isMatch) {
+            this.handleSuccess(userSql);
+          } else {
+            this.handleSqlMismatch(userResult, expectedResult);
+          }
+        } catch (err) {
+          this.handleSqlError(err, userSql);
+        }
+      }
+
+      compareSqlResults(userRes, expRes, orderMatters) {
+        if (userRes.length === 0 && expRes.length === 0) return true;
+        if (userRes.length === 0 || expRes.length === 0) return false;
+
+        const uCols = userRes[0].columns.map(c => c.toLowerCase());
+        const eCols = expRes[0].columns.map(c => c.toLowerCase());
+
+        // 列数の比較
+        if (uCols.length !== eCols.length) return false;
+
+        // 列名の一致確認
+        for (let i = 0; i < uCols.length; i++) {
+          if (uCols[i] !== eCols[i]) return false;
+        }
+
+        const uRows = userRes[0].values;
+        const eRows = expRes[0].values;
+
+        // 行数の比較
+        if (uRows.length !== eRows.length) return false;
+
+        // 行順を考慮する場合
+        if (orderMatters) {
+          for (let r = 0; r < uRows.length; r++) {
+            for (let c = 0; c < uCols.length; c++) {
+              if (String(uRows[r][c]) !== String(eRows[r][c])) {
+                return false;
+              }
+            }
+          }
+          return true;
+        }
+
+        // 行順を考慮しない場合（ソートして比較）
+        const serializeRow = row => row.map(v => (v === null ? "__NULL__" : String(v))).join("||");
+        const uSorted = uRows.map(serializeRow).sort();
+        const eSorted = eRows.map(serializeRow).sort();
+
+        for (let i = 0; i < uSorted.length; i++) {
+          if (uSorted[i] !== eSorted[i]) return false;
+        }
+        return true;
+      }
+
+      handleSuccess(userSql) {
+        const panel = document.getElementById("panel-success");
+        const resultPanel = document.getElementById("result-panel");
+        const modelSqlBox = document.getElementById("model-answer-box");
+        const afterNote = document.getElementById("after-note-text");
+
+        if (this.currentLesson.answerSql) {
+          modelSqlBox.style.display = "block";
+          document.getElementById("model-sql-text").textContent = this.currentLesson.answerSql;
+        } else {
+          modelSqlBox.style.display = "none";
+        }
+
+        afterNote.textContent = this.currentLesson.afterNote || "素晴らしい！正解です。";
+
+        this.markLessonCompleted(this.currentLesson.id);
+        this.updateCurrentLessonBadge();
+        this.updateBottomNavButtons();
+
+        resultPanel.classList.add("active");
+        panel.style.display = "block";
+        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      handleChoiceMismatch() {
+        const resultPanel = document.getElementById("result-panel");
+        const panel = document.getElementById("panel-mismatch");
+        document.getElementById("mismatch-detail").textContent = "おしい！もう一度解説文を読んで、別の選択肢を選んでみてね。";
+        document.getElementById("user-result-table-box").innerHTML = "";
+
+        resultPanel.classList.add("active");
+        panel.style.display = "block";
+        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      handleSqlMismatch(userResult, expectedResult) {
+        const resultPanel = document.getElementById("result-panel");
+        const panel = document.getElementById("panel-mismatch");
+        const detail = document.getElementById("mismatch-detail");
+
+        let reason = "求めている結果の行数や列名、または値が少し異なっています。";
+        if (userResult.length === 0) {
+          reason = "データが1件も取得できませんでした。条件（WHERE）を見直してみてね。";
+        } else {
+          const uCols = userResult[0].columns;
+          const eCols = expectedResult[0].columns;
+          if (uCols.length !== eCols.length) {
+            reason = `指定した列の数が違います（取り出す列数: 期待 ${eCols.length}列 / あなたのSQL ${uCols.length}列）。`;
+          } else if (userResult[0].values.length !== expectedResult[0].values.length) {
+            reason = `抽出された行の数が違います（件数: 期待 ${expectedResult[0].values.length}件 / あなたのSQL ${userResult[0].values.length}件）。`;
+          }
+        }
+
+        detail.textContent = reason;
+        document.getElementById("user-result-table-box").innerHTML = this.formatResultTable(userResult);
+
+        resultPanel.classList.add("active");
+        panel.style.display = "block";
+        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      handleSqlError(err, userSql) {
+        const resultPanel = document.getElementById("result-panel");
+        const panel = document.getElementById("panel-error");
+        const rawMsg = err.message || String(err);
+        const friendly = document.getElementById("error-friendly-msg");
+
+        let msg = "SQLの書き方に小さなエラーがあるみたいです。";
+
+        if (/no such table/i.test(rawMsg)) {
+          msg = "テーブル名が違うかもしれません。スペルを確認してみてね（練習テーブル名は stamp_sales です）";
+        } else if (/no such column/i.test(rawMsg)) {
+          msg = "列の名前が違うかもしれません。テーブル定義の列名（date, stamp_name, units, amount）を確認してね！";
+        } else if (/syntax error/i.test(rawMsg)) {
+          msg = "SQLの構文（キーワードの並びやカンマ、クォーテーションの閉じ忘れ）を確認してみてね！";
+        } else if (/incomplete input/i.test(rawMsg)) {
+          msg = "SQLが途中で終わっているかもしれません。カッコやシングルクォーテーションが閉じていないかも？";
+        }
+
+        friendly.textContent = msg;
+        document.getElementById("error-raw-msg").textContent = rawMsg;
+
+        resultPanel.classList.add("active");
+        panel.style.display = "block";
+        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      formatResultTable(sqlResult) {
+        if (!sqlResult || sqlResult.length === 0) {
+          return '<div style="padding: 10px; font-size: 0.82rem; color: var(--text-muted); background: #FAF8F5;">結果は0件でした。</div>';
+        }
+        const res = sqlResult[0];
+        let html = '<table class="data-table"><thead><tr>';
+        res.columns.forEach(col => {
+          html += `<th>${col}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+        res.values.forEach(row => {
+          html += '<tr>';
+          row.forEach(val => {
+            html += `<td>${val !== null ? val : '<em>NULL</em>'}</td>`;
+          });
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+        return html;
+      }
+
+      goNextLesson() {
+        const currentIndex = LESSONS.findIndex(l => l.id === this.currentLesson.id);
+        if (currentIndex >= 0 && currentIndex < LESSONS.length - 1) {
+          const nextLesson = LESSONS[currentIndex + 1];
+          this.loadLesson(nextLesson.id);
+        } else {
+          alert("おめでとうございます！現在実装されているすべてのレッスンをクリアしました！🎉");
+          this.showHome();
+        }
+      }
+
+      updateCurrentLessonBadge() {
+        const badge = document.getElementById("lesson-status-badge");
+        if (!badge || !this.currentLesson) return;
+        const isDone = this.isLessonCompleted(this.currentLesson.id);
+        if (isDone) {
+          badge.className = "lesson-status-badge badge-done";
+          badge.innerHTML = "<span>✓ 完了済み</span>";
+        } else {
+          badge.className = "lesson-status-badge badge-pending";
+          badge.innerHTML = "<span>未完了</span>";
+        }
+      }
+
+      updateBottomNavButtons() {
+        if (!this.currentLesson) return;
+        const currentIndex = LESSONS.findIndex(l => l.id === this.currentLesson.id);
+        const prevBtn = document.getElementById("btn-prev-lesson");
+        const nextBtn = document.getElementById("btn-next-lesson-nav");
+
+        if (prevBtn) {
+          if (currentIndex <= 0) {
+            prevBtn.disabled = true;
+            prevBtn.className = "btn-lesson-nav disabled";
+            prevBtn.innerHTML = "<span>← 前のレッスン</span>";
+          } else {
+            prevBtn.disabled = false;
+            const prevLesson = LESSONS[currentIndex - 1];
+            const isPrevDone = this.isLessonCompleted(prevLesson.id);
+            if (isPrevDone) {
+              prevBtn.className = "btn-lesson-nav is-completed";
+              prevBtn.innerHTML = "<span>← 前のレッスン ✓</span>";
+            } else {
+              prevBtn.className = "btn-lesson-nav";
+              prevBtn.innerHTML = "<span>← 前のレッスン</span>";
+            }
+          }
+        }
+
+        if (nextBtn) {
+          if (currentIndex >= LESSONS.length - 1) {
+            nextBtn.disabled = true;
+            nextBtn.className = "btn-lesson-nav disabled";
+            nextBtn.innerHTML = "<span>次のレッスン →</span>";
+          } else {
+            nextBtn.disabled = false;
+            const nextLesson = LESSONS[currentIndex + 1];
+            const isNextDone = this.isLessonCompleted(nextLesson.id);
+            if (isNextDone) {
+              nextBtn.className = "btn-lesson-nav is-completed";
+              nextBtn.innerHTML = "<span>次のレッスン → ✓</span>";
+            } else {
+              nextBtn.className = "btn-lesson-nav";
+              nextBtn.innerHTML = "<span>次のレッスン →</span>";
+            }
+          }
+        }
+      }
+
+      goPrevLesson() {
+        if (!this.currentLesson) return;
+        const currentIndex = LESSONS.findIndex(l => l.id === this.currentLesson.id);
+        if (currentIndex > 0) {
+          this.loadLesson(LESSONS[currentIndex - 1].id);
+        }
+      }
+
+      goNextLessonNav() {
+        if (!this.currentLesson) return;
+        const currentIndex = LESSONS.findIndex(l => l.id === this.currentLesson.id);
+        if (currentIndex < LESSONS.length - 1) {
+          this.loadLesson(LESSONS[currentIndex + 1].id);
+        }
+      }
+
+      /* ==========================================================================
+         9. 自由練習モード（Sandbox）の操作
+         ========================================================================== */
+      insertSandboxKw(kw) {
+        const textarea = document.getElementById("sandbox-sql");
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const val = textarea.value;
+        textarea.value = val.substring(0, start) + kw + val.substring(end);
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + kw.length;
+      }
+
+      setSandboxPreset() {
+        document.getElementById("sandbox-sql").value = "SELECT * FROM stamp_sales WHERE units >= 1 ORDER BY amount DESC;";
+      }
+
+      runSandbox() {
+        const sql = document.getElementById("sandbox-sql").value.trim();
+        const area = document.getElementById("sandbox-result-area");
+        if (!sql) {
+          alert("実行するSQLを入力してください！");
+          return;
+        }
+
+        try {
+          const res = this.db.exec(sql);
+          area.innerHTML = `
+            <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px;">
+              <div class="query-result-meta">
+                <span style="font-weight: 700; color: var(--accent-green);">✓ 実行完了</span>
+                <span>取得件数: ${res.length > 0 ? res[0].values.length : 0}件</span>
+              </div>
+              <div class="table-scroll">${this.formatResultTable(res)}</div>
+            </div>
+          `;
+        } catch (err) {
+          area.innerHTML = `
+            <div class="panel-error" style="display: block; margin-top: 0;">
+              <div class="error-title">⚠️ エラーが発生しました</div>
+              <div class="error-raw-msg">${err.message || err}</div>
+            </div>
+          `;
+        }
+      }
+    }
+
+    // アプリインスタンスの起動
+    const app = new MarumochiSQLApp();
+    window.addEventListener("DOMContentLoaded", () => {
+      app.initDB();
+    });
+  </script>
+</body>
+</html>
