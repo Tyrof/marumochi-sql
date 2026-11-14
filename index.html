@@ -1661,7 +1661,12 @@
             <div class="stage-remain-chip" id="stage-remain-chip" style="display: none;">
               <!-- 残りレッスン表示 -->
             </div>
-            <div id="model-answer-box" style="margin-top: 8px;">
+            <!-- あなたの実行結果（正解時） -->
+            <div class="query-result-wrapper" id="success-result-wrapper" style="display: none;">
+              <span style="font-size: 0.75rem; font-weight: bold; color: var(--accent-green);">あなたの実行結果:</span>
+              <div class="table-scroll mt-2" id="success-result-table-box"></div>
+            </div>
+            <div id="model-answer-box" style="margin-top: 12px;">
               <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-green);">模範解答:</span>
               <div class="example-sql" id="model-sql-text" style="margin-top: 4px;"></div>
             </div>
@@ -1682,7 +1687,7 @@
               抽出された行や列、並び順を確認してみてね。
             </div>
             <div class="query-result-wrapper">
-              <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">あなたのSQLの実行結果:</span>
+              <span style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted);">あなたの実行結果:</span>
               <div class="table-scroll mt-2" id="user-result-table-box"></div>
             </div>
           </div>
@@ -3011,6 +3016,10 @@
         document.getElementById("panel-success").style.display = "none";
         document.getElementById("panel-mismatch").style.display = "none";
         document.getElementById("panel-error").style.display = "none";
+        const successBox = document.getElementById("success-result-wrapper");
+        if (successBox) successBox.style.display = "none";
+        const successTable = document.getElementById("success-result-table-box");
+        if (successTable) successTable.innerHTML = "";
       }
 
       submitAnswer() {
@@ -3061,7 +3070,7 @@
           }
 
           if (isMatch) {
-            this.handleSuccess(userSql);
+            this.handleSuccess(userSql, userResult);
           } else {
             this.handleSqlMismatch(userResult, expectedResult);
           }
@@ -3114,11 +3123,21 @@
         return true;
       }
 
-      handleSuccess(userSql) {
+      handleSuccess(userSql, userResult) {
         const panel = document.getElementById("panel-success");
         const resultPanel = document.getElementById("result-panel");
         const modelSqlBox = document.getElementById("model-answer-box");
         const afterNote = document.getElementById("after-note-text");
+        const successResultWrapper = document.getElementById("success-result-wrapper");
+        const successResultTableBox = document.getElementById("success-result-table-box");
+
+        // 学習者が入力したSQLの実行結果テーブルを表示
+        if (userResult && successResultWrapper && successResultTableBox) {
+          successResultTableBox.innerHTML = this.formatResultTable(userResult);
+          successResultWrapper.style.display = "block";
+        } else if (successResultWrapper) {
+          successResultWrapper.style.display = "none";
+        }
 
         if (this.currentLesson.answerSql) {
           modelSqlBox.style.display = "block";
