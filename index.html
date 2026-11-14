@@ -352,9 +352,45 @@
       color: var(--accent-green);
       border: 1px solid #A3D9A5;
     }
+    .badge-cleared {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border: 1.5px solid #81C784;
+      font-weight: 800;
+    }
+    .badge-current {
+      background: var(--primary-brown);
+      color: #FFFFFF;
+      border: 1.5px solid var(--primary-brown-dark);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      box-shadow: 0 2px 6px rgba(111, 78, 55, 0.3);
+      animation: pulseBadge 2.2s infinite ease-in-out;
+    }
+    @keyframes pulseBadge {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
     .badge-locked {
       background: #E5E7EB;
       color: #6B7280;
+    }
+
+    /* ステージカード状態表示 */
+    .stage-card.stage-current {
+      border: 2px solid var(--primary-brown);
+      box-shadow: 0 4px 16px rgba(111, 78, 55, 0.14);
+      background: #FFFFFF;
+    }
+    .stage-card.stage-current .stage-card-header {
+      background: linear-gradient(90deg, #F8EFE7, #FAF6F1);
+      border-bottom: 2px solid var(--border-color);
+    }
+    .stage-card.stage-cleared {
+      border: 1.5px solid #C4E2D0;
+    }
+    .stage-card.stage-cleared .stage-card-header {
+      background: #F3FAF5;
     }
     .stage-lessons-list {
       padding: 6px 8px;
@@ -408,6 +444,20 @@
       font-weight: 800;
       color: var(--primary-brown-light);
       letter-spacing: 0.02em;
+    }
+    .lesson-tag.tag-test {
+      color: #B45309;
+      background: #FEF3C7;
+      padding: 1px 6px;
+      border-radius: var(--radius-sm);
+      display: inline-block;
+    }
+    .lesson-tag.tag-boss {
+      color: #991B1B;
+      background: #FEE2E2;
+      padding: 1px 6px;
+      border-radius: var(--radius-sm);
+      display: inline-block;
     }
     .lesson-title {
       font-weight: 700;
@@ -779,11 +829,14 @@
       box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.15);
     }
 
-    /* クイックキーワードボタン */
+    /* クイックキーワード・記号ボタン */
     .keyword-bar {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
+      margin-bottom: 6px;
+    }
+    .keyword-bar.symbol-bar {
       margin-bottom: 14px;
     }
     .btn-kw {
@@ -802,6 +855,17 @@
     .btn-kw:active {
       transform: translateY(1px);
       background: var(--accent-soft);
+    }
+    .btn-kw-symbol {
+      min-width: 36px;
+      text-align: center;
+      background: #FCFAF7;
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+    .btn-kw-symbol:hover {
+      background: var(--accent-soft);
+      border-color: var(--primary-brown);
     }
 
     /* アクションボタン（実行・判定） */
@@ -1114,11 +1178,206 @@
       margin-bottom: 24px;
     }
 
+    /* レッスン完了時の残りレッスン表示チップ */
+    .stage-remain-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FFFFFF;
+      border: 1px solid #C4E2D0;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .stage-remain-chip.chip-cleared {
+      background: var(--accent-green-light);
+      border-color: #81C784;
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* ステージクリアお祝い画面（モーダル） */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(60, 48, 40, 0.58);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: modalFadeIn 0.25s ease;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      max-width: 440px;
+      width: 100%;
+      padding: 28px 22px 24px 22px;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(111, 78, 55, 0.25);
+      border: 2.5px solid var(--primary-brown);
+      position: relative;
+      overflow: hidden;
+      animation: modalScaleUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes modalScaleUp {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 星・紙吹雪デコレーション */
+    .modal-confetti {
+      position: absolute;
+      pointer-events: none;
+      font-size: 1rem;
+      user-select: none;
+      opacity: 0.85;
+      animation: confettiFloat 3s infinite ease-in-out;
+    }
+    .modal-confetti.c1 { top: 14px; left: 18px; animation-delay: 0s; font-size: 1.1rem; }
+    .modal-confetti.c2 { top: 20px; right: 20px; animation-delay: 0.5s; font-size: 1rem; }
+    .modal-confetti.c3 { top: 70px; left: 24px; animation-delay: 1.1s; font-size: 0.9rem; }
+    .modal-confetti.c4 { top: 74px; right: 26px; animation-delay: 1.6s; font-size: 0.95rem; }
+    .modal-confetti.c5 { bottom: 80px; left: 16px; animation-delay: 0.8s; font-size: 0.85rem; }
+    .modal-confetti.c6 { bottom: 84px; right: 18px; animation-delay: 1.3s; font-size: 0.9rem; }
+    @keyframes confettiFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(12deg); }
+    }
+
+    .modal-marumochi-area {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .modal-marumochi-bounce {
+      transform: scale(1.22);
+      animation: bounceMarumochi 1.8s infinite ease-in-out;
+    }
+    @keyframes bounceMarumochi {
+      0%, 100% { transform: scale(1.22) translateY(0); }
+      50% { transform: scale(1.22) translateY(-8px); }
+    }
+    .modal-badge {
+      display: inline-block;
+      background: var(--accent-amber-light);
+      color: #B45309;
+      border: 1px solid #FCD34D;
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 3px 12px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .modal-title {
+      font-size: 1.38rem;
+      font-weight: 800;
+      color: var(--primary-brown-dark);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .modal-stats {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      background: var(--accent-green-light);
+      border: 1px solid #A3D9A5;
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+    .modal-message {
+      font-size: 0.94rem;
+      color: var(--text-main);
+      line-height: 1.65;
+      background: #FDFBF8;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn-modal-primary {
+      width: 100%;
+      min-height: 50px;
+      background: var(--accent-green);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .btn-modal-primary:hover {
+      background: #256629;
+    }
+    .btn-modal-primary:active {
+      transform: translateY(1px);
+    }
+    .btn-modal-secondary {
+      width: 100%;
+      min-height: 46px;
+      background: var(--accent-soft);
+      color: var(--primary-brown);
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .btn-modal-secondary:hover {
+      background: #E8DCD1;
+    }
+    .btn-modal-close {
+      width: 100%;
+      min-height: 42px;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .btn-modal-close:hover {
+      background: #F3ECE5;
+      color: var(--primary-brown);
+    }
+
     /* フッター */
     footer {
       margin-top: auto;
       text-align: center;
-      padding: 24px 16px;
+      padding: 24px 16px 28px 16px;
       font-size: 0.8rem;
       color: var(--text-muted);
       border-top: 1px solid var(--border-color);
@@ -1126,6 +1385,12 @@
     }
     .footer-actions {
       margin-top: 8px;
+    }
+    .footer-copyright {
+      margin-top: 12px;
+      font-size: 0.72rem;
+      color: #A3968B;
+      letter-spacing: 0.05em;
     }
     .btn-reset-data {
       background: none;
@@ -1211,7 +1476,7 @@
     <div class="progress-bar-card">
       <div class="progress-header">
         <span>全体の進捗状況</span>
-        <span id="progress-text">0 / 16 完了 (0%)</span>
+        <span id="progress-text">0 / 29 完了 (0%)</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
@@ -1336,18 +1601,35 @@
 
           <!-- クイックキーワードボタン -->
           <div class="keyword-bar">
-            <button class="btn-kw" onclick="app.insertKeyword('SELECT ')">SELECT</button>
-            <button class="btn-kw" onclick="app.insertKeyword('* ')">*</button>
-            <button class="btn-kw" onclick="app.insertKeyword('FROM ')">FROM</button>
-            <button class="btn-kw" onclick="app.insertKeyword('stamp_sales ')">stamp_sales</button>
-            <button class="btn-kw" onclick="app.insertKeyword('WHERE ')">WHERE</button>
-            <button class="btn-kw" onclick="app.insertKeyword('AND ')">AND</button>
-            <button class="btn-kw" onclick="app.insertKeyword('OR ')">OR</button>
-            <button class="btn-kw" onclick="app.insertKeyword('IN (')">IN ( )</button>
-            <button class="btn-kw" onclick="app.insertKeyword('LIKE ')">LIKE</button>
-            <button class="btn-kw" onclick="app.insertKeyword('ORDER BY ')">ORDER BY</button>
-            <button class="btn-kw" onclick="app.insertKeyword('LIMIT ')">LIMIT</button>
-            <button class="btn-kw" onclick="app.insertKeyword('; ')">;</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('SELECT ')">SELECT</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('* ')">*</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('FROM ')">FROM</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('stamp_sales ')">stamp_sales</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('customers ')">customers</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('WHERE ')">WHERE</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('GROUP BY ')">GROUP BY</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('HAVING ')">HAVING</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('COUNT(')">COUNT( )</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('SUM(')">SUM( )</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('AVG(')">AVG( )</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('DISTINCT ')">DISTINCT</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('ORDER BY ')">ORDER BY</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('LIMIT ')">LIMIT</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('AND ')">AND</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('OR ')">OR</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('IN (')">IN ( )</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('LIKE ')">LIKE</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('; ')">;</button>
+          </div>
+          <!-- 記号ボタン -->
+          <div class="keyword-bar symbol-bar">
+            <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertKeyword(', ')">,</button>
+            <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertKeyword('=')">=</button>
+            <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertKeyword('<')">&lt;</button>
+            <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertKeyword('>')">&gt;</button>
+            <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertKeyword('(')">(</button>
+            <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertKeyword(')')">)</button>
+            <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertKeyword('\'')">'</button>
           </div>
         </div>
 
@@ -1375,6 +1657,9 @@
           <div class="panel-success" id="panel-success" style="display: none;">
             <div class="success-badge">
               <span>🎉 大正解！素晴らしい！</span>
+            </div>
+            <div class="stage-remain-chip" id="stage-remain-chip" style="display: none;">
+              <!-- 残りレッスン表示 -->
             </div>
             <div id="model-answer-box" style="margin-top: 8px;">
               <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-green);">模範解答:</span>
@@ -1458,14 +1743,42 @@
       <div class="sandbox-card">
         <div class="sandbox-table-list">
           <div style="font-weight: 800; color: var(--primary-brown-dark); margin-bottom: 6px;">利用できるテーブル:</div>
-          <div style="font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 4px;">
-            <strong>stamp_sales</strong> (まるもちのスタンプ売上)
+          
+          <div style="margin-bottom: 10px;">
+            <div style="font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 3px;">
+              <strong>stamp_sales</strong> (まるもちのスタンプ売上)
+            </div>
+            <div class="schema-columns-pills">
+              <span class="col-pill"><strong>date</strong> TEXT</span>
+              <span class="col-pill"><strong>stamp_name</strong> TEXT</span>
+              <span class="col-pill"><strong>units</strong> INTEGER</span>
+              <span class="col-pill"><strong>amount</strong> INTEGER</span>
+            </div>
           </div>
-          <div class="schema-columns-pills">
-            <span class="col-pill"><strong>date</strong> TEXT</span>
-            <span class="col-pill"><strong>stamp_name</strong> TEXT</span>
-            <span class="col-pill"><strong>units</strong> INTEGER</span>
-            <span class="col-pill"><strong>amount</strong> INTEGER</span>
+
+          <div style="margin-bottom: 10px;">
+            <div style="font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 3px;">
+              <strong>customers</strong> (登録顧客データ)
+            </div>
+            <div class="schema-columns-pills">
+              <span class="col-pill"><strong>id</strong> INTEGER</span>
+              <span class="col-pill"><strong>name</strong> TEXT</span>
+              <span class="col-pill"><strong>region</strong> TEXT</span>
+              <span class="col-pill"><strong>email</strong> TEXT</span>
+              <span class="col-pill"><strong>registered_at</strong> TEXT</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 3px;">
+              <strong>products</strong> (商品マスタ)
+            </div>
+            <div class="schema-columns-pills">
+              <span class="col-pill"><strong>id</strong> INTEGER</span>
+              <span class="col-pill"><strong>name</strong> TEXT</span>
+              <span class="col-pill"><strong>category</strong> TEXT</span>
+              <span class="col-pill"><strong>price</strong> INTEGER</span>
+            </div>
           </div>
         </div>
 
@@ -1478,13 +1791,30 @@
         </div>
 
         <div class="keyword-bar">
-          <button class="btn-kw" onclick="app.insertSandboxKw('SELECT ')">SELECT</button>
-          <button class="btn-kw" onclick="app.insertSandboxKw('* ')">*</button>
-          <button class="btn-kw" onclick="app.insertSandboxKw('FROM ')">FROM</button>
-          <button class="btn-kw" onclick="app.insertSandboxKw('stamp_sales ')">stamp_sales</button>
-          <button class="btn-kw" onclick="app.insertSandboxKw('WHERE ')">WHERE</button>
-          <button class="btn-kw" onclick="app.insertSandboxKw('ORDER BY ')">ORDER BY</button>
-          <button class="btn-kw" onclick="app.insertSandboxKw('LIMIT ')">LIMIT</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('SELECT ')">SELECT</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('* ')">*</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('FROM ')">FROM</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('stamp_sales ')">stamp_sales</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('customers ')">customers</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('products ')">products</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('WHERE ')">WHERE</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('GROUP BY ')">GROUP BY</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('HAVING ')">HAVING</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('COUNT(')">COUNT( )</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('SUM(')">SUM( )</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('AVG(')">AVG( )</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ORDER BY ')">ORDER BY</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('LIMIT ')">LIMIT</button>
+        </div>
+        <!-- 記号ボタン -->
+        <div class="keyword-bar symbol-bar">
+          <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertSandboxKw(', ')">,</button>
+          <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertSandboxKw('=')">=</button>
+          <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertSandboxKw('<')">&lt;</button>
+          <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertSandboxKw('>')">&gt;</button>
+          <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertSandboxKw('(')">(</button>
+          <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertSandboxKw(')')">)</button>
+          <button type="button" class="btn-kw btn-kw-symbol" onclick="app.insertSandboxKw('\'')">'</button>
         </div>
 
         <button class="btn-primary" onclick="app.runSandbox()">
@@ -1511,7 +1841,48 @@
     <div class="footer-actions">
       <button class="btn-reset-data" onclick="app.resetProgress()">進捗データをリセット</button>
     </div>
+    <div class="footer-copyright">© RYO YOKOTA</div>
   </footer>
+
+  <!-- ステージクリア / 全レッスンクリアお祝い画面（モーダル） -->
+  <div id="stage-clear-modal" class="modal-overlay" style="display: none;" onclick="if(event.target===this) app.closeStageClearModal()">
+    <div class="modal-card">
+      <!-- 星・紙吹雪デコレーション -->
+      <span class="modal-confetti c1">✨</span>
+      <span class="modal-confetti c2">🎉</span>
+      <span class="modal-confetti c3">⭐</span>
+      <span class="modal-confetti c4">✨</span>
+      <span class="modal-confetti c5">🎊</span>
+      <span class="modal-confetti c6">⭐</span>
+
+      <div class="modal-marumochi-area">
+        <div class="marumochi-big modal-marumochi-bounce">
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="cheek left"></div>
+          <div class="cheek right"></div>
+          <div class="mouth"></div>
+        </div>
+      </div>
+      <div class="modal-badge" id="modal-clear-badge">🎉 STAGE CLEAR!</div>
+      <h2 class="modal-title" id="modal-stage-title">Stage 1 クリア！</h2>
+      <div class="modal-stats" id="modal-stage-stats">8 / 8 レッスン完了</div>
+      <div class="modal-message" id="modal-stage-message">
+        まるもち：「お見事！Stage 1 をぜんぶクリアしたよ！この調子で次のステージへ進もう！」
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal-primary" id="btn-modal-next-stage" onclick="app.modalGoNextStage()">
+          <span>次のステージへ進む →</span>
+        </button>
+        <button class="btn-modal-secondary" id="btn-modal-home" onclick="app.modalGoHome()">
+          <span>ステージ地図で確認する</span>
+        </button>
+        <button class="btn-modal-close" id="btn-modal-close" onclick="app.closeStageClearModal()" style="display: none;">
+          <span>閉じる</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- アプリケーション本体スクリプト -->
   <script>
@@ -1533,16 +1904,47 @@
       ('2026-11-10', '動く！癒しのまるもち', 1, 250),
       ('2026-11-10', '癒しのまるもち', 3, 570),
       ('2026-11-12', 'あけおめ！まるもち2027', 0, 0);
+
+      DROP TABLE IF EXISTS customers;
+      CREATE TABLE customers (
+        id INTEGER,
+        name TEXT,
+        region TEXT,
+        email TEXT,
+        registered_at TEXT
+      );
+
+      INSERT INTO customers (id, name, region, email, registered_at) VALUES
+      (1,'さくら','関東','sakura@example.com','2026-01-15'),
+      (2,'たろう','関東',NULL,'2026-02-03'),
+      (3,'はなこ','関西','hanako@example.com','2026-03-21'),
+      (4,'じろう','関西',NULL,'2026-04-10'),
+      (5,'みき','関東','miki@example.com','2026-05-05'),
+      (6,'さくら','関西','sakura2@example.com','2026-06-18');
+
+      DROP TABLE IF EXISTS products;
+      CREATE TABLE products (
+        id INTEGER,
+        name TEXT,
+        category TEXT,
+        price INTEGER
+      );
+
+      INSERT INTO products (id, name, category, price) VALUES
+      (1,'癒しのまるもち','静止画',190),
+      (2,'動く！癒しのまるもち','アニメ',250),
+      (3,'あけおめ！まるもち2027','季節',250),
+      (4,'まるもち絵本','絵本',480);
     `;
 
     /* ==========================================================================
-       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問)
+       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問)
        ========================================================================== */
     const LESSON_STAGES = [
       { id: "prologue", stageNum: -1, name: "プロローグ: 超入門", desc: "そもそもSQLって何？専門用語ゼロでイメージをつかむ章" },
       { id: "stage0", stageNum: 0, name: "Stage 0: 導入", desc: "SQLと友達になる。テーブルの考え方と最初の実行" },
       { id: "stage1", stageNum: 1, name: "Stage 1: 入門：取り出す（基礎文法）", desc: "SELECT / WHERE / LIKE / ORDER BY など基本の抽出" },
-      { id: "stage2", stageNum: 2, name: "Stage 2: 集計：数える・合計する", desc: "COUNT / SUM / GROUP BY / HAVING など（近日公開）", locked: true },
+      { id: "stage2", stageNum: 2, name: "Stage 2: 集計：数える・合計する", desc: "COUNT / SUM / AVG / GROUP BY / HAVING などの集計文法" },
       { id: "stage3", stageNum: 3, name: "Stage 3: 結合：テーブルをつなぐ", desc: "INNER JOIN / LEFT JOIN / 複数結合（近日公開）", locked: true },
       { id: "stage4", stageNum: 4, name: "Stage 4: 応用文法：入れ子と分岐", desc: "サブクエリ / CASE式 / WITH句（近日公開）", locked: true },
       { id: "stage5", stageNum: 5, name: "Stage 5: 実務操作：データを変える", desc: "INSERT / UPDATE / DELETE / 安全の型（近日公開）", locked: true },
@@ -1746,7 +2148,7 @@
         stage: 1,
         title: "条件でしぼる（WHERE、= ）",
         marumochiMsg: "ここからがSQLの真骨頂！欲しい行だけにしぼり込もう。",
-        explain: "「このスタンプの売上だけ見たい！」というときは、文のうしろに「WHERE（ウェア）」をつけます。\n\n文字（テキスト）を条件にするときは、値をシングルクォーテーション「 ' 」で囲むのが決まりです！\n例：WHERE stamp_name = '癒しのまるもち'",
+        explain: "表には売上のデータが5行、全部入っています。\nでも実際に見たいのは「癒しのまるもちの売上だけ」のような、条件に合う行だけ、ということが多いですよね。\n\nそこで使うのが WHERE です。WHERE は行をふるいにかける「フィルター」のようなもの。\nWHERE の後に条件を書くと、条件に合った行だけが残って、合わない行は結果から消えます。\n\n条件の書き方は「列名 = 値」です。\n例：stamp_name = '癒しのまるもち'\n→「スタンプ名が『癒しのまるもち』と等しい行だけ」という意味で、5行のうち3行が残ります。\n\n決まりごとが1つだけ：文字（テキスト）の値を書くときは、シングルクォーテーション「'」で囲みます。数字のときは囲みません。",
         example: {
           sql: "SELECT * FROM stamp_sales WHERE stamp_name = '癒しのまるもち';",
           note: "癒しのまるもち の行だけが抜き出されます"
@@ -1826,19 +2228,19 @@
         stage: 1,
         title: "リストで指定（IN）",
         marumochiMsg: "ORがたくさん並ぶときは「IN」を使うとスッキリ！",
-        explain: "「units = 1 OR units = 2 OR units = 3...」と書くのは大変ですよね。\nそんなときは「IN（イン）」を使うと、候補をカッコの中に並べるだけで済みます！\n\n例：WHERE units IN (1, 3)\n（unitsが 1 または 3 のいずれかに当てはまるもの）",
+        explain: "「units = 1 OR units = 2 OR units = 3...」と書くのは大変ですよね。\nそんなときは「IN（イン）」を使うと、候補をカッコの中に並べるだけで済みます！\n\n例：WHERE units IN (1, 2, 3)\n（unitsが 1、2、3 のいずれかに当てはまるもの）",
         example: {
-          sql: "SELECT * FROM stamp_sales WHERE units IN (1, 3);",
-          note: "1か3のどちらかを持つデータが取れます"
+          sql: "SELECT * FROM stamp_sales WHERE units IN (1, 2, 3);",
+          note: "1か2か3のどれかを持つデータが取れます"
         },
         tables: ["stamp_sales"],
         type: "sql",
-        question: "「IN」を使って、units が 1 または 3 の行をすべて（*）取り出してみよう！",
-        answerSql: "SELECT * FROM stamp_sales WHERE units IN (1, 3);",
+        question: "「IN」を使って、units が 1、2、3 のいずれかに当てはまる行をすべて（*）取り出してみよう！",
+        answerSql: "SELECT * FROM stamp_sales WHERE units IN (1, 2, 3);",
         orderMatters: false,
-        hint1: "WHERE units IN (1, 3) と書くよ。",
+        hint1: "WHERE units IN (1, 2, 3) と書くよ。",
         hint2: "カッコの中はカンマ区切りで数字を並べます。",
-        hint3: "「SELECT * FROM stamp_sales WHERE units IN (1, 3);」と書いてみよう！",
+        hint3: "「SELECT * FROM stamp_sales WHERE units IN (1, 2, 3);」と書いてみよう！",
         afterNote: "お見事！実務でも「特定のID一覧で絞り込みたい」ときに IN は必須のテクニックです。"
       },
       {
@@ -1880,7 +2282,278 @@
         hint2: "SELECT * FROM stamp_sales ORDER BY amount DESC LIMIT 3;",
         hint3: "「SELECT * FROM stamp_sales ORDER BY amount DESC LIMIT 3;」と書いてみてね！",
         afterNote: "おめでとうございます！！Stage 1 入門編を見事に完走しました！「取り出し・条件・並び替え」というSQLの最重要基礎が身につきましたよ！"
-      }
+      },
+// ----------------------------------------------------
+  // Stage 2 集計：数える・合計する（9レッスン + 確認テスト3 + ボス1 = 全13問）
+  // ----------------------------------------------------
+  {
+    id: "s2-01",
+    stage: 2,
+    title: "何件ある？（COUNT）",
+    marumochiMsg: "データが何行あるか、まるもちと一緒に数えてみよう！",
+    explain: "実務では「今日売れた注文件数は何件？」「登録ユーザーは何人？」のように、データの「行数（件数）」を知りたい場面が毎日あります。\n\n行数を数えたいときは、COUNT（カウント）を使います。\nカッコの中に *（アスタリスク）を入れると、「テーブルに全部で何行あるか」を1つの数字で返してくれます。\n\n書き方：SELECT COUNT(*) FROM テーブル名;\nこのクエリを実行すると、データそのものではなく「行の数」だけが結果として手に入ります。",
+    example: {
+      sql: "SELECT COUNT(*) FROM stamp_sales;",
+      note: "stamp_sales テーブルにデータが何行あるかを数える"
+    },
+    tables: ["stamp_sales"],
+    type: "sql",
+    question: "COUNT(*) を使って、stamp_sales テーブルの全行数を数えてみよう！",
+    answerSql: "SELECT COUNT(*) FROM stamp_sales;",
+    orderMatters: false,
+    hint1: "SELECT COUNT(*) FROM ... の形で書くよ。",
+    hint2: "テーブル名は stamp_sales です。",
+    hint3: "「SELECT COUNT(*) FROM stamp_sales;」と書いてみてね！",
+    afterNote: "お見事！stamp_sales には全部で5行のデータがあることが分かりました。COUNT(*) は件数を把握する最も基本的な集計関数です。"
+  },
+  {
+    id: "s2-02",
+    stage: 2,
+    title: "合計する（SUM）",
+    marumochiMsg: "数字をぜんぶ足し算！売上の合計額を計算しよう！",
+    explain: "「今月の売上金額の合計はいくら？」のように、特定の列の数値をぜんぶ足し合わせたいときは SUM（サム）を使います。\n\nSUM は「合計（Summation）」の略。カッコの中に「足したい列名」を指定すると、その列のすべての数値を足した1つの合計値を計算してくれます。\n\n書き方：SELECT SUM(列名) FROM テーブル名;\n※足し算できるのは数値の列だけです。文字（テキスト）の列には使えません。",
+    example: {
+      sql: "SELECT SUM(amount) FROM stamp_sales;",
+      note: "売上金額（amount）の全行合計を計算する"
+    },
+    tables: ["stamp_sales"],
+    type: "sql",
+    question: "SUM を使って、stamp_sales テーブルの売上金額（amount）の合計を計算してみよう！",
+    answerSql: "SELECT SUM(amount) FROM stamp_sales;",
+    orderMatters: false,
+    hint1: "SUM のカッコの中に列名 amount を書くよ。",
+    hint2: "SELECT SUM(amount) FROM ... です。",
+    hint3: "「SELECT SUM(amount) FROM stamp_sales;」と書いて実行してみよう！",
+    afterNote: "大正解！全5行の金額が合算されて「1390」円になりました。電卓で足し算しなくても、SQLなら一瞬で正確な合計が分かります。"
+  },
+  {
+    id: "s2-03",
+    stage: 2,
+    title: "平均・最大・最小（AVG、MIN、MAX）",
+    marumochiMsg: "平均値や、一番大きい値・小さい値も一度にチェック！",
+    explain: "集計関数には、合計（SUM）や件数（COUNT）の他にも便利な関数があります。\n・AVG(列名)：平均値（Average）を計算する\n・MIN(列名)：最小値（Minimum）を見つける\n・MAX(列名)：最大値（Maximum）を見つける\n\nこれらはカンマで区切って一度に取り出すことができます。\n書き方：SELECT AVG(列), MIN(列), MAX(列) FROM テーブル名;",
+    example: {
+      sql: "SELECT AVG(amount), MIN(amount), MAX(amount) FROM stamp_sales;",
+      note: "売上金額の平均・最小・最大を一度に取得する"
+    },
+    tables: ["stamp_sales"],
+    type: "sql",
+    question: "stamp_sales テーブルから、amount の「平均値（AVG）」「最小値（MIN）」「最大値（MAX）」をカンマ区切りで取り出してみよう！",
+    answerSql: "SELECT AVG(amount), MIN(amount), MAX(amount) FROM stamp_sales;",
+    orderMatters: false,
+    hint1: "SELECT AVG(amount), MIN(amount), MAX(amount) FROM stamp_sales; の順に並べてみよう。",
+    hint2: "カンマの後には半角スペースを入れると綺麗です。",
+    hint3: "「SELECT AVG(amount), MIN(amount), MAX(amount) FROM stamp_sales;」と書いてみてね！",
+    afterNote: "完璧！平均278円、最小0円、最大570円と分かりました。\n💡 実務の注意点：SQLiteなどでは「SUM(列) / COUNT(*)」のように整数同士の割り算をすると端数が切り捨てられて整数に丸められることがあります。平均を正確に出すには専用の AVG を使うか、CAST(列 AS REAL) で実数に変換してから割り算しましょう。"
+  },
+  {
+    id: "s2-04",
+    stage: 2,
+    title: "グループごとに数える（GROUP BY）",
+    marumochiMsg: "スタンプごとに何回売れたかな？グループ化に挑戦！",
+    explain: "テーブル全体の合計だけでなく、「スタンプの種類ごとに何件売れたか」のようにカテゴリ別の内訳を見たいことがよくあります。\n\nそんなときに使うのが GROUP BY（グループ・バイ）です。\nGROUP BY に列名を指定すると、その列の値が同じ行同士をひとまとめにして、グループごとに集計してくれます。\n\n書き方：SELECT グループ化する列, COUNT(*) FROM テーブル名 GROUP BY グループ化する列;\n※SELECT に並べられるのは、「GROUP BY に書いた列」と「集計関数（COUNTやSUMなど）」だけです。",
+    example: {
+      sql: "SELECT stamp_name, COUNT(*) FROM stamp_sales GROUP BY stamp_name;",
+      note: "スタンプ名（stamp_name）ごとに売上件数を数える"
+    },
+    tables: ["stamp_sales"],
+    type: "sql",
+    question: "stamp_sales テーブルで、スタンプ名（stamp_name）ごとにグループ化して、スタンプ名と件数（COUNT(*)）を取り出してみよう！",
+    answerSql: "SELECT stamp_name, COUNT(*) FROM stamp_sales GROUP BY stamp_name;",
+    orderMatters: false,
+    hint1: "SELECT stamp_name, COUNT(*) FROM stamp_sales の後ろに GROUP BY stamp_name を付けよう。",
+    hint2: "GROUP と BY の間には半角スペースが必要です。",
+    hint3: "「SELECT stamp_name, COUNT(*) FROM stamp_sales GROUP BY stamp_name;」",
+    afterNote: "素晴らしい！「あけおめ」が1件、「動く」が1件、「癒しのまるもち」が3件と、商品別の内訳が一発で集計できましたね。"
+  },
+  {
+    id: "s2-05",
+    stage: 2,
+    title: "グループごとの顧客数（customers）",
+    marumochiMsg: "新テーブル「customers（顧客）」が登場！地域別に集計してみよう！",
+    explain: "新しいテーブル「customers」には、ユーザーのID、名前、地域（region）、メール、登録日が入っています。\n\nマーケティングでは「関東のユーザーは何人？関西は何人？」のように地域ごとの人数を集計することがよくあります。\n\nGROUP BY region を使えば、地域ごとに何人登録されているかを簡単に集計できます。\n例：SELECT region, COUNT(*) FROM customers GROUP BY region;",
+    example: {
+      sql: "SELECT region, COUNT(*) FROM customers GROUP BY region;",
+      note: "地域（region）ごとの顧客数を集計する"
+    },
+    tables: ["customers"],
+    type: "sql",
+    question: "customers テーブルから、地域（region）ごとにグループ化して、「region」と「顧客数（COUNT(*)）」を取り出してみよう！",
+    answerSql: "SELECT region, COUNT(*) FROM customers GROUP BY region;",
+    orderMatters: false,
+    hint1: "SELECT region, COUNT(*) FROM customers GROUP BY region; を書こう。",
+    hint2: "対象のテーブル名は customers です。",
+    hint3: "「SELECT region, COUNT(*) FROM customers GROUP BY region;」と入力して実行してね！",
+    afterNote: "大正解！関東3人、関西3人と、地域ごとの分布がキレイに把握できました。"
+  },
+  {
+    id: "s2-06",
+    stage: 2,
+    title: "集計結果をしぼる（HAVING）",
+    marumochiMsg: "「合計が300円以上」のグループだけを残したいときは HAVING！",
+    explain: "「売上の合計が300円以上のスタンプだけに絞りたい」というとき、WHERE SUM(amount) >= 300 と書きたくなりますが、実はそれはエラーになります！\nWHERE は「集計する前の1行1行」をふるいにかける命令だからです。\n\nグループ化した集計結果を絞り込むときは、GROUP BY の後ろに HAVING（ハビング）を使います。\n\n書き方：SELECT 列, SUM(値) FROM テーブル GROUP BY 列 HAVING 集計条件;\n例：HAVING SUM(amount) >= 300",
+    example: {
+      sql: "SELECT stamp_name, SUM(amount) FROM stamp_sales GROUP BY stamp_name HAVING SUM(amount) >= 300;",
+      note: "スタンプごとの合計金額のうち、300円以上のものだけに絞り込む"
+    },
+    tables: ["stamp_sales"],
+    type: "sql",
+    question: "stamp_sales テーブルで、スタンプ名ごとの「stamp_name」と「SUM(amount)」を集計し、合計金額が 300 以上のスタンプだけを取り出してみよう！",
+    answerSql: "SELECT stamp_name, SUM(amount) FROM stamp_sales GROUP BY stamp_name HAVING SUM(amount) >= 300;",
+    orderMatters: false,
+    hint1: "GROUP BY stamp_name の後に HAVING SUM(amount) >= 300 を付けよう。",
+    hint2: "SELECT stamp_name, SUM(amount) FROM stamp_sales GROUP BY stamp_name HAVING SUM(amount) >= 300;",
+    hint3: "「SELECT stamp_name, SUM(amount) FROM stamp_sales GROUP BY stamp_name HAVING SUM(amount) >= 300;」",
+    afterNote: "お見事！合計が1140円の「癒しのまるもち」だけが残りました。集計後の値で絞り込むときは必ず HAVING を使いましょう。"
+  },
+  {
+    id: "s2-07",
+    stage: 2,
+    title: "WHERE と HAVING の使い分け",
+    marumochiMsg: "WHERE で元データを絞り、HAVING で集計後を絞る！合わせ技に挑戦！",
+    explain: "実務で最も混乱しやすいのが WHERE と HAVING の違いです。\n・WHERE：グループ化する前に、不要な行（売上0円など）を除外する\n・HAVING：グループ化して計算した後の結果（合計など）を絞り込む\n\nSQLの実行順序は必ず「WHERE → GROUP BY → HAVING」の順です。\n例：SELECT stamp_name, SUM(amount) FROM stamp_sales WHERE amount > 0 GROUP BY stamp_name HAVING SUM(amount) >= 200;",
+    example: {
+      sql: "SELECT stamp_name, SUM(amount) FROM stamp_sales WHERE amount > 0 GROUP BY stamp_name HAVING SUM(amount) >= 200;",
+      note: "売上金額が0より大きい行だけを集計し、合計200円以上のスタンプを抽出"
+    },
+    tables: ["stamp_sales"],
+    type: "sql",
+    question: "stamp_sales テーブルから、amount が 0 より大きい行（WHERE amount > 0）だけを対象にしてスタンプ名ごとにグループ化し、合計金額が 200 以上（HAVING SUM(amount) >= 200）の「stamp_name」と「SUM(amount)」を取り出してみよう！",
+    answerSql: "SELECT stamp_name, SUM(amount) FROM stamp_sales WHERE amount > 0 GROUP BY stamp_name HAVING SUM(amount) >= 200;",
+    orderMatters: false,
+    hint1: "順番は FROM → WHERE → GROUP BY → HAVING だよ。",
+    hint2: "WHERE amount > 0 GROUP BY stamp_name HAVING SUM(amount) >= 200 と繋げよう。",
+    hint3: "「SELECT stamp_name, SUM(amount) FROM stamp_sales WHERE amount > 0 GROUP BY stamp_name HAVING SUM(amount) >= 200;」",
+    afterNote: "正解です！今回は「癒しのまるもち（1140円）」に加えて「動く！癒しのまるもち（250円）」も条件を満たし、合計2行が抽出されました。s2-06（300円以上＝1行）と結果が変わる点に注目してください。WHERE と HAVING を正しく使い分けられると、SQL中級者への大きな一歩です！"
+  },
+  {
+    id: "s2-08",
+    stage: 2,
+    title: "NULL の数え方（COUNT 列名 vs COUNT *）",
+    marumochiMsg: "NULL（空っぽ）を数えるか数えないか？超重要ルール！",
+    explain: "SQLには「COUNT(*)」と「COUNT(列名)」の2通りの数え方があります。\n・COUNT(*)：NULLがあってもなくても、すべての「行の数」を数える\n・COUNT(列名)：その列が NULL でない（値が入っている）行だけを数える\n\ncustomers テーブルの email 列を見ると、メールアドレスが NULL（未登録）のユーザーがいます。\n「メール登録済みの顧客数」を知りたいときは、COUNT(email) を使います。",
+    example: {
+      sql: "SELECT COUNT(email) FROM customers;",
+      note: "email 列に値が入っている行数だけを数える（NULLは数えない）"
+    },
+    tables: ["customers"],
+    type: "sql",
+    question: "customers テーブルから、メールアドレスが登録されている（NULLでない）顧客数を数えるため、COUNT(email) を取り出してみよう！",
+    answerSql: "SELECT COUNT(email) FROM customers;",
+    orderMatters: false,
+    hint1: "カッコの中に * ではなく email を指定します。",
+    hint2: "SELECT COUNT(email) FROM customers; です。",
+    hint3: "「SELECT COUNT(email) FROM customers;」と書いて実行してみよう！",
+    afterNote: "完璧！全6人のうち、メールが入っている4人だけがカウントされました。COUNT(*) なら「全顧客数（6）」、COUNT(email) なら「メール登録数（4）」と使い分けるのが実務の鉄則です。"
+  },
+  {
+    id: "s2-09",
+    stage: 2,
+    title: "重複を数えない（COUNT DISTINCT）",
+    marumochiMsg: "同じ名前の人がいるかも？重複を省いて「種類の数」を数えよう！",
+    explain: "customers テーブルの名前（name）を見ると、「さくら」さんが関東と関西に1人ずつ、計2人登録されています。\n\n単に COUNT(name) とすると「6」になりますが、「登録されている名前の種類数（ユニークな名前の数）」を数えたいときはどうすればいいでしょうか？\n\nそんなときは COUNT のカッコの中に DISTINCT（ディスティンクト）を入れます。\n書き方：SELECT COUNT(DISTINCT 列名) FROM テーブル名;\nこれで重複を取り除いた正味の件数が求まります。",
+    example: {
+      sql: "SELECT COUNT(DISTINCT name) FROM customers;",
+      note: "重複を除外した異なる名前の数を数える"
+    },
+    tables: ["customers"],
+    type: "sql",
+    question: "customers テーブルから、重複を除いた異なる名前の数（COUNT(DISTINCT name)）を取り出してみよう！",
+    answerSql: "SELECT COUNT(DISTINCT name) FROM customers;",
+    orderMatters: false,
+    hint1: "COUNT のカッコの中に「DISTINCT name」と書くよ。",
+    hint2: "SELECT COUNT(DISTINCT name) FROM customers;",
+    hint3: "「SELECT COUNT(DISTINCT name) FROM customers;」と書いてみよう！",
+    afterNote: "素晴らしい！重複していた「さくら」さんが1種類として数えられ、結果は「5」になりました。DISTINCT を組み合わせることで、「何種類のユーザーや商品が存在するか」を正確に集計できます。"
+  },
+
+  // ----------------------------------------------------
+  // Stage 2 確認テスト（3問）
+  // ----------------------------------------------------
+  {
+    id: "s2-t1",
+    stage: 2,
+    title: "確認テスト1：COUNT と WHERE",
+    marumochiMsg: "Stage 2 の実力試し！条件に合う件数を数えよう！",
+    explain: "【確認テスト 1/3】\nここまでの学習の総復習テストです！ヒントなしでも解けるか腕試ししてみましょう（迷ったら段階ヒントを開いてOKです）。\n\n売上金額（amount）が 250円 以上の売上は何件あったでしょうか？\nWHERE で条件を絞り、COUNT(*) でその件数を数えてみましょう。",
+    example: {
+      sql: "SELECT COUNT(*) FROM stamp_sales WHERE amount >= 250;",
+      note: "金額が250以上の行数をカウントする"
+    },
+    tables: ["stamp_sales"],
+    type: "sql",
+    question: "stamp_sales テーブルから、売上金額（amount）が 250 以上の行数（COUNT(*)）を取り出してみよう！",
+    answerSql: "SELECT COUNT(*) FROM stamp_sales WHERE amount >= 250;",
+    orderMatters: false,
+    hint1: "SELECT COUNT(*) FROM stamp_sales の後ろに WHERE amount >= 250 を書こう。",
+    hint2: "SELECT COUNT(*) FROM stamp_sales WHERE amount >= 250;",
+    hint3: "「SELECT COUNT(*) FROM stamp_sales WHERE amount >= 250;」",
+    afterNote: "テスト1問目クリア！条件で絞り込んでから件数を数える処理は、日々の集計業務で最も頻出するパターンです。"
+  },
+  {
+    id: "s2-t2",
+    stage: 2,
+    title: "確認テスト2：GROUP BY と SUM",
+    marumochiMsg: "確認テスト2問目！スタンプごとの合計個数を集計しよう！",
+    explain: "【確認テスト 2/3】\nスタンプごとに売れた個数（units）の合計を計算してみましょう！\n\nスタンプ名（stamp_name）でグループ化し、それぞれの「スタンプ名」と「売上個数の合計（SUM(units)）」を求めてください。",
+    example: {
+      sql: "SELECT stamp_name, SUM(units) FROM stamp_sales GROUP BY stamp_name;",
+      note: "スタンプ名ごとの売上個数合計を集計"
+    },
+    tables: ["stamp_sales"],
+    type: "sql",
+    question: "stamp_sales テーブルから、スタンプ名（stamp_name）ごとにグループ化して、「stamp_name」と売上個数の合計「SUM(units)」を取り出してみよう！",
+    answerSql: "SELECT stamp_name, SUM(units) FROM stamp_sales GROUP BY stamp_name;",
+    orderMatters: false,
+    hint1: "SELECT stamp_name, SUM(units) FROM stamp_sales と書こう。",
+    hint2: "末尾に GROUP BY stamp_name を付けます。",
+    hint3: "「SELECT stamp_name, SUM(units) FROM stamp_sales GROUP BY stamp_name;」",
+    afterNote: "テスト2問目クリア！「あけおめ」が0個、「動く」が1個、「癒しのまるもち」が6個と正しく集計できました。"
+  },
+  {
+    id: "s2-t3",
+    stage: 2,
+    title: "確認テスト3：GROUP BY と HAVING",
+    marumochiMsg: "確認テスト最後の難関！グループ化したあとで絞り込もう！",
+    explain: "【確認テスト 3/3】\ncustomers テーブルを使って、顧客数が 3人以上 いる地域を特定してみましょう！\n\n地域（region）ごとにグループ化し、顧客数（COUNT(*)）が 3以上の地域について、「region」と「COUNT(*)」を取り出してください。",
+    example: {
+      sql: "SELECT region, COUNT(*) FROM customers GROUP BY region HAVING COUNT(*) >= 3;",
+      note: "顧客数が3以上の地域を抽出する"
+    },
+    tables: ["customers"],
+    type: "sql",
+    question: "customers テーブルから、地域（region）ごとにグループ化し、人数（COUNT(*)）が 3 以上の地域の「region」と「COUNT(*)」を取り出してみよう！",
+    answerSql: "SELECT region, COUNT(*) FROM customers GROUP BY region HAVING COUNT(*) >= 3;",
+    orderMatters: false,
+    hint1: "GROUP BY region の後ろに HAVING COUNT(*) >= 3 を指定しよう。",
+    hint2: "SELECT region, COUNT(*) FROM customers GROUP BY region HAVING COUNT(*) >= 3;",
+    hint3: "「SELECT region, COUNT(*) FROM customers GROUP BY region HAVING COUNT(*) >= 3;」",
+    afterNote: "確認テスト全問正解！関東（3人）、関西（3人）の双方が抽出されました。HAVING による集計後の絞り込みもバッチリ身についています！"
+  },
+
+  // ----------------------------------------------------
+  // Stage 2 ボス課題（1問）
+  // ----------------------------------------------------
+  {
+    id: "s2-boss",
+    stage: 2,
+    title: "ボス課題：重複顧客のチェック",
+    marumochiMsg: "Stage 2 のボス登場！仕様書を読んで自力でSQLを組み立てよう！",
+    explain: "【Stage 2 ボス課題】\n実務では「仕様書」や「依頼文」だけを渡されて、SQLを自力で設計することが求められます。\n問題文の仕様をしっかり読んで、学んだ集計文法を組み合わせて挑戦してみましょう！",
+    example: {
+      sql: "SELECT name, COUNT(*) FROM customers GROUP BY name HAVING COUNT(*) >= 2;",
+      note: "同じ名前が2件以上登録されている名前と件数を抽出"
+    },
+    tables: ["customers"],
+    type: "sql",
+    question: "customers テーブルで、同じ名前が2件以上登録されている名前と、その件数を出してください。重複チェックのつもりで取り組んでみましょう。",
+    answerSql: "SELECT name, COUNT(*) FROM customers GROUP BY name HAVING COUNT(*) >= 2;",
+    orderMatters: false,
+    hint1: "名前（name）でグループ化して、それぞれの人数 COUNT(*) を数えてみよう。",
+    hint2: "グループ化した件数が 2以上 という条件は、HAVING COUNT(*) >= 2 で指定できるよ。",
+    hint3: "「SELECT name, COUNT(*) FROM customers GROUP BY name HAVING COUNT(*) >= 2;」と書いてみよう！",
+    afterNote: "🎉 ボス撃破おめでとうございます！！\n「さくら」さんが2件登録されている重複を正しく検知できました！\n実務のデータベース管理でも、このような「重複登録のチェック」や「不正検知」には GROUP BY と HAVING の組み合わせが欠かせません。Stage 2 集計編を見事に完全制覇しました！"
+  }
     ];
 
     /* ==========================================================================
@@ -1901,11 +2574,17 @@
       loadProgress() {
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) return JSON.parse(raw);
+          if (raw) {
+            const data = JSON.parse(raw);
+            return {
+              completed: Array.isArray(data.completed) ? data.completed : [],
+              clearedStages: Array.isArray(data.clearedStages) ? data.clearedStages : []
+            };
+          }
         } catch (e) {
           console.error("Failed to load progress:", e);
         }
-        return { completed: [] };
+        return { completed: [], clearedStages: [] };
       }
 
       saveProgress() {
@@ -1930,7 +2609,7 @@
 
       resetProgress() {
         if (confirm("これまでの学習進捗をすべてリセットしますか？")) {
-          this.progress = { completed: [] };
+          this.progress = { completed: [], clearedStages: [] };
           this.saveProgress();
           this.updateGlobalProgressUI();
           this.renderStageList();
@@ -1999,27 +2678,46 @@
         const container = document.getElementById("stages-container");
         container.innerHTML = "";
 
+        // 次に取り組むべきステージ（現在地）を特定
+        // 実装済み（!locked）の中で、まだ全完了していない最初のステージ
+        const currentActiveStage = LESSON_STAGES.find(s => {
+          if (s.locked) return false;
+          const sLessons = LESSONS.filter(l => l.stage === s.stageNum);
+          return !sLessons.every(l => this.isLessonCompleted(l.id));
+        });
+
         LESSON_STAGES.forEach(stage => {
           const card = document.createElement("div");
-          card.className = `stage-card ${stage.locked ? "locked" : ""}`;
 
           // このステージに属するレッスン
           const stageLessons = LESSONS.filter(l => l.stage === stage.stageNum);
           const stageDoneCount = stageLessons.filter(l => this.isLessonCompleted(l.id)).length;
           const stagePct = stageLessons.length > 0 ? Math.round((stageDoneCount / stageLessons.length) * 100) : 0;
+          const isAllDone = stageLessons.length > 0 && stageDoneCount === stageLessons.length;
+          const isCurrent = !stage.locked && currentActiveStage && currentActiveStage.id === stage.id;
 
           let badgeHtml = "";
           let progressBoxHtml = "";
           if (stage.locked) {
+            card.className = "stage-card locked";
             badgeHtml = `<span class="badge badge-locked">🔒 近日公開</span>`;
           } else {
-            const isAllDone = stageLessons.length > 0 && stageDoneCount === stageLessons.length;
-            badgeHtml = `<span class="badge badge-active">${isAllDone ? "✨ 完了！" : `${stageDoneCount} / ${stageLessons.length} 完了`}</span>`;
+            if (isAllDone) {
+              card.className = "stage-card stage-cleared";
+              badgeHtml = `<span class="badge badge-cleared">✓ クリア</span>`;
+            } else if (isCurrent) {
+              card.className = "stage-card stage-current";
+              badgeHtml = `<span class="badge badge-current">▶ 今ここ</span>`;
+            } else {
+              card.className = "stage-card";
+              badgeHtml = `<span class="badge badge-active">${stageDoneCount} / ${stageLessons.length} 完了</span>`;
+            }
+
             progressBoxHtml = `
               <div class="stage-progress-box">
                 <div class="stage-progress-info">
                   <span>進捗</span>
-                  <span>${stageDoneCount} / ${stageLessons.length} 完了</span>
+                  <span>${stageDoneCount} / ${stageLessons.length} 完了 (${stagePct}%)</span>
                 </div>
                 <div class="stage-progress-track">
                   <div class="stage-progress-fill" style="width: ${stagePct}%;"></div>
@@ -2032,6 +2730,15 @@
           if (!stage.locked) {
             lessonsHtml = `<div class="stage-lessons-list">` + stageLessons.map(lesson => {
               const isDone = this.isLessonCompleted(lesson.id);
+              let tagClass = "lesson-tag";
+              let tagText = lesson.id.toUpperCase();
+              if (lesson.id.includes("-t")) {
+                tagClass = "lesson-tag tag-test";
+                tagText = "確認テスト " + lesson.id.toUpperCase();
+              } else if (lesson.id.includes("-boss")) {
+                tagClass = "lesson-tag tag-boss";
+                tagText = "ボス課題 " + lesson.id.toUpperCase();
+              }
               return `
                 <div class="lesson-item" onclick="app.loadLesson('${lesson.id}')">
                   <div class="lesson-item-left">
@@ -2039,7 +2746,7 @@
                       ${isDone ? "✓" : "○"}
                     </div>
                     <div class="lesson-info">
-                      <div class="lesson-tag">${lesson.id.toUpperCase()}</div>
+                      <div class="${tagClass}">${tagText}</div>
                       <div class="lesson-title">
                         <span>${lesson.title}</span>
                         ${isDone ? '<span class="lesson-check-mark">✓</span>' : '<span class="lesson-pending-mark">○</span>'}
@@ -2091,6 +2798,10 @@
 
         // 現在のレッスンの状態バッジ（✓ 完了済み / 未完了）
         this.updateCurrentLessonBadge();
+
+        // 残りレッスン数チップを非表示（正解時に表示）
+        const remainChip = document.getElementById("stage-remain-chip");
+        if (remainChip) remainChip.style.display = "none";
 
         // 例題ブロック
         const exampleBlock = document.getElementById("example-block");
@@ -2169,12 +2880,27 @@
           return;
         }
 
+        const tableName = lesson.tables[0];
         try {
-          const res = this.db.exec("SELECT * FROM stamp_sales LIMIT 5;");
+          const res = this.db.exec(`SELECT * FROM ${tableName} LIMIT 5;`);
           if (res.length > 0) {
             tableCard.style.display = "block";
             const cols = res[0].columns;
             const values = res[0].values;
+
+            // テーブル名とスキーマピルの更新
+            const nameEl = document.getElementById("table-preview-name");
+            if (nameEl) nameEl.textContent = tableName;
+
+            const countRes = this.db.exec(`SELECT COUNT(*) FROM ${tableName};`);
+            const totalRows = countRes.length > 0 ? countRes[0].values[0][0] : values.length;
+            const infoEl = document.getElementById("table-schema-info");
+            if (infoEl) infoEl.textContent = `${cols.length}列・全${totalRows}行`;
+
+            const pillsEl = document.getElementById("schema-columns-pills");
+            if (pillsEl) {
+              pillsEl.innerHTML = cols.map(c => `<span class="col-pill"><strong>${c}</strong></span>`).join("");
+            }
 
             let html = "<thead><tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr></thead><tbody>";
             values.forEach(row => {
@@ -2194,9 +2920,28 @@
         try {
           const result = this.db.exec(this.currentLesson.example.sql);
           resBox.style.display = "block";
+
+          // 元のテーブル行数と結果行数の集計・表示メッセージ
+          let summaryMsg = "";
+          try {
+            const tableMatch = this.currentLesson.example.sql.match(/\bFROM\s+([a-zA-Z0-9_]+)/i);
+            const tableName = tableMatch ? tableMatch[1] : (this.currentLesson.tables ? this.currentLesson.tables[0] : null);
+            if (tableName) {
+              const countRes = this.db.exec(`SELECT COUNT(*) FROM ${tableName};`);
+              const totalRows = countRes.length > 0 ? countRes[0].values[0][0] : null;
+              const resultRows = result.length > 0 ? result[0].values.length : 0;
+              if (totalRows !== null) {
+                summaryMsg = `<div class="example-row-summary" style="margin-top: 6px; font-size: 0.82rem; font-weight: 700; color: var(--primary-brown); background: #FAF6ED; border-left: 3px solid var(--accent-green); padding: 5px 10px; border-radius: 4px;">📌 ${totalRows}行のうち、条件に合った${resultRows}行だけが表示されました</div>`;
+              }
+            }
+          } catch (countErr) {
+            console.warn("Could not calculate row counts:", countErr);
+          }
+
           resBox.innerHTML = `
             <span style="font-size: 0.75rem; font-weight: bold; color: var(--primary-brown);">実行結果プレビュー:</span>
             <div class="table-scroll mt-2">${this.formatResultTable(result)}</div>
+            ${summaryMsg}
           `;
         } catch (err) {
           resBox.style.display = "block";
@@ -2387,10 +3132,14 @@
         this.markLessonCompleted(this.currentLesson.id);
         this.updateCurrentLessonBadge();
         this.updateBottomNavButtons();
+        this.updateStageRemainingInfo();
 
         resultPanel.classList.add("active");
         panel.style.display = "block";
         panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+        // ステージクリア判定とお祝いモーダル表示
+        this.checkStageClear(this.currentLesson);
       }
 
       handleChoiceMismatch() {
@@ -2483,8 +3232,8 @@
           const nextLesson = LESSONS[currentIndex + 1];
           this.loadLesson(nextLesson.id);
         } else {
-          alert("おめでとうございます！現在実装されているすべてのレッスンをクリアしました！🎉");
-          this.showHome();
+          // 最終レッスンの「次のレッスンへ進む」を押したとき、全レッスンクリアモーダルを表示
+          this.showAllLessonsClearModal();
         }
       }
 
@@ -2560,6 +3309,156 @@
         if (currentIndex < LESSONS.length - 1) {
           this.loadLesson(LESSONS[currentIndex + 1].id);
         }
+      }
+
+      updateStageRemainingInfo() {
+        const chip = document.getElementById("stage-remain-chip");
+        if (!chip || !this.currentLesson) return;
+        const stageObj = LESSON_STAGES.find(s => s.stageNum === this.currentLesson.stage);
+        if (!stageObj) {
+          chip.style.display = "none";
+          return;
+        }
+
+        const stageLessons = LESSONS.filter(l => l.stage === stageObj.stageNum);
+        const remaining = stageLessons.filter(l => !this.isLessonCompleted(l.id)).length;
+
+        chip.style.display = "inline-flex";
+        if (remaining === 0) {
+          chip.className = "stage-remain-chip chip-cleared";
+          chip.innerHTML = `<span>✨</span> <strong>${stageObj.name}</strong>：全レッスン完了！ステージクリア！`;
+        } else {
+          chip.className = "stage-remain-chip";
+          chip.innerHTML = `<span>●</span> <strong>${stageObj.name}</strong>：あと <strong>${remaining}</strong> レッスンでクリア`;
+        }
+      }
+
+      checkStageClear(lesson) {
+        const stageObj = LESSON_STAGES.find(s => s.stageNum === lesson.stage);
+        if (!stageObj) return;
+
+        const stageLessons = LESSONS.filter(l => l.stage === stageObj.stageNum);
+        const isAllDone = stageLessons.length > 0 && stageLessons.every(l => this.isLessonCompleted(l.id));
+
+        // まだこのステージのお祝いモーダルを表示していなければ表示して記録
+        if (isAllDone && !this.progress.clearedStages.includes(stageObj.id)) {
+          this.progress.clearedStages.push(stageObj.id);
+          this.saveProgress();
+
+          setTimeout(() => {
+            this.showStageClearModal(stageObj, stageLessons.length);
+          }, 350);
+        }
+      }
+
+      showStageClearModal(stageObj, totalLessons) {
+        const modal = document.getElementById("stage-clear-modal");
+        if (!modal) return;
+
+        // 実装済みステージ（未ロック）すべてがクリアされているかを判定
+        const unlockedStages = LESSON_STAGES.filter(s => !s.locked);
+        const isAllUnlockedCleared = unlockedStages.every(s => {
+          const lessons = LESSONS.filter(l => l.stage === s.stageNum);
+          return lessons.length > 0 && lessons.every(l => this.isLessonCompleted(l.id));
+        });
+
+        const badgeEl = document.getElementById("modal-clear-badge");
+        const titleEl = document.getElementById("modal-stage-title");
+        const statsEl = document.getElementById("modal-stage-stats");
+        const msgEl = document.getElementById("modal-stage-message");
+        const nextBtn = document.getElementById("btn-modal-next-stage");
+        const closeBtn = document.getElementById("btn-modal-close");
+        const homeBtn = document.getElementById("btn-modal-home");
+
+        if (isAllUnlockedCleared) {
+          // 全ステージ完全制覇
+          this.showAllLessonsClearModal();
+          return;
+        } else {
+          // 次の未ロックステージを探す
+          const currentIdx = LESSON_STAGES.findIndex(s => s.id === stageObj.id);
+          let nextStage = null;
+          for (let i = currentIdx + 1; i < LESSON_STAGES.length; i++) {
+            if (!LESSON_STAGES[i].locked) {
+              nextStage = LESSON_STAGES[i];
+              break;
+            }
+          }
+
+          badgeEl.textContent = "🎉 STAGE CLEAR!";
+          badgeEl.style.background = "#E8F5E9";
+          badgeEl.style.color = "#2E7D32";
+          badgeEl.style.display = "inline-block";
+          titleEl.textContent = `${stageObj.name} クリア！`;
+          statsEl.textContent = `${totalLessons} / ${totalLessons} レッスン完了`;
+          statsEl.style.display = "inline-block";
+
+          if (nextStage) {
+            const nextStageLessons = LESSONS.filter(l => l.stage === nextStage.stageNum);
+            this.nextStageTargetLessonId = nextStageLessons.length > 0 ? nextStageLessons[0].id : null;
+            msgEl.innerHTML = `<strong>まるもち：</strong>「お見事！${stageObj.name} をぜんぶクリアしたよ！この調子で次の「${nextStage.name}」にも挑戦してみよう！」`;
+            nextBtn.style.display = "flex";
+            nextBtn.innerHTML = "<span>次のステージへ進む →</span>";
+          } else {
+            this.nextStageTargetLessonId = null;
+            msgEl.innerHTML = `<strong>まるもち：</strong>「お見事！${stageObj.name} をぜんぶクリアしたよ！素晴らしい集中力だね！」`;
+            nextBtn.style.display = "none";
+          }
+          homeBtn.style.display = "flex";
+          homeBtn.innerHTML = "<span>ステージ地図で確認する</span>";
+          closeBtn.style.display = "flex";
+        }
+
+        modal.style.display = "flex";
+      }
+
+      showAllLessonsClearModal() {
+        const modal = document.getElementById("stage-clear-modal");
+        if (!modal) return;
+
+        const badgeEl = document.getElementById("modal-clear-badge");
+        const titleEl = document.getElementById("modal-stage-title");
+        const statsEl = document.getElementById("modal-stage-stats");
+        const msgEl = document.getElementById("modal-stage-message");
+        const nextBtn = document.getElementById("btn-modal-next-stage");
+        const homeBtn = document.getElementById("btn-modal-home");
+        const closeBtn = document.getElementById("btn-modal-close");
+
+        badgeEl.textContent = "🎊 ALL LESSONS CLEAR!";
+        badgeEl.style.background = "#FEF3C7";
+        badgeEl.style.color = "#92400E";
+        badgeEl.style.display = "inline-block";
+        titleEl.textContent = "🎉 全レッスンクリア！";
+        statsEl.textContent = `全 ${LESSONS.length} / ${LESSONS.length} レッスン完全制覇！`;
+        statsEl.style.display = "inline-block";
+        msgEl.innerHTML = `おめでとうございます！現在実装されているすべてのレッスンをクリアしました！<br><br><span style="font-size: 0.88rem; color: var(--text-muted);">まるもち：「ゼロから始めて、自力でSQLを書いてデータを抽出できる実務基礎がバッチリ身についたね！本当にお疲れさまでした！」</span>`;
+
+        nextBtn.style.display = "none";
+        homeBtn.style.display = "flex";
+        homeBtn.innerHTML = "<span>ステージ地図で確認する</span>";
+        closeBtn.style.display = "flex";
+
+        modal.style.display = "flex";
+      }
+
+      closeStageClearModal() {
+        const modal = document.getElementById("stage-clear-modal");
+        if (modal) modal.style.display = "none";
+      }
+
+      modalGoNextStage() {
+        this.closeStageClearModal();
+        if (this.nextStageTargetLessonId) {
+          this.loadLesson(this.nextStageTargetLessonId);
+        } else {
+          // 全ステージクリア時は自由練習モードへ
+          this.showSandbox();
+        }
+      }
+
+      modalGoHome() {
+        this.closeStageClearModal();
+        this.showHome();
       }
 
       /* ==========================================================================
