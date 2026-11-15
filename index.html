@@ -1476,7 +1476,7 @@
     <div class="progress-bar-card">
       <div class="progress-header">
         <span>全体の進捗状況</span>
-        <span id="progress-text">0 / 81 完了 (0%)</span>
+        <span id="progress-text">0 / 94 完了 (0%)</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
@@ -2031,7 +2031,7 @@
     `;
 
     /* ==========================================================================
-       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問, Stage 4 13問, Stage 5 13問, Stage 6 13問 全81問)
+       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問, Stage 4 13問, Stage 5 13問, Stage 6 13問, Stage 7 13問 全94問)
        ========================================================================== */
     const LESSON_STAGES = [
       { id: "prologue", stageNum: -1, name: "プロローグ: 超入門", desc: "そもそもSQLって何？専門用語ゼロでイメージをつかむ章" },
@@ -2042,7 +2042,7 @@
       { id: "stage4", stageNum: 4, name: "Stage 4: 応用文法：入れ子と分岐", desc: "サブクエリ / CASE式 / WITH句などの応用文法" },
       { id: "stage5", stageNum: 5, name: "Stage 5: 実務操作：データを変える", desc: "INSERT / UPDATE / DELETE / トランザクションなどの実務操作" },
       { id: "stage6", stageNum: 6, name: "Stage 6: 上級：分析と速さ", desc: "ウィンドウ関数 / インデックス / 実行計画などの上級文法" },
-      { id: "stage7", stageNum: 7, name: "Stage 7: 実務再現：卒業編", desc: "仕様書から自力で書く総合演習（近日公開）", locked: true }
+      { id: "stage7", stageNum: 7, name: "Stage 7: 卒業編：実務形式の総合演習", desc: "現場の依頼文をもとにゼロからSQLを組み立てる総合演習" }
     ];
 
     const LESSONS = [
@@ -3815,6 +3815,272 @@
     "hint2": "amount - LAG(amount) OVER (ORDER BY date, amount) と RANK() OVER (ORDER BY amount DESC) を続けます。",
     "hint3": "「SELECT date, amount, SUM(amount) OVER (ORDER BY date, amount ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), amount - LAG(amount) OVER (ORDER BY date, amount), RANK() OVER (ORDER BY amount DESC) FROM stamp_sales ORDER BY date, amount;」",
     "afterNote": "🎉 ボス撃破おめでとうございます！！！\n受託の現場でよくある「月次売上レポート」そのものの高度な分析ダッシュボードクエリを見事に完成させました！\n単なるデータの抽出にとどまらず、累計推移、前日比差分、全体ランキングをひと目で把握できるこのクエリは、実務のデータアナリストやバックエンドエンジニアが日常的に作成するレベルのクエリです。Stage 6 上級編を見事に完全制覇しました！"
+  },
+
+  // ----------------------------------------------------
+  // Stage 7 卒業編：実務形式の総合演習（9レッスン + 確認テスト3 + ボス1 = 全13問）
+  // ----------------------------------------------------
+  {
+    "id": "s7-01",
+    "stage": 7,
+    "title": "依頼：カテゴリ別の売上集計",
+    "marumochiMsg": "ショップ店長からの初依頼！まずはカテゴリごとの売上を見てみよう！",
+    "explain": "【店長からの相談】\n「どのカテゴリの商品が一番売れているか知りたいです。金額だけでなく、何回注文されたかも知りたいな」\n商品情報と注文情報を結びつけて、カテゴリごとに集計しましょう。",
+    "example": null,
+    "tables": [
+      "orders",
+      "products"
+    ],
+    "type": "sql",
+    "question": "ショップの店長からの依頼です。\n「商品カテゴリごとに、売上金額の合計と注文件数を、売上金額の大きい順に出してください」",
+    "answerSql": "SELECT p.category, SUM(p.price * o.qty), COUNT(*) FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY p.category ORDER BY SUM(p.price * o.qty) DESC;",
+    "orderMatters": true,
+    "hint1": "2つのテーブルを結合（INNER JOIN）しよう。",
+    "hint2": "カテゴリ（category）でグループ化（GROUP BY）します。",
+    "hint3": "売上金額の合計は SUM、件数は COUNT を使い、ORDER BY で並び替えます。",
+    "afterNote": "依頼達成！アニメグッズが1250円でトップ、続いて静止画760円、季節750円であることが一目でわかりました。店長も大満足です！"
+  },
+  {
+    "id": "s7-02",
+    "stage": 7,
+    "title": "依頼：連絡できない顧客リスト",
+    "marumochiMsg": "カスタマーサポートからの相談！重要なお知らせが送れないお客様を探そう！",
+    "explain": "【サポート担当からの相談】\n「キャンペーンのメールを送りたいのですが、アドレス未登録のお客様には送れません。誰が該当するか教えてください」\nNULLの扱いに注意して抽出しよう。",
+    "example": null,
+    "tables": [
+      "customers"
+    ],
+    "type": "sql",
+    "question": "カスタマーサポートからの依頼です。\n「メールアドレスが未登録で連絡できない顧客について、名前と地域を取り出してください」",
+    "answerSql": "SELECT name, region FROM customers WHERE email IS NULL;",
+    "orderMatters": false,
+    "hint1": "条件指定（WHERE）を使おう。",
+    "hint2": "値が入っていないこと（未登録）の判定には IS NULL を使います。",
+    "hint3": "customers テーブルから name と region を取り出します。",
+    "afterNote": "依頼達成！たろうさんとじろうさんの2名がリストアップされました。サポート担当から個別案内の手紙が出せるようになりました。"
+  },
+  {
+    "id": "s7-03",
+    "stage": 7,
+    "title": "依頼：リピーターの洗い出し",
+    "marumochiMsg": "マーケティング部からの依頼！ファンになってくれたリピーターさんを探そう！",
+    "explain": "【マーケ担当からの相談】\n「リピーター様限定のクーポンを配りたいです。2回以上お買い物してくれたお客様を教えてもらえますか？」\n同姓同名の顧客がいる点に注意してグループ化しましょう。",
+    "example": null,
+    "tables": [
+      "customers",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "マーケティング担当からの依頼です。\n「2回以上注文してくれたリピーターの顧客について、名前と注文件数を出してください」",
+    "answerSql": "SELECT c.name, COUNT(*) FROM customers c INNER JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name HAVING COUNT(*) >= 2;",
+    "orderMatters": false,
+    "hint1": "customers と orders を結合（INNER JOIN）してグループ化（GROUP BY）しよう。",
+    "hint2": "同姓同名のお客様を区別できるよう、顧客ID（c.id）を含めてまとめます。",
+    "hint3": "グループ化した件数の絞り込みには HAVING COUNT(*) を使います。",
+    "afterNote": "依頼達成！さくらさん、たろうさん、はなこさんの3名が2回以上注文していることが判明しました。限定クーポンでさらに喜んでもらえそうですね！"
+  },
+  {
+    "id": "s7-04",
+    "stage": 7,
+    "title": "依頼：一度も売れていない商品",
+    "marumochiMsg": "商品企画部からの依頼！まだ注文がない商品をチェック！",
+    "explain": "【商品企画からの相談】\n「新商品の売れ行きを見直したいです。発売後にまだ一度も注文が入っていない商品があれば教えてください」\n注文がない行も落とさずに見つける結合テクニックが必要です。",
+    "example": null,
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "商品企画担当からの依頼です。\n「注文が1件も入っていない商品の、名前と価格を出してください」",
+    "answerSql": "SELECT p.name, p.price FROM products p LEFT JOIN orders o ON o.product_id = p.id WHERE o.id IS NULL;",
+    "orderMatters": false,
+    "hint1": "商品テーブルを起点に外部結合（LEFT JOIN）を使おう。",
+    "hint2": "注文テーブル側のID（o.id）が空っぽの行を探します。",
+    "hint3": "WHERE 句で IS NULL を指定して、注文のない商品を絞り込みます。",
+    "afterNote": "依頼達成！「まるもち絵本（480円）」がまだ0件であることが判明しました。トップページで目立たせるなどの販促施策が打てそうです！"
+  },
+  {
+    "id": "s7-05",
+    "stage": 7,
+    "title": "依頼：平均より売れた日",
+    "marumochiMsg": "店長からの依頼！平均売上を上回った好調な日を探そう！",
+    "explain": "【店長からの相談】\n「スタンプの売上が好調だった日を分析したいです。全期間の平均売上金額を超えている日を教えてください」\n平均値を自動計算して条件に組み込む書き方を思い出しましょう。",
+    "example": null,
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "ショップの店長からの依頼です。\n「stamp_sales テーブルから、金額が全体の平均金額より大きい日の、日付・スタンプ名・金額を取り出してください」",
+    "answerSql": "SELECT date, stamp_name, amount FROM stamp_sales WHERE amount > (SELECT AVG(amount) FROM stamp_sales);",
+    "orderMatters": false,
+    "hint1": "WHERE 句の中でサブクエリ（副問合せ）を使おう。",
+    "hint2": "内側のカッコ内で AVG(amount) を使って平均金額を計算します。",
+    "hint3": "WHERE amount > (SELECT ...) で比較します。",
+    "afterNote": "依頼達成！380円と570円の2日が平均を上回っていることがわかりました。SNS投稿日と重ね合わせて要因分析が進みそうです！"
+  },
+  {
+    "id": "s7-06",
+    "stage": 7,
+    "title": "依頼：顧客ランク付け",
+    "marumochiMsg": "店長からの依頼！累計購入額に応じてお客様をランク分け！",
+    "explain": "【店長からの相談】\n「お客様への感謝イベントを企画しています。合計購入金額が500円以上の方を『常連さん』、それ以外を『新規さん』に分類して一覧化してください」\n合計金額の計算と条件分岐をスッキリ整理して組み立てましょう。",
+    "example": null,
+    "tables": [
+      "customers",
+      "orders",
+      "products"
+    ],
+    "type": "sql",
+    "question": "ショップの店長からの依頼です。\n「注文履歴のある顧客ごとに合計購入金額を求め、500円以上は『常連さん』、それ以外は『新規さん』と判定して、名前・合計金額・ランクを合計金額の大きい順に出してください」",
+    "answerSql": "WITH totals AS (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) SELECT c.name, t.total, CASE WHEN t.total >= 500 THEN '常連さん' ELSE '新規さん' END FROM totals t INNER JOIN customers c ON c.id = t.cid ORDER BY t.total DESC;",
+    "orderMatters": true,
+    "hint1": "共通テーブル式（WITH句）で顧客ごとの合計金額（SUM）をあらかじめ集計しよう。",
+    "hint2": "条件分岐には CASE 式（WHEN 〜 THEN 〜 ELSE 〜 END）を使います。",
+    "hint3": "外側のクエリで customers テーブルと結合し、ORDER BY で合計金額の降順に並べます。",
+    "afterNote": "依頼達成！みきさん、はなこさん、さくらさんが常連さん、たろうさんと別のさくらさんが新規さんと綺麗にランク分けされました。"
+  },
+  {
+    "id": "s7-07",
+    "stage": 7,
+    "title": "依頼：日ごとの売上推移",
+    "marumochiMsg": "経理部からの相談！売上がどう積み上がってきたかをレポート！",
+    "explain": "【経理担当からの相談】\n「注文日ごとの売上金額と、その日までの売上累計の推移を確認したいです。日々の推移が追える表を作ってください」\n行をまとめずに累計を計算する高度な手法を使いましょう。",
+    "example": null,
+    "tables": [
+      "orders",
+      "products"
+    ],
+    "type": "sql",
+    "question": "経理担当からの依頼です。\n「注文を日付の昇順に並べ、注文日・その注文の売上金額・その日までの売上累計金額を取り出してください」",
+    "answerSql": "SELECT o.ordered_at, p.price * o.qty, SUM(p.price * o.qty) OVER (ORDER BY o.ordered_at) FROM orders o INNER JOIN products p ON o.product_id = p.id ORDER BY o.ordered_at;",
+    "orderMatters": true,
+    "hint1": "注文テーブルと商品テーブルを結合（INNER JOIN）して金額（p.price * o.qty）を計算しよう。",
+    "hint2": "累計を計算するためにウィンドウ関数（SUM OVER）を使います。",
+    "hint3": "OVER (ORDER BY o.ordered_at) で日付順に積み上げます。",
+    "afterNote": "依頼達成！380円からスタートして2760円まで綺麗に積み上がっていく売上推移が可視化されました。経理担当もグラフ化しやすいと喜んでいます！"
+  },
+  {
+    "id": "s7-08",
+    "stage": 7,
+    "title": "依頼：買ったことのない顧客への案内",
+    "marumochiMsg": "プロモーション担当からの依頼！未購入の会員様へ初回案内を出そう！",
+    "explain": "【販促担当からの相談】\n「会員登録してくれたのに、まだ一度も購入していないお客様がいらっしゃいます。初回限定のご案内を送りたいので名前と地域を教えてください」\n顧客テーブルをベースに注文の有無を判定します。",
+    "example": null,
+    "tables": [
+      "customers",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "プロモーション担当からの依頼です。\n「まだ一度も注文したことのない顧客について、名前と地域を取り出してください」",
+    "answerSql": "SELECT c.name, c.region FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE o.id IS NULL;",
+    "orderMatters": false,
+    "hint1": "customers テーブルを起点に orders テーブルを外部結合（LEFT JOIN）しよう。",
+    "hint2": "注文データのキー（o.id など）が NULL の行を WHERE 句で探します。",
+    "hint3": "SELECT c.name, c.region を指定します。",
+    "afterNote": "依頼達成！関西の「じろう」さんがまだ未購入であることが特定できました。初回限定クーポンを送る準備に入ります！"
+  },
+  {
+    "id": "s7-09",
+    "stage": 7,
+    "title": "依頼：地域別の売上",
+    "marumochiMsg": "営業企画からの依頼！関東と関西、どちらのエリアが好調か？",
+    "explain": "【営業企画からの相談】\n「今後のポップアップ出店の参考に、顧客の地域（関東・関西）ごとの売上合計を比較したいです」\n3つのテーブルをつないで地域ごとにまとめましょう。",
+    "example": null,
+    "tables": [
+      "customers",
+      "orders",
+      "products"
+    ],
+    "type": "sql",
+    "question": "営業企画担当からの依頼です。\n「顧客の地域（region）ごとに売上合計金額を計算し、金額の大きい順に出してください」",
+    "answerSql": "SELECT c.region, SUM(p.price * o.qty) FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id GROUP BY c.region ORDER BY SUM(p.price * o.qty) DESC;",
+    "orderMatters": true,
+    "hint1": "orders、customers、products の3テーブルを結合しよう。",
+    "hint2": "地域（c.region）でグループ化（GROUP BY）します。",
+    "hint3": "SUM(p.price * o.qty) で合計金額を求め、ORDER BY ... DESC で並び替えます。",
+    "afterNote": "依頼達成！関東1820円、関西940円という売上比率が明確になりました。出店計画の貴重な判断材料になります！"
+  },
+  {
+    "id": "s7-t1",
+    "stage": 7,
+    "title": "確認テスト1：一番売れている商品",
+    "marumochiMsg": "確認テスト1問目！売上トップの人気商品をピンポイント特定！",
+    "explain": "【店長からの相談】\n「今一番売れているトップの商品名と売上金額を1件だけ教えてください！」\n集計して並べ替えたあと、先頭1件だけを取り出します。",
+    "example": null,
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "ショップの店長からの依頼です。\n「商品ごとに売上合計金額を計算し、最も売上金額が大きい商品の名前と売上金額を1件だけ出してください」",
+    "answerSql": "SELECT p.name, SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY SUM(p.price * o.qty) DESC LIMIT 1;",
+    "orderMatters": false,
+    "hint1": "orders と products を結合し、商品名で GROUP BY しよう。",
+    "hint2": "売上金額合計（SUM）の降順（ORDER BY ... DESC）に並べます。",
+    "hint3": "最上位の1行だけを取得するために LIMIT 1 を使います。",
+    "afterNote": "テスト1問目クリア！「動く！癒しのまるもち（1250円）」が堂々のトップであることが特定できました。"
+  },
+  {
+    "id": "s7-t2",
+    "stage": 7,
+    "title": "確認テスト2：最近の注文を新しい順に",
+    "marumochiMsg": "確認テスト2問目！直近の受注状況をタイムライン表示！",
+    "explain": "【受注管理からの相談】\n「最近の注文状況を新しい順に確認したいです。注文日、誰が、何を、何個買ったかを一覧にしてください」\n3テーブルの結合と日付降順ソートの組み合わせです。",
+    "example": null,
+    "tables": [
+      "orders",
+      "customers",
+      "products"
+    ],
+    "type": "sql",
+    "question": "受注管理担当からの依頼です。\n「すべての注文について、注文日（ordered_at）、顧客名（c.name）、商品名（p.name）、個数（o.qty）を、注文日の新しい順に取り出してください」",
+    "answerSql": "SELECT o.ordered_at, c.name, p.name, o.qty FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id ORDER BY o.ordered_at DESC;",
+    "orderMatters": true,
+    "hint1": "orders、customers、products を INNER JOIN で結合しよう。",
+    "hint2": "SELECT o.ordered_at, c.name, p.name, o.qty を指定します。",
+    "hint3": "注文日の新しい順に並べるため ORDER BY o.ordered_at DESC を指定します。",
+    "afterNote": "テスト2問目クリア！直近の11月14日から過去へ遡る形で受注タイムラインが完成しました。"
+  },
+  {
+    "id": "s7-t3",
+    "stage": 7,
+    "title": "確認テスト3：個数ベースの集計",
+    "marumochiMsg": "確認テスト3問目！金額ではなく「販売数量」でランキング！",
+    "explain": "【在庫管理からの相談】\n「金額ではなく、純粋に売れた『個数』の多い順に商品ランキングを知りたいです。発注数の参考にします」\n数量の合計に注目して集計しましょう。",
+    "example": null,
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "在庫管理担当からの依頼です。\n「注文のある商品について、商品名と売れた個数の合計を、個数の多い順に出してください」",
+    "answerSql": "SELECT p.name, SUM(o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY SUM(o.qty) DESC;",
+    "orderMatters": true,
+    "hint1": "orders と products を結合し、商品名でグループ化（GROUP BY）しよう。",
+    "hint2": "個数の合計は SUM(o.qty) で計算します。",
+    "hint3": "ORDER BY SUM(o.qty) DESC で個数の多い順に並べ替えます。",
+    "afterNote": "確認テスト全問正解！動く（5個）、癒し（4個）、あけおめ（3個）という出荷数量ランキングが判明しました。発注作業がスムーズに進みます！"
+  },
+  {
+    "id": "s7-boss",
+    "stage": 7,
+    "title": "卒業課題：キャンペーン用 顧客レポート",
+    "marumochiMsg": "まるもちSQL 最後の挑戦！実務のすべてが詰まった総合顧客レポートを完成させよう！",
+    "explain": "【代表からの特別依頼】\n「年末大感謝祭の企画用レポートが必要です。購入歴のあるお客様全員について、お名前、購入回数、合計購入金額、1回あたりの平均購入金額（端数は四捨五入して整数に）、そして最終購入日を、合計購入金額の大きい順に一覧化してください」\nこれまで学んだ結合、集計、関数を総動員して挑みましょう！",
+    "example": null,
+    "tables": [
+      "orders",
+      "customers",
+      "products"
+    ],
+    "type": "sql",
+    "question": "代表取締役からの卒業特別依頼です。\n「注文したことのある顧客ごとに、顧客名（c.name）、購入回数（COUNT(*)）、合計金額（SUM(p.price * o.qty)）、平均金額（小数なしの整数になるよう ROUND(AVG(p.price * o.qty))）、最終購入日（MAX(o.ordered_at)）を取り出し、合計金額の大きい順に並べてください」",
+    "answerSql": "SELECT c.name, COUNT(*), SUM(p.price * o.qty), ROUND(AVG(p.price * o.qty)), MAX(o.ordered_at) FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id GROUP BY c.id, c.name ORDER BY SUM(p.price * o.qty) DESC;",
+    "orderMatters": true,
+    "hint1": "orders、customers、products を結合し、顧客ごとにグループ化（GROUP BY c.id, c.name）しよう。",
+    "hint2": "購入回数は COUNT(*)、合計は SUM、平均の四捨五入は ROUND(AVG(...))、最終日は MAX(o.ordered_at) を使います。",
+    "hint3": "並び順は ORDER BY SUM(p.price * o.qty) DESC を指定します。",
+    "afterNote": "🎉 まるもちSQL 卒業おめでとうございます！！！\n実務で求められる「顧客分析レポート」の最高峰クエリを見事に自力で書き上げました！\nこの1枚が作れれば、受託のデータ集計案件の基本形は全部入っている、と自信を持って言える実務の型がすべて網羅されています。テーブルの結合、適切な粒度でのGROUP BY、集計関数、日付処理、並び替え——ゼロから始めたあなたが、今や実務レベルのSQLを自由自在に操れるようになりました。素晴らしい成長です！胸を張って卒業してください！"
   }
     ];
 
@@ -4765,14 +5031,28 @@
         const homeBtn = document.getElementById("btn-modal-home");
         const closeBtn = document.getElementById("btn-modal-close");
 
-        badgeEl.textContent = "🎊 ALL LESSONS CLEAR!";
-        badgeEl.style.background = "#FEF3C7";
-        badgeEl.style.color = "#92400E";
-        badgeEl.style.display = "inline-block";
-        titleEl.textContent = "🎉 全レッスンクリア！";
-        statsEl.textContent = `全 ${LESSONS.length} / ${LESSONS.length} レッスン完全制覇！`;
-        statsEl.style.display = "inline-block";
-        msgEl.innerHTML = `おめでとうございます！現在実装されているすべてのレッスンをクリアしました！<br><br><span style="font-size: 0.88rem; color: var(--text-muted);">まるもち：「ゼロから始めて、自力でSQLを書いてデータを抽出できる実務基礎がバッチリ身についたね！本当にお疲れさまでした！」</span>`;
+        const isStage7Cleared = this.progress.clearedStages.includes("stage7") ||
+          LESSONS.filter(l => l.stage === 7).every(l => this.isLessonCompleted(l.id));
+
+        if (isStage7Cleared) {
+          badgeEl.textContent = "🎓 GRADUATION!";
+          badgeEl.style.background = "#FEF3C7";
+          badgeEl.style.color = "#92400E";
+          badgeEl.style.display = "inline-block";
+          titleEl.textContent = "🎓 卒業おめでとうございます！";
+          statsEl.textContent = `全 ${LESSONS.length} / ${LESSONS.length} レッスン完全制覇！`;
+          statsEl.style.display = "inline-block";
+          msgEl.innerHTML = `おめでとうございます！まるもちSQLのすべてのレッスンをクリアし、見事に卒業を迎えました！<br><br><span style="font-size: 0.88rem; color: var(--text-muted);"><strong>まるもち：</strong>「ゼロから始めて、実務形式の依頼を自力でSQLにできるようになりました！実務の現場でも自信を持ってデータを扱っていってね！」</span>`;
+        } else {
+          badgeEl.textContent = "🎊 ALL LESSONS CLEAR!";
+          badgeEl.style.background = "#FEF3C7";
+          badgeEl.style.color = "#92400E";
+          badgeEl.style.display = "inline-block";
+          titleEl.textContent = "🎉 全レッスンクリア！";
+          statsEl.textContent = `全 ${LESSONS.length} / ${LESSONS.length} レッスン完全制覇！`;
+          statsEl.style.display = "inline-block";
+          msgEl.innerHTML = `おめでとうございます！現在実装されているすべてのレッスンをクリアしました！<br><br><span style="font-size: 0.88rem; color: var(--text-muted);">まるもち：「ゼロから始めて、自力でSQLを書いてデータを抽出できる実務基礎がバッチリ身についたね！本当にお疲れさまでした！」</span>`;
+        }
 
         nextBtn.style.display = "none";
         homeBtn.style.display = "flex";
