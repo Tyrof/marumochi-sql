@@ -1476,7 +1476,7 @@
     <div class="progress-bar-card">
       <div class="progress-header">
         <span>全体の進捗状況</span>
-        <span id="progress-text">0 / 55 完了 (0%)</span>
+        <span id="progress-text">0 / 68 完了 (0%)</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
@@ -1625,6 +1625,14 @@
             <button type="button" class="btn-kw" onclick="app.insertKeyword('END ')">END</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('EXISTS (')">EXISTS ( )</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('WITH ')">WITH</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('INSERT ')">INSERT</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('INTO ')">INTO</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('VALUES ')">VALUES</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('UPDATE ')">UPDATE</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('SET ')">SET</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('DELETE ')">DELETE</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('BEGIN; ')">BEGIN</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('ROLLBACK; ')">ROLLBACK</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('DISTINCT ')">DISTINCT</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('ORDER BY ')">ORDER BY</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('DESC ')">DESC</button>
@@ -1849,6 +1857,14 @@
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('END ')">END</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('EXISTS (')">EXISTS ( )</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('WITH ')">WITH</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('INSERT ')">INSERT</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('INTO ')">INTO</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('VALUES ')">VALUES</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('UPDATE ')">UPDATE</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('SET ')">SET</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('DELETE ')">DELETE</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('BEGIN; ')">BEGIN</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ROLLBACK; ')">ROLLBACK</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ORDER BY ')">ORDER BY</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('LIMIT ')">LIMIT</button>
         </div>
@@ -2003,7 +2019,7 @@
     `;
 
     /* ==========================================================================
-       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問, Stage 4 13問 全55問)
+       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問, Stage 4 13問, Stage 5 13問 全68問)
        ========================================================================== */
     const LESSON_STAGES = [
       { id: "prologue", stageNum: -1, name: "プロローグ: 超入門", desc: "そもそもSQLって何？専門用語ゼロでイメージをつかむ章" },
@@ -2012,7 +2028,7 @@
       { id: "stage2", stageNum: 2, name: "Stage 2: 集計：数える・合計する", desc: "COUNT / SUM / AVG / GROUP BY / HAVING などの集計文法" },
       { id: "stage3", stageNum: 3, name: "Stage 3: 結合：テーブルをつなぐ", desc: "INNER JOIN / LEFT JOIN / 複数結合などの結合文法" },
       { id: "stage4", stageNum: 4, name: "Stage 4: 応用文法：入れ子と分岐", desc: "サブクエリ / CASE式 / WITH句などの応用文法" },
-      { id: "stage5", stageNum: 5, name: "Stage 5: 実務操作：データを変える", desc: "INSERT / UPDATE / DELETE / 安全の型（近日公開）", locked: true },
+      { id: "stage5", stageNum: 5, name: "Stage 5: 実務操作：データを変える", desc: "INSERT / UPDATE / DELETE / トランザクションなどの実務操作" },
       { id: "stage6", stageNum: 6, name: "Stage 6: 上級：分析と速さ", desc: "ウィンドウ関数 / インデックス / 実行計画（近日公開）", locked: true },
       { id: "stage7", stageNum: 7, name: "Stage 7: 実務再現：卒業編", desc: "仕様書から自力で書く総合演習（近日公開）", locked: true }
     ];
@@ -3191,6 +3207,310 @@
     "hint2": "CASE WHEN COALESCE(SUM(p.price * o.qty), 0) >= 1000 THEN '人気' WHEN COALESCE(SUM(p.price * o.qty), 0) >= 500 THEN 'ふつう' ELSE 'これから' END でランクを判定します。",
     "hint3": "「SELECT p.name, COUNT(o.id), COALESCE(SUM(p.price * o.qty), 0), CASE WHEN COALESCE(SUM(p.price * o.qty), 0) >= 1000 THEN '人気' WHEN COALESCE(SUM(p.price * o.qty), 0) >= 500 THEN 'ふつう' ELSE 'これから' END FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC;」",
     "afterNote": "🎉 ボス撃破おめでとうございます！！！\n受託の現場でよくある「商品別の売上表」そのものの高度な集計・分析レポートクエリを見事に完成させました！\nLEFT JOIN で注文ゼロの商品も漏らさず拾い、COALESCE で NULL を 0 に補正し、CASE式でビジネス要件に合わせたステータスに分類する——現場で即戦力として重宝される応用SQLテクニックが完璧に身についています！Stage 4 応用文法編を完全制覇しました！"
+  },
+
+  // ----------------------------------------------------
+  // Stage 5 実務操作：データを変える（9レッスン + 確認テスト3 + ボス1 = 全13問）
+  // ----------------------------------------------------
+  {
+    "id": "s5-01",
+    "stage": 5,
+    "title": "データを変える前に",
+    "marumochiMsg": "これからはデータを書き換える領域へ！まずは「安全の型」を身につけよう！",
+    "explain": "これまでのレッスンではデータを「見る（SELECT）」だけでしたが、ここからはデータを「追加・変更・削除」する操作を学びます！\n\n実務では一度変更したデータを元に戻せない危険があるため、プロは必ず次の「安全の型（3手順）」を守っています：\n① まず SELECT で対象データを確認する\n② 適切な WHERE 条件を付けて実行する\n③ 実行後、すぐに SELECT で変更結果を確認する\n\nまずは肩慣らしとして、現在の顧客数を確認してみましょう！（データは変更しません）",
+    "example": {
+      "sql": "SELECT COUNT(*) FROM customers;",
+      "note": "現在の顧客件数（6件）を確認"
+    },
+    "tables": [
+      "customers"
+    ],
+    "type": "sql",
+    "question": "customers テーブルの行数を COUNT(*) で数えて、現在登録されている顧客が6件であることを確認してみましょう（データは変更しません）。安全の型「①まず SELECT で対象を確認」の第一歩です！",
+    "answerSql": "SELECT COUNT(*) FROM customers;",
+    "verifySql": "SELECT COUNT(*) FROM customers;",
+    "orderMatters": false,
+    "hint1": "SELECT COUNT(*) FROM customers; と書こう。",
+    "hint2": "変更を行わず、現在の行数を数えるだけのクエリです。",
+    "hint3": "「SELECT COUNT(*) FROM customers;」と書いてみよう！",
+    "afterNote": "確認完了！現在6人の顧客が登録されていますね。「データを書き換える前にまず SELECT で対象を確認する」という安全の型の第1ステップを常に意識しましょう。"
+  },
+  {
+    "id": "s5-02",
+    "stage": 5,
+    "title": "INSERT の基本",
+    "marumochiMsg": "テーブルに新しい行を追加！INSERT 文の基本を覚えよう！",
+    "explain": "テーブルに新しいデータを1行追加するには `INSERT INTO` を使います。\n\n書き方：\nINSERT INTO テーブル名 (列1, 列2, ...) VALUES (値1, 値2, ...);\n\n列の順番と値の順番・データ型を一致させて指定します。文字列や日付はシングルクォーテーションで囲みます。\n安全の型：追加したらすぐに SELECT で正しく追加されたか確認しましょう！",
+    "example": {
+      "sql": "INSERT INTO customers (id, name, region, email, registered_at) VALUES (7, 'そら', '関東', 'sora@example.com', '2026-07-01');",
+      "note": "新顧客「そら」を登録"
+    },
+    "tables": [
+      "customers"
+    ],
+    "type": "sql",
+    "question": "customers テーブルに、新しい顧客「そら」（id=7、地域='関東'、email='sora@example.com'、登録日='2026-07-01'）を追加してください。",
+    "answerSql": "INSERT INTO customers (id, name, region, email, registered_at) VALUES (7, 'そら', '関東', 'sora@example.com', '2026-07-01');",
+    "verifySql": "SELECT id, name FROM customers ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "INSERT INTO customers (id, name, region, email, registered_at) VALUES ... の形です。",
+    "hint2": "VALUES (7, 'そら', '関東', 'sora@example.com', '2026-07-01') と値を指定します。",
+    "hint3": "「INSERT INTO customers (id, name, region, email, registered_at) VALUES (7, 'そら', '関東', 'sora@example.com', '2026-07-01');」",
+    "afterNote": "正解です！「そら」さんが7人目の顧客として追加されました。安全の型の3手順「③実行後に SELECT で確認」が自動で行われ、結果テーブルに反映されています。"
+  },
+  {
+    "id": "s5-03",
+    "stage": 5,
+    "title": "INSERT 複数行",
+    "marumochiMsg": "複数のデータをまとめて一括登録！カンマでつなぐ複数行 INSERT！",
+    "explain": "複数行のデータを一度に追加したいときは、VALUES の後ろにカンマ区切りでカッコを並べます。\n\n書き方：\nINSERT INTO テーブル名 (列1, 列2, ...) VALUES (値1, 値2, ...), (値3, 値4, ...);\n\n1回ずつ INSERT を実行するよりも高速で、実務の一括インポートでも多用されます。\n安全の型：追加後に SELECT で登録件数と内容を確認する習慣を付けましょう。",
+    "example": {
+      "sql": "INSERT INTO products (id, name, category, price) VALUES (5, 'まるもちクッション', 'グッズ', 1200), (6, 'まるもちTシャツ', 'グッズ', 2800);",
+      "note": "グッズ2商品を一括追加"
+    },
+    "tables": [
+      "products"
+    ],
+    "type": "sql",
+    "question": "products テーブルに商品を2つ追加してください。\n・id=5, name='まるもちクッション', category='グッズ', price=1200\n・id=6, name='まるもちTシャツ', category='グッズ', price=2800",
+    "answerSql": "INSERT INTO products (id, name, category, price) VALUES (5, 'まるもちクッション', 'グッズ', 1200), (6, 'まるもちTシャツ', 'グッズ', 2800);",
+    "verifySql": "SELECT id, name, category, price FROM products ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "VALUES の後ろに (5, 'まるもちクッション', 'グッズ', 1200), (6, 'まるもちTシャツ', 'グッズ', 2800) とカンマで続けよう。",
+    "hint2": "INSERT INTO products (id, name, category, price) VALUES (...), (...); の形です。",
+    "hint3": "「INSERT INTO products (id, name, category, price) VALUES (5, 'まるもちクッション', 'グッズ', 1200), (6, 'まるもちTシャツ', 'グッズ', 2800);」",
+    "afterNote": "素晴らしい！2つの新商品が一度に追加され、全6商品になりました。実務でも1件ずつ何千回も実行するより、一括INSERTを使うのが基本です。"
+  },
+  {
+    "id": "s5-04",
+    "stage": 5,
+    "title": "UPDATE の基本",
+    "marumochiMsg": "すでにあるデータを書き換える！UPDATE と WHERE の鉄則！",
+    "explain": "既存のデータを書き換えるには `UPDATE` 文を使います。\n\n書き方：\nUPDATE テーブル名 SET 列名 = 新しい値 WHERE 条件;\n\n⚠️ 超重要！WHERE を書き忘れると、テーブル内の「すべての行」が書き換わってしまいます！\n安全の型：①まず SELECT * FROM customers WHERE id = 2; で対象を確認してから、②UPDATE を実行しましょう。",
+    "example": {
+      "sql": "UPDATE customers SET email = 'taro@example.com' WHERE id = 2;",
+      "note": "たろう（id=2）のメールアドレスを登録"
+    },
+    "tables": [
+      "customers"
+    ],
+    "type": "sql",
+    "question": "customers テーブルで、たろう（id=2）のメールアドレス（email）に 'taro@example.com' を設定（更新）してください。",
+    "answerSql": "UPDATE customers SET email = 'taro@example.com' WHERE id = 2;",
+    "verifySql": "SELECT id, name, email FROM customers WHERE id = 2;",
+    "orderMatters": true,
+    "hint1": "UPDATE customers SET email = 'taro@example.com' と書こう。",
+    "hint2": "対象を絞るため必ず WHERE id = 2 を付けよう。",
+    "hint3": "「UPDATE customers SET email = 'taro@example.com' WHERE id = 2;」",
+    "afterNote": "見事更新できました！NULLだったたろうさんのメールアドレスが正しく登録されました。「対象を WHERE でピンポイントに絞る」のが UPDATE の鉄則です。"
+  },
+  {
+    "id": "s5-05",
+    "stage": 5,
+    "title": "UPDATE で一括変更",
+    "marumochiMsg": "全品一律30円引き！意図的に全体を変える UPDATE の使い分け！",
+    "explain": "「すべての行の価格を一律で30円引きにしたい」など、テーブル全体を一括変更したいときは、あえて WHERE を付けずに実行します。\n\n書き方：\nUPDATE products SET price = price - 30;\n\n`price = price - 30` のように「現在の値から計算する」式も使えます！\n安全の型：全行変えるのが目的のときだけ WHERE なし、一部を変えるのが目的なら必ず WHERE を付けます。",
+    "example": {
+      "sql": "UPDATE products SET price = price - 30;",
+      "note": "全商品の価格を一律30円引き"
+    },
+    "tables": [
+      "products"
+    ],
+    "type": "sql",
+    "question": "値引きキャンペーンのため、products テーブルの全商品の価格（price）を一律30円引き（price = price - 30）にしてください（この問題では WHERE なしが正解です）。",
+    "answerSql": "UPDATE products SET price = price - 30;",
+    "verifySql": "SELECT name, price FROM products ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "UPDATE products SET price = price - 30; と書こう。",
+    "hint2": "全商品が対象なので WHERE は不要です。",
+    "hint3": "「UPDATE products SET price = price - 30;」",
+    "afterNote": "全商品の価格が30円引き（160, 220, 220, 450）に更新されました！全行変えるのが目的のときだけ WHERE なし、目的が一部の行なら必ず WHERE を付ける、という見分け方を常に意識しましょう。"
+  },
+  {
+    "id": "s5-06",
+    "stage": 5,
+    "title": "やらかし体験（WHERE忘れの悲劇）",
+    "marumochiMsg": "あえて大事故を再現！？安全な練習環境だからこそ学べる教訓！",
+    "explain": "【あえて事故を再現してみよう】\n「さくらさん（id=1）だけを地域『関東』にしようとして、うっかり WHERE id = 1 を書き忘れた…！」\nこれは実務で新人が一度は青ざめる最恐の事故です。\n\nこれは練習用の安全な環境だからこそ体験できる事故です。実務の本番データベースでは取り返しがつきません！恐れずに WHERE なしで実行して何が起きるか見てみましょう。\n安全の型：実行前に SELECT で件数確認、WHERE の付け忘れチェックが必須です。",
+    "example": {
+      "sql": "UPDATE customers SET region = '関東';",
+      "note": "WHEREを忘れて全員が関東に上書きされてしまう"
+    },
+    "tables": [
+      "customers"
+    ],
+    "type": "sql",
+    "question": "事故を体験するため、あえて WHERE を付けずに customers テーブルの地域（region）をすべて '関東' に更新してください。",
+    "answerSql": "UPDATE customers SET region = '関東';",
+    "verifySql": "SELECT DISTINCT region FROM customers;",
+    "orderMatters": false,
+    "hint1": "UPDATE customers SET region = '関東'; と書こう。",
+    "hint2": "あえて WHERE を書かずに実行します。",
+    "hint3": "「UPDATE customers SET region = '関東';」",
+    "afterNote": "実行結果を見てください！関西在住だったはずの顧客も含め、全員が「関東」に上書きされてしまいました…！実務での対策はただ1つ、「安全の型」を守ること。実行前に必ず SELECT で件数と対象を確認し、WHERE の付け忘れを二重チェックする習慣を徹底しましょう！"
+  },
+  {
+    "id": "s5-07",
+    "stage": 5,
+    "title": "DELETE の基本",
+    "marumochiMsg": "不要な行を削除！元に戻せない DELETE の恐怖と安全の型！",
+    "explain": "不要になった行を削除するには `DELETE` 文を使います。\n\n書き方：\nDELETE FROM テーブル名 WHERE 条件;\n\n⚠️ DELETE も UPDATE と同様、WHERE を付けないと「テーブルの全行が消滅」します！\n安全の型：\n① まず SELECT * FROM orders WHERE id = 8; で消す対象が1件だけか確認\n② DELETE FROM orders WHERE id = 8; を実行\n③ SELECT COUNT(*) FROM orders; で7件になったか確認",
+    "example": {
+      "sql": "DELETE FROM orders WHERE id = 8;",
+      "note": "注文ID 8 のレコードを削除"
+    },
+    "tables": [
+      "orders"
+    ],
+    "type": "sql",
+    "question": "orders テーブルから、注文IDが 8（id = 8）の注文データを削除してください。",
+    "answerSql": "DELETE FROM orders WHERE id = 8;",
+    "verifySql": "SELECT COUNT(*) FROM orders;",
+    "orderMatters": false,
+    "hint1": "DELETE FROM orders WHERE id = 8; と書こう。",
+    "hint2": "WHERE id = 8 を忘れずに付けよう。",
+    "hint3": "「DELETE FROM orders WHERE id = 8;」",
+    "afterNote": "注文ID 8 の削除に成功し、全8件から7件になりました！「①まず SELECT で確認、②WHERE を付けて削除、③SELECT で結果確認」の安全の型を常に守りましょう。"
+  },
+  {
+    "id": "s5-08",
+    "stage": 5,
+    "title": "DELETE の条件指定",
+    "marumochiMsg": "条件に一致する複数行をまとめて削除！消去前の件数確認が命！",
+    "explain": "DELETE でも WHERE 句に様々な条件を指定して、条件に当てはまる行を一括削除できます。\n\n安全の型：\nたとえば「個数（qty）が 1 の注文を消す」ときは、まず事前に `SELECT COUNT(*) FROM orders WHERE qty = 1;` を実行して「何件消えるか」を把握してから DELETE に進みます。",
+    "example": {
+      "sql": "DELETE FROM orders WHERE qty = 1;",
+      "note": "個数が1の注文を一括削除"
+    },
+    "tables": [
+      "orders"
+    ],
+    "type": "sql",
+    "question": "orders テーブルから、個数（qty）が 1（qty = 1）の注文をすべて削除してください。",
+    "answerSql": "DELETE FROM orders WHERE qty = 1;",
+    "verifySql": "SELECT id, qty FROM orders ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "DELETE FROM orders WHERE qty = 1; と書こう。",
+    "hint2": "WHERE 条件に qty = 1 を指定します。",
+    "hint3": "「DELETE FROM orders WHERE qty = 1;」",
+    "afterNote": "正解です！個数1の5件が削除され、個数2以上の3件（id: 1, 4, 5）だけが残りました。消去対象の件数を事前に把握しておくことが事故防止の秘訣です。"
+  },
+  {
+    "id": "s5-09",
+    "stage": 5,
+    "title": "トランザクション入門",
+    "marumochiMsg": "失敗しても「やっぱりナシ」にできる究極の安全装置！ROLLBACK！",
+    "explain": "実務では、複数のデータ変更を「ひとかたまりの処理」として行い、もし途中で問題があったら `ROLLBACK` で実行前の状態に巻き戻す仕組みがあります。これを「トランザクション」と呼びます。\n\n書き方：\nBEGIN; -- トランザクション開始\nDELETE FROM orders; -- 危険な全件削除！\nROLLBACK; -- やっぱりナシ！元に戻す！\n\n問題がなければ `COMMIT;` で確定します。安全の型として、危険な更新作業は必ずトランザクションを開始して行います。",
+    "example": {
+      "sql": "BEGIN; DELETE FROM orders; ROLLBACK;",
+      "note": "全件削除した後にROLLBACKで元通りに復元"
+    },
+    "tables": [
+      "orders"
+    ],
+    "type": "sql",
+    "question": "BEGIN でトランザクションを開始したあと、orders テーブルを全件削除（DELETE FROM orders;）し、最後に ROLLBACK; で取り消して元の状態に戻してください。",
+    "answerSql": "BEGIN; DELETE FROM orders; ROLLBACK;",
+    "verifySql": "SELECT COUNT(*) FROM orders;",
+    "orderMatters": false,
+    "hint1": "BEGIN; DELETE FROM orders; ROLLBACK; と3つの文をセミコロンでつなげて書こう。",
+    "hint2": "BEGIN; で始めて ROLLBACK; で終わります。",
+    "hint3": "「BEGIN; DELETE FROM orders; ROLLBACK;」",
+    "afterNote": "すごい！全件削除されたはずなのに、ROLLBACK のおかげで注文件数が8件のまま元通りに保たれています！この「元に戻せる仕組み」こそが、実務のデータベース管理における最大の安全策です。"
+  },
+  {
+    "id": "s5-t1",
+    "stage": 5,
+    "title": "確認テスト1：INSERT",
+    "marumochiMsg": "確認テスト1問目！商品テーブルに新しいグッズを追加しよう！",
+    "explain": "【確認テスト 1/3】\nproducts テーブルに新しい商品を追加してみましょう！\n\n・id = 5\n・name = 'まるもちシール'\n・category = 'グッズ'\n・price = 300\n\n安全の型：追加後に SELECT で正しく入ったか確認されます。",
+    "example": {
+      "sql": "INSERT INTO products (id, name, category, price) VALUES (5, 'まるもちシール', 'グッズ', 300);",
+      "note": "新商品まるもちシールを追加"
+    },
+    "tables": [
+      "products"
+    ],
+    "type": "sql",
+    "question": "products テーブルに、商品 id=5「まるもちシール」（category='グッズ', price=300）を追加してください。",
+    "answerSql": "INSERT INTO products (id, name, category, price) VALUES (5, 'まるもちシール', 'グッズ', 300);",
+    "verifySql": "SELECT name, price FROM products WHERE id = 5;",
+    "orderMatters": false,
+    "hint1": "INSERT INTO products (id, name, category, price) VALUES (5, 'まるもちシール', 'グッズ', 300); と書こう。",
+    "hint2": "列名と値の対応を確認しよう。",
+    "hint3": "「INSERT INTO products (id, name, category, price) VALUES (5, 'まるもちシール', 'グッズ', 300);」",
+    "afterNote": "テスト1問目クリア！「まるもちシール（300円）」が正しく追加されました。"
+  },
+  {
+    "id": "s5-t2",
+    "stage": 5,
+    "title": "確認テスト2：UPDATE",
+    "marumochiMsg": "確認テスト2問目！商品の価格をピンポイントに変更！",
+    "explain": "【確認テスト 2/3】\n「あけおめ！まるもち2027」の価格（price）を 300円 に変更してみましょう！\n\n安全の型：他の商品が変わってしまわないよう、`WHERE name = 'あけおめ！まるもち2027'` で確実に絞り込みます。",
+    "example": {
+      "sql": "UPDATE products SET price = 300 WHERE name = 'あけおめ！まるもち2027';",
+      "note": "対象商品の価格を300円に変更"
+    },
+    "tables": [
+      "products"
+    ],
+    "type": "sql",
+    "question": "products テーブルで、「あけおめ！まるもち2027」（name = 'あけおめ！まるもち2027'）の価格（price）を 300 に変更してください。",
+    "answerSql": "UPDATE products SET price = 300 WHERE name = 'あけおめ！まるもち2027';",
+    "verifySql": "SELECT price FROM products WHERE id = 3;",
+    "orderMatters": false,
+    "hint1": "UPDATE products SET price = 300 WHERE name = 'あけおめ！まるもち2027'; と書こう。",
+    "hint2": "SET price = 300 と WHERE 条件を組み合わせます。",
+    "hint3": "「UPDATE products SET price = 300 WHERE name = 'あけおめ！まるもち2027';」",
+    "afterNote": "テスト2問目クリア！価格が250円から300円に更新されました。安全の型の基本、WHEREによるピンポイント指定がバッチリです。"
+  },
+  {
+    "id": "s5-t3",
+    "stage": 5,
+    "title": "確認テスト3：DELETE",
+    "marumochiMsg": "確認テスト3問目！条件に合う不要データを安全に削除！",
+    "explain": "【確認テスト 3/3】\ncustomers テーブルから、メールアドレスが未登録（email IS NULL）の顧客を削除してみましょう！\n\n安全の型：NULLの判定は `= NULL` ではなく `IS NULL` を使います。実行前に「たろう」さんと「じろう」さんの2人が対象だと確認する意識を持ちましょう。",
+    "example": {
+      "sql": "DELETE FROM customers WHERE email IS NULL;",
+      "note": "メール未登録の顧客を一括削除"
+    },
+    "tables": [
+      "customers"
+    ],
+    "type": "sql",
+    "question": "customers テーブルから、メールアドレスが未登録（email IS NULL）の顧客を削除してください。",
+    "answerSql": "DELETE FROM customers WHERE email IS NULL;",
+    "verifySql": "SELECT id, name FROM customers ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "DELETE FROM customers WHERE email IS NULL; と書こう。",
+    "hint2": "IS NULL で未登録の行を指定します。",
+    "hint3": "「DELETE FROM customers WHERE email IS NULL;」",
+    "afterNote": "テスト全問正解！メールアドレス未登録の2名が削除され、4名が残りました。条件付きDELETEも完璧です。"
+  },
+  {
+    "id": "s5-boss",
+    "stage": 5,
+    "title": "ボス課題：退会処理（関連データの連動削除）",
+    "marumochiMsg": "Stage 5 最終決戦！「子テーブルから親テーブルへ」実務の退会処理を実行せよ！",
+    "explain": "【Stage 5 ボス課題】\n顧客 id=2（たろう）が退会することになりました。\nしかし、データベースには「顧客（親）」と「注文（子）」の結びつきがあります。注文データが残っている状態で先に顧客を消すと、「誰の注文かわからない孤立データ」が生まれてしまいます！\n\nそのため、実務では必ず「① 先に orders からその顧客の注文を削除」「② 次に customers から顧客を削除」という【子→親】の順番で削除します。\n\n2つの文をセミコロン（;）で区切って続けて実行してみましょう！\n安全の型：消す順番（子→親）を守ることで、データの整合性が保たれます。",
+    "example": {
+      "sql": "DELETE FROM orders WHERE customer_id = 2; DELETE FROM customers WHERE id = 2;",
+      "note": "退会顧客の注文（子）を消してから顧客（親）を削除"
+    },
+    "tables": [
+      "orders",
+      "customers"
+    ],
+    "type": "sql",
+    "question": "顧客 id=2（たろう）の退会処理を行います。\n先に orders テーブルから customer_id = 2 の注文を削除し、次に customers テーブルから id = 2 の顧客を削除してください（2つのSQL文をセミコロンで区切って一度に入力します）。",
+    "answerSql": "DELETE FROM orders WHERE customer_id = 2; DELETE FROM customers WHERE id = 2;",
+    "verifySql": "SELECT name FROM customers ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "DELETE FROM orders WHERE customer_id = 2; を先に書こう。",
+    "hint2": "続けて DELETE FROM customers WHERE id = 2; を書きます。",
+    "hint3": "「DELETE FROM orders WHERE customer_id = 2; DELETE FROM customers WHERE id = 2;」",
+    "afterNote": "🎉 ボス撃破おめでとうございます！！！\n実務で最も神経を使う「データの退会・削除処理」を見事に成功させました！\n親（顧客）を消す前に子（注文）から消すという「消す順番（子→親）が実務の型」であることを体得できましたね。\nデータを「見る」だけでなく「安全に変える」プロフェッショナルの技術が身につきました！Stage 5 実務操作編を見事に完全制覇しました！"
   }
     ];
 
@@ -3294,12 +3614,18 @@
       }
 
       showHome() {
+        if (this.currentLesson && this.currentLesson.stage === 5) {
+          this.resetDbToSeed();
+        }
         this.renderStageList();
         this.updateGlobalProgressUI();
         this.switchView("home");
       }
 
       showSandbox() {
+        if (this.currentLesson && this.currentLesson.stage === 5) {
+          this.resetDbToSeed();
+        }
         this.switchView("sandbox");
       }
 
@@ -3424,6 +3750,9 @@
         const lesson = LESSONS.find(l => l.id === lessonId);
         if (!lesson) return;
 
+        if (lesson.stage === 5 || (this.currentLesson && this.currentLesson.stage === 5)) {
+          this.resetDbToSeed();
+        }
         this.currentLesson = lesson;
         this.selectedChoiceIndex = null;
         this.unlockedHintLevel = 0;
@@ -3558,6 +3887,18 @@
         if (!this.currentLesson || !this.currentLesson.example) return;
         const resBox = document.getElementById("example-result");
         try {
+          if (this.currentLesson.verifySql) {
+            this.resetDbToSeed();
+            this.db.exec(this.currentLesson.example.sql);
+            const result = this.db.exec(this.currentLesson.verifySql);
+            this.resetDbToSeed();
+            resBox.style.display = "block";
+            resBox.innerHTML = `
+              <span style="font-size: 0.75rem; font-weight: bold; color: var(--primary-brown);">実行結果プレビュー（変更後のテーブル状態）:</span>
+              <div class="table-scroll mt-2">${this.formatResultTable(result)}</div>
+            `;
+            return;
+          }
           const result = this.db.exec(this.currentLesson.example.sql);
           resBox.style.display = "block";
 
@@ -3684,6 +4025,48 @@
         }
 
         try {
+          if (lesson.verifySql) {
+            // Stage 5 の判定手順：
+            // 1. 初期シード状態で学習者のSQLを実行
+            this.resetDbToSeed();
+            this.db.exec(userSql);
+
+            // 2. 直後に verifySql を実行して learner の結果セットを取得
+            const userResult = this.db.exec(lesson.verifySql);
+
+            // 3. 初期シード状態で模範の answerSql を実行し、直後に verifySql を実行して期待値を取得
+            this.resetDbToSeed();
+            this.db.exec(lesson.answerSql);
+            const expectedResult = this.db.exec(lesson.verifySql);
+
+            // 4. 学習者の実行後の状態をDBに残す
+            this.resetDbToSeed();
+            try { this.db.exec(userSql); } catch(e){}
+
+            // 5. 結果セット完全一致を比較
+            let isMatch = this.compareSqlResults(userResult, expectedResult, lesson.orderMatters);
+
+            // 別解SQLがある場合
+            if (!isMatch && lesson.alternativeSqls && lesson.alternativeSqls.length > 0) {
+              for (const altSql of lesson.alternativeSqls) {
+                this.resetDbToSeed();
+                this.db.exec(altSql);
+                const altResult = this.db.exec(lesson.verifySql);
+                if (this.compareSqlResults(userResult, altResult, lesson.orderMatters)) {
+                  isMatch = true;
+                  break;
+                }
+              }
+            }
+
+            if (isMatch) {
+              this.handleSuccess(userSql, userResult);
+            } else {
+              this.handleSqlMismatch(userResult, expectedResult);
+            }
+            return;
+          }
+
           // ユーザーSQL実行
           const userResult = this.db.exec(userSql);
 
