@@ -1476,7 +1476,7 @@
     <div class="progress-bar-card">
       <div class="progress-header">
         <span>全体の進捗状況</span>
-        <span id="progress-text">0 / 29 完了 (0%)</span>
+        <span id="progress-text">0 / 42 完了 (0%)</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
@@ -1565,7 +1565,7 @@
           <div class="table-preview-header">
             <div>
               <span class="table-tag" id="table-preview-name">stamp_sales</span>
-              <span style="font-size: 0.8rem; font-weight: bold; margin-left: 6px; color: var(--primary-brown);">テーブル（先頭プレビュー）</span>
+              <span style="font-size: 0.8rem; font-weight: bold; margin-left: 6px; color: var(--primary-brown);" id="table-preview-label">テーブル</span>
             </div>
             <span class="table-schema-info" id="table-schema-info" style="font-size: 0.75rem; color: var(--text-muted);">4列・全5行</span>
           </div>
@@ -1579,7 +1579,7 @@
           <!-- データテーブル -->
           <div class="table-scroll">
             <table class="data-table" id="preview-table">
-              <!-- JSで先頭プレビューをレンダリング -->
+              <!-- JSでテーブル全行をレンダリング -->
             </table>
           </div>
         </div>
@@ -1604,21 +1604,29 @@
             <button type="button" class="btn-kw" onclick="app.insertKeyword('SELECT ')">SELECT</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('* ')">*</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('FROM ')">FROM</button>
-            <button type="button" class="btn-kw" onclick="app.insertKeyword('stamp_sales ')">stamp_sales</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('orders ')">orders</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('customers ')">customers</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('products ')">products</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('INNER JOIN ')">INNER JOIN</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('LEFT JOIN ')">LEFT JOIN</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('ON ')">ON</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('AS ')">AS</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('WHERE ')">WHERE</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('GROUP BY ')">GROUP BY</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('HAVING ')">HAVING</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('COUNT(')">COUNT( )</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('SUM(')">SUM( )</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('AVG(')">AVG( )</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('COALESCE(')">COALESCE( )</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('DISTINCT ')">DISTINCT</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('ORDER BY ')">ORDER BY</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('DESC ')">DESC</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('LIMIT ')">LIMIT</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('AND ')">AND</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('OR ')">OR</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('IN (')">IN ( )</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('LIKE ')">LIKE</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('IS NULL ')">IS NULL</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('; ')">;</button>
           </div>
           <!-- 記号ボタン -->
@@ -1774,7 +1782,7 @@
             </div>
           </div>
 
-          <div>
+          <div style="margin-bottom: 10px;">
             <div style="font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 3px;">
               <strong>products</strong> (商品マスタ)
             </div>
@@ -1783,6 +1791,19 @@
               <span class="col-pill"><strong>name</strong> TEXT</span>
               <span class="col-pill"><strong>category</strong> TEXT</span>
               <span class="col-pill"><strong>price</strong> INTEGER</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 3px;">
+              <strong>orders</strong> (注文履歴データ)
+            </div>
+            <div class="schema-columns-pills">
+              <span class="col-pill"><strong>id</strong> INTEGER</span>
+              <span class="col-pill"><strong>customer_id</strong> INTEGER</span>
+              <span class="col-pill"><strong>product_id</strong> INTEGER</span>
+              <span class="col-pill"><strong>qty</strong> INTEGER</span>
+              <span class="col-pill"><strong>ordered_at</strong> TEXT</span>
             </div>
           </div>
         </div>
@@ -1799,9 +1820,13 @@
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('SELECT ')">SELECT</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('* ')">*</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('FROM ')">FROM</button>
-          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('stamp_sales ')">stamp_sales</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('orders ')">orders</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('customers ')">customers</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('products ')">products</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('INNER JOIN ')">INNER JOIN</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('LEFT JOIN ')">LEFT JOIN</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ON ')">ON</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('AS ')">AS</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('WHERE ')">WHERE</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('GROUP BY ')">GROUP BY</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('HAVING ')">HAVING</button>
@@ -1940,17 +1965,36 @@
       (2,'動く！癒しのまるもち','アニメ',250),
       (3,'あけおめ！まるもち2027','季節',250),
       (4,'まるもち絵本','絵本',480);
+
+      DROP TABLE IF EXISTS orders;
+      CREATE TABLE orders (
+        id INTEGER,
+        customer_id INTEGER,
+        product_id INTEGER,
+        qty INTEGER,
+        ordered_at TEXT
+      );
+
+      INSERT INTO orders (id, customer_id, product_id, qty, ordered_at) VALUES
+      (1,1,1,2,'2026-11-06'),
+      (2,1,2,1,'2026-11-08'),
+      (3,2,1,1,'2026-11-09'),
+      (4,3,3,2,'2026-11-10'),
+      (5,5,2,3,'2026-11-11'),
+      (6,6,3,1,'2026-11-12'),
+      (7,3,1,1,'2026-11-13'),
+      (8,2,2,1,'2026-11-14');
     `;
 
     /* ==========================================================================
-       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問)
+       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問)
        ========================================================================== */
     const LESSON_STAGES = [
       { id: "prologue", stageNum: -1, name: "プロローグ: 超入門", desc: "そもそもSQLって何？専門用語ゼロでイメージをつかむ章" },
       { id: "stage0", stageNum: 0, name: "Stage 0: 導入", desc: "SQLと友達になる。テーブルの考え方と最初の実行" },
       { id: "stage1", stageNum: 1, name: "Stage 1: 入門：取り出す（基礎文法）", desc: "SELECT / WHERE / LIKE / ORDER BY など基本の抽出" },
       { id: "stage2", stageNum: 2, name: "Stage 2: 集計：数える・合計する", desc: "COUNT / SUM / AVG / GROUP BY / HAVING などの集計文法" },
-      { id: "stage3", stageNum: 3, name: "Stage 3: 結合：テーブルをつなぐ", desc: "INNER JOIN / LEFT JOIN / 複数結合（近日公開）", locked: true },
+      { id: "stage3", stageNum: 3, name: "Stage 3: 結合：テーブルをつなぐ", desc: "INNER JOIN / LEFT JOIN / 複数結合などの結合文法" },
       { id: "stage4", stageNum: 4, name: "Stage 4: 応用文法：入れ子と分岐", desc: "サブクエリ / CASE式 / WITH句（近日公開）", locked: true },
       { id: "stage5", stageNum: 5, name: "Stage 5: 実務操作：データを変える", desc: "INSERT / UPDATE / DELETE / 安全の型（近日公開）", locked: true },
       { id: "stage6", stageNum: 6, name: "Stage 6: 上級：分析と速さ", desc: "ウィンドウ関数 / インデックス / 実行計画（近日公開）", locked: true },
@@ -2558,6 +2602,277 @@
     hint2: "グループ化した件数が 2以上 という条件は、HAVING COUNT(*) >= 2 で指定できるよ。",
     hint3: "「SELECT name, COUNT(*) FROM customers GROUP BY name HAVING COUNT(*) >= 2;」と書いてみよう！",
     afterNote: "🎉 ボス撃破おめでとうございます！！\n「さくら」さんが2件登録されている重複を正しく検知できました！\n実務のデータベース管理でも、このような「重複登録のチェック」や「不正検知」には GROUP BY と HAVING の組み合わせが欠かせません。Stage 2 集計編を見事に完全制覇しました！"
+  },
+// ----------------------------------------------------
+  // Stage 3 結合：テーブルをつなぐ（9レッスン + 確認テスト3 + ボス1 = 全13問）
+  // ----------------------------------------------------
+  {
+    id: "s3-01",
+    stage: 3,
+    title: "結合とは（表を分ける理由とキー）",
+    marumochiMsg: "表と表を「ID」でガッチャンコ！リレーショナルデータベースの真骨頂！",
+    explain: "データベースでは、すべての情報を1つの表にまとめず、「注文一覧（orders）」と「顧客名簿（customers）」のように表を分けて保存します。住所が変わったときなどに1箇所直せば済むからです。\n\n分かれた表をつなぎ合わせる魔法が「結合（JOIN）」です！\norders テーブルの「customer_id」と、customers テーブルの「id」のように、共通するキー番号を目印にして行同士をくっつけます。\n\n書き方：\nSELECT 列名 FROM 表A INNER JOIN 表B ON 表A.キー = 表B.キー;\n※「表名.列名」のようにドットでつなぐと、どの表の列かを指定できます。",
+    example: {
+      sql: "SELECT orders.id, customers.name, orders.ordered_at FROM orders INNER JOIN customers ON orders.customer_id = customers.id;",
+      note: "orders と customers をつないで注文情報と顧客名を取り出す"
+    },
+    tables: ["orders", "customers"],
+    type: "sql",
+    question: "orders テーブルと customers テーブルを INNER JOIN で結合し、注文ID（orders.id）、顧客名（customers.name）、注文日（orders.ordered_at）を取り出してみよう！結合条件は orders.customer_id = customers.id です。",
+    answerSql: "SELECT orders.id, customers.name, orders.ordered_at FROM orders INNER JOIN customers ON orders.customer_id = customers.id;",
+    orderMatters: false,
+    hint1: "FROM orders INNER JOIN customers ON orders.customer_id = customers.id と書こう。",
+    hint2: "取り出す列は「orders.id, customers.name, orders.ordered_at」です。",
+    hint3: "「SELECT orders.id, customers.name, orders.ordered_at FROM orders INNER JOIN customers ON orders.customer_id = customers.id;」",
+    afterNote: "お見事！ID番号しか入っていなかった注文表に、顧客名簿の「お名前」が見事にドッキングされました！これがSQLの結合（JOIN）の力です。"
+  },
+  {
+    id: "s3-02",
+    stage: 3,
+    title: "INNER JOIN の基本（商品情報の結合）",
+    marumochiMsg: "次は「商品表（products）」と注文表をつないでみよう！",
+    explain: "注文表（orders）の「product_id」には、買った商品のID番号が入っています。\n商品名や価格は商品マスタ（products）に保管されているので、INNER JOIN でつなぐことで「何の商品が何個売れたか」が分かります。\n\nINNER JOIN（内部結合）は、両方のテーブルでキーが一致したデータだけを取り出します。\n\n結合条件：ON orders.product_id = products.id",
+    example: {
+      sql: "SELECT orders.id, products.name, orders.qty FROM orders INNER JOIN products ON orders.product_id = products.id;",
+      note: "orders と products をつないで注文ID・商品名・個数を表示"
+    },
+    tables: ["orders", "products"],
+    type: "sql",
+    question: "orders テーブルと products テーブルを INNER JOIN で結合し、注文ID（orders.id）、商品名（products.name）、個数（orders.qty）を取り出してみよう！結合条件は orders.product_id = products.id です。",
+    answerSql: "SELECT orders.id, products.name, orders.qty FROM orders INNER JOIN products ON orders.product_id = products.id;",
+    orderMatters: false,
+    hint1: "FROM orders INNER JOIN products ON orders.product_id = products.id を指定します。",
+    hint2: "SELECT orders.id, products.name, orders.qty から始めよう。",
+    hint3: "「SELECT orders.id, products.name, orders.qty FROM orders INNER JOIN products ON orders.product_id = products.id;」",
+    afterNote: "大正解！注文ごとに「癒しのまるもち」や「動く！癒しのまるもち」など、実際の商品名と個数がスッキリ取り出せましたね。"
+  },
+  {
+    id: "s3-03",
+    stage: 3,
+    title: "テーブル別名（AS と短縮記法）",
+    marumochiMsg: "長いテーブル名は「別名」で短縮！実務で必須のスマートな書き方！",
+    explain: "「orders.customer_id = customers.id」のようにテーブル名を毎回書くのは長くて大変ですよね。\n\nそこで実務では「AS」を使ってテーブルに短いあだ名（別名）をつけます。\n・orders AS o（o と略す）\n・customers AS c（c と略す）\n※「AS」は省略して「orders o」と書くこともできます。\n\n別名をつけると「o.id」「c.name」のように劇的に短くスッキリ書けます！",
+    example: {
+      sql: "SELECT o.id, c.name, o.qty FROM orders AS o INNER JOIN customers AS c ON o.customer_id = c.id;",
+      note: "別名 o と c を使って短く書く例"
+    },
+    tables: ["orders", "customers"],
+    type: "sql",
+    question: "別名「o（orders AS o）」と「c（customers AS c）」を使って、注文ID（o.id）、顧客名（c.name）、個数（o.qty）を取り出してみよう！結合条件は o.customer_id = c.id です。",
+    answerSql: "SELECT o.id, c.name, o.qty FROM orders AS o INNER JOIN customers AS c ON o.customer_id = c.id;",
+    orderMatters: false,
+    hint1: "FROM orders AS o INNER JOIN customers AS c ON o.customer_id = c.id と書こう。",
+    hint2: "SELECT の後ろには「o.id, c.name, o.qty」を並べるよ。",
+    hint3: "「SELECT o.id, c.name, o.qty FROM orders AS o INNER JOIN customers AS c ON o.customer_id = c.id;」",
+    afterNote: "完璧！別名を使うとコードが読みやすくなり、タイピング量も大幅に減ります。実務の現場ではほぼ100%別名が使われています。"
+  },
+  {
+    id: "s3-04",
+    stage: 3,
+    title: "JOIN ＋ WHERE（結合して絞り込む）",
+    marumochiMsg: "表をつなげたあとに WHERE で絞り込み！「関東の注文だけ」を探そう！",
+    explain: "テーブルを結合したあとでも、これまで通り WHERE を使って条件で絞り込むことができます。\n\n実行順序は「JOIN で表をつなぐ → WHERE で条件に合う行だけを残す」となります。\n\n例えば「関東地方の顧客による注文だけ」を見たいときは、WHERE c.region = '関東' と指定します。",
+    example: {
+      sql: "SELECT o.id, c.name, o.ordered_at FROM orders o INNER JOIN customers c ON o.customer_id = c.id WHERE c.region = '関東';",
+      note: "関東の顧客による注文情報（5行）を抽出する"
+    },
+    tables: ["orders", "customers"],
+    type: "sql",
+    question: "orders と customers を結合し、地域が「関東」（c.region = '関東'）の注文だけについて、注文ID（o.id）、顧客名（c.name）、注文日（o.ordered_at）を取り出してみよう！",
+    answerSql: "SELECT o.id, c.name, o.ordered_at FROM orders o INNER JOIN customers c ON o.customer_id = c.id WHERE c.region = '関東';",
+    orderMatters: false,
+    hint1: "INNER JOIN ... ON o.customer_id = c.id のうしろに「WHERE c.region = '関東'」をつけよう。",
+    hint2: "SELECT o.id, c.name, o.ordered_at FROM orders o INNER JOIN customers c ON o.customer_id = c.id WHERE c.region = '関東';",
+    hint3: "「SELECT o.id, c.name, o.ordered_at FROM orders o INNER JOIN customers c ON o.customer_id = c.id WHERE c.region = '関東';」",
+    afterNote: "素晴らしい！全8件の注文のうち、関東の顧客（さくら、たろう、みき）による5件の注文だけがキレイに抽出されました。"
+  },
+  {
+    id: "s3-05",
+    stage: 3,
+    title: "JOIN ＋ GROUP BY（顧客別の注文件数）",
+    marumochiMsg: "結合とグループ化のコラボ！「同姓同名」に気をつけるのがプロの技！",
+    explain: "「誰が何回注文してくれたか」を集計したいときは、JOIN と GROUP BY を組み合わせます。\n\nここで超重要な実務の落とし穴：\n「さくら」さんのように同姓同名の顧客がいる場合、GROUP BY c.name だけでグループ化すると別人の注文が合算されてしまいます！\n\nそのため実務では、必ず一意な「c.id」をグループ化に含めます（GROUP BY c.id, c.name）。\n並び順をそろえるため ORDER BY c.id も指定しましょう。",
+    example: {
+      sql: "SELECT c.name, COUNT(o.id) FROM orders o INNER JOIN customers c ON o.customer_id = c.id GROUP BY c.id, c.name ORDER BY c.id;",
+      note: "顧客IDごとに注文件数を集計（ID昇順）"
+    },
+    tables: ["orders", "customers"],
+    type: "sql",
+    question: "orders と customers を結合し、顧客ごとの「顧客名（c.name）」と「注文件数（COUNT(o.id)）」を計算して、顧客ID（c.id）の昇順で並べ替えて取り出してみよう！（GROUP BY c.id, c.name ORDER BY c.id）",
+    answerSql: "SELECT c.name, COUNT(o.id) FROM orders o INNER JOIN customers c ON o.customer_id = c.id GROUP BY c.id, c.name ORDER BY c.id;",
+    orderMatters: true,
+    hint1: "GROUP BY c.id, c.name と ORDER BY c.id を指定しよう。",
+    hint2: "SELECT c.name, COUNT(o.id) FROM orders o INNER JOIN customers c ON o.customer_id = c.id ...",
+    hint3: "「SELECT c.name, COUNT(o.id) FROM orders o INNER JOIN customers c ON o.customer_id = c.id GROUP BY c.id, c.name ORDER BY c.id;」",
+    afterNote: "お見事！結果を見ると「さくら（ID:1、2件）」と「さくら（ID:6、1件）」がちゃんと別々の行に分かれていますね。実務では名前が重複することが日常茶飯事なので、IDでグループ化することが鉄則です。"
+  },
+  {
+    id: "s3-06",
+    stage: 3,
+    title: "LEFT JOIN（注文のない顧客も残す）",
+    marumochiMsg: "「買ってない人」もリストに残したい！外部結合 LEFT JOIN の登場！",
+    explain: "INNER JOIN だと、注文を一度もしていない顧客（じろうさん）は結果から消えてしまいます。\n\n「全顧客の名簿を出して、注文がない人は0件と表示したい」というときは、LEFT JOIN（左外部結合）を使います！\nLEFT JOIN は、左側のテーブル（FROM に書いた表）の行を「すべて残し」、右側の表に一致するデータがなければ NULL で埋めてくれます。\n\n注意：COUNT(*) だと注文がない行も1件と数えてしまうため、必ず「COUNT(o.id)」を使って注文IDがあるものだけを数えます。",
+    example: {
+      sql: "SELECT c.name, COUNT(o.id) FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name ORDER BY c.id;",
+      note: "全顧客（6人）の注文件数を表示（じろうさんは0件で残る）"
+    },
+    tables: ["customers", "orders"],
+    type: "sql",
+    question: "customers を左側にして orders を LEFT JOIN で結合し、全顧客の「顧客名（c.name）」と「注文件数（COUNT(o.id)）」を、顧客ID（c.id）の昇順で取り出してみよう！結合条件は o.customer_id = c.id です。",
+    answerSql: "SELECT c.name, COUNT(o.id) FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name ORDER BY c.id;",
+    orderMatters: true,
+    hint1: "FROM customers c LEFT JOIN orders o ON o.customer_id = c.id と書こう。",
+    hint2: "GROUP BY c.id, c.name ORDER BY c.id を付けます。",
+    hint3: "「SELECT c.name, COUNT(o.id) FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.name ORDER BY c.id;」",
+    afterNote: "大正解！全6行が表示され、注文のない「じろう」さんも0件として正しく結果に残りました。COUNT(*) ではなく COUNT(o.id) を使うことで、NULL の注文を0件として数えられます。"
+  },
+  {
+    id: "s3-07",
+    stage: 3,
+    title: "注文のない顧客を探す（LEFT JOIN ＋ IS NULL）",
+    marumochiMsg: "「まだ一度も買ってくれていない顧客」をピンポイントで発掘！",
+    explain: "マーケティングで「未購入のユーザーにクーポンを送りたい」というとき、どうやって未購入者を見つけるでしょうか？\n\nLEFT JOIN すると、注文のない行は右側の列（o.id など）が NULL になります。\nそこに「WHERE o.id IS NULL」と条件をつけると、「注文が1件もない顧客」だけをあぶり出すことができます！",
+    example: {
+      sql: "SELECT c.name FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE o.id IS NULL;",
+      note: "注文のない顧客名（じろうさん）を取り出す"
+    },
+    tables: ["customers", "orders"],
+    type: "sql",
+    question: "customers に orders を LEFT JOIN し、WHERE o.id IS NULL を使って、注文が1件もない顧客の「名前（c.name）」を取り出してみよう！",
+    answerSql: "SELECT c.name FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE o.id IS NULL;",
+    orderMatters: false,
+    hint1: "FROM customers c LEFT JOIN orders o ON o.customer_id = c.id の後ろに WHERE o.id IS NULL を書こう。",
+    hint2: "SELECT c.name を指定します。",
+    hint3: "「SELECT c.name FROM customers c LEFT JOIN orders o ON o.customer_id = c.id WHERE o.id IS NULL;」",
+    afterNote: "完璧！「じろう」さん1件だけがピンポイントで抽出されました。「LEFT JOIN ＋ IS NULL」は、未購入顧客や未登録データの抽出に実務で超頻出するテクニックです。"
+  },
+  {
+    id: "s3-08",
+    stage: 3,
+    title: "3テーブル結合（注文明細レポート）",
+    marumochiMsg: "注文表＋顧客表＋商品表の3つを連結！本格的な明細表を作ろう！",
+    explain: "実務では、2つだけでなく3つ以上のテーブルを連結することも日常茶飯事です。\n\n書き方はとてもシンプルで、INNER JOIN を2回連続で書くだけです！\nFROM orders o\nINNER JOIN customers c ON o.customer_id = c.id\nINNER JOIN products p ON o.product_id = p.id\n\nこれで「誰が」「何の商品を」「何個買ったか」がすべて入った完全な注文明細表が完成します。",
+    example: {
+      sql: "SELECT o.id, c.name, p.name, o.qty FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id;",
+      note: "3つの表をつないで注文ID・顧客名・商品名・個数を表示（全8行）"
+    },
+    tables: ["orders", "customers", "products"],
+    type: "sql",
+    question: "orders を起点に customers と products の3テーブルを INNER JOIN で結合し、注文ID（o.id）、顧客名（c.name）、商品名（p.name）、個数（o.qty）を取り出してみよう！",
+    answerSql: "SELECT o.id, c.name, p.name, o.qty FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id;",
+    orderMatters: false,
+    hint1: "INNER JOIN customers c ON ... の後に続けて INNER JOIN products p ON o.product_id = p.id を書こう。",
+    hint2: "SELECT o.id, c.name, p.name, o.qty を取り出します。",
+    hint3: "「SELECT o.id, c.name, p.name, o.qty FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id;」",
+    afterNote: "素晴らしい！全8件の注文について、顧客の名前と買った商品名が1つの表にキレイに並びました。3つ以上の結合も基本の積み重ねだと分かりますね。"
+  },
+  {
+    id: "s3-09",
+    stage: 3,
+    title: "結合して金額計算（売上集計）",
+    marumochiMsg: "「単価 × 個数」で売上金額を計算！商品ごとの売上合計を出そう！",
+    explain: "商品マスタには「価格（price）」、注文表には「個数（qty）」が入っています。\nこれらを掛け算した「p.price * o.qty」を SUM することで、商品ごとの売上金額の合計を計算できます！\n\n書き方：\nSELECT p.name, SUM(p.price * o.qty)\nFROM orders o\nINNER JOIN products p ON o.product_id = p.id\nGROUP BY p.id, p.name\nORDER BY p.id;",
+    example: {
+      sql: "SELECT p.name, SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY p.id;",
+      note: "商品ごとの売上金額合計を商品ID昇順で集計"
+    },
+    tables: ["orders", "products"],
+    type: "sql",
+    question: "orders と products を結合し、商品ごとの「商品名（p.name）」と「売上金額（SUM(p.price * o.qty)）」を、商品ID（p.id）の昇順で取り出してみよう！",
+    answerSql: "SELECT p.name, SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY p.id;",
+    orderMatters: true,
+    hint1: "SELECT p.name, SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id を書こう。",
+    hint2: "末尾に GROUP BY p.id, p.name ORDER BY p.id を付けます。",
+    hint3: "「SELECT p.name, SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY p.id;」",
+    afterNote: "お見事！動くスタンプが1250円、あけおめが750円、癒しのまるもちが760円と集計できました。なお、注文が0件の「まるもち絵本」は INNER JOIN のため結果に出てきません（全商品の売上を出すなら LEFT JOIN が必要になります）。"
+  },
+
+  // ----------------------------------------------------
+  // Stage 3 確認テスト（3問）
+  // ----------------------------------------------------
+  {
+    id: "s3-t1",
+    stage: 3,
+    title: "確認テスト1：INNER JOIN",
+    marumochiMsg: "Stage 3 の実力試し！注文表と商品表を結合しよう！",
+    explain: "【確認テスト 1/3】\nここまでの結合の復習テストです！\n\norders テーブルと products テーブルを INNER JOIN で結合し、注文ID（o.id）、商品名（p.name）、注文日（o.ordered_at）を取り出してください（結合条件: o.product_id = p.id）。",
+    example: {
+      sql: "SELECT o.id, p.name, o.ordered_at FROM orders o INNER JOIN products p ON o.product_id = p.id;",
+      note: "orders と products を結合して注文ID・商品名・注文日を表示"
+    },
+    tables: ["orders", "products"],
+    type: "sql",
+    question: "orders（o）と products（p）を INNER JOIN で結合し、「o.id」「p.name」「o.ordered_at」を取り出してみよう！（ON o.product_id = p.id）",
+    answerSql: "SELECT o.id, p.name, o.ordered_at FROM orders o INNER JOIN products p ON o.product_id = p.id;",
+    orderMatters: false,
+    hint1: "FROM orders o INNER JOIN products p ON o.product_id = p.id と書こう。",
+    hint2: "SELECT o.id, p.name, o.ordered_at を指定します。",
+    hint3: "「SELECT o.id, p.name, o.ordered_at FROM orders o INNER JOIN products p ON o.product_id = p.id;」",
+    afterNote: "テスト1問目クリア！注文と商品の内部結合がしっかり身についていますね。"
+  },
+  {
+    id: "s3-t2",
+    stage: 3,
+    title: "確認テスト2：LEFT JOIN",
+    marumochiMsg: "確認テスト2問目！売れていない商品も含めて注文件数を数えよう！",
+    explain: "【確認テスト 2/3】\n全商品の名前と注文件数を集計してみましょう！\n\n商品マスタ（products）を左側に置いて orders を LEFT JOIN し、商品ごとの「商品名（p.name）」と「注文件数（COUNT(o.id)）」を商品ID（p.id）の昇順で取り出してください（全4行。「まるもち絵本」は0件になります）。",
+    example: {
+      sql: "SELECT p.name, COUNT(o.id) FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY p.id;",
+      note: "全商品について注文件数を集計（ID昇順）"
+    },
+    tables: ["products", "orders"],
+    type: "sql",
+    question: "products（p）に orders（o）を LEFT JOIN し、全商品について「p.name」と「COUNT(o.id)」を、商品ID（p.id）の昇順で取り出してみよう！（GROUP BY p.id, p.name ORDER BY p.id）",
+    answerSql: "SELECT p.name, COUNT(o.id) FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY p.id;",
+    orderMatters: true,
+    hint1: "FROM products p LEFT JOIN orders o ON o.product_id = p.id と書こう。",
+    hint2: "GROUP BY p.id, p.name ORDER BY p.id を付けます。",
+    hint3: "「SELECT p.name, COUNT(o.id) FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY p.id;」",
+    afterNote: "テスト2問目クリア！注文のない「まるもち絵本」も含め、全4商品が0件も漏らさず正しく集計できました。"
+  },
+  {
+    id: "s3-t3",
+    stage: 3,
+    title: "確認テスト3：JOIN ＋ WHERE",
+    marumochiMsg: "確認テスト最後の難関！関西の顧客が買った商品を調べよう！",
+    explain: "【確認テスト 3/3】\norders、customers、products の3テーブルを結合し、地域が「関西（c.region = '関西'）」の顧客による注文情報だけを取り出してみましょう！\n\n注文ID（o.id）、顧客名（c.name）、商品名（p.name）の3列を取り出してください（3行になります）。",
+    example: {
+      sql: "SELECT o.id, c.name, p.name FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id WHERE c.region = '関西';",
+      note: "関西の顧客による注文の注文ID・顧客名・商品名を表示"
+    },
+    tables: ["orders", "customers", "products"],
+    type: "sql",
+    question: "orders、customers、products を結合し、地域が「関西」（c.region = '関西'）の注文について、「o.id」「c.name」「p.name」を取り出してみよう！",
+    answerSql: "SELECT o.id, c.name, p.name FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id WHERE c.region = '関西';",
+    orderMatters: false,
+    hint1: "3テーブルを INNER JOIN で連結した末尾に WHERE c.region = '関西' を付けよう。",
+    hint2: "SELECT o.id, c.name, p.name を指定します。",
+    hint3: "「SELECT o.id, c.name, p.name FROM orders o INNER JOIN customers c ON o.customer_id = c.id INNER JOIN products p ON o.product_id = p.id WHERE c.region = '関西';」",
+    afterNote: "確認テスト全問正解！3テーブルの結合とWHERE条件による絞り込みが完璧にできています。"
+  },
+
+  // ----------------------------------------------------
+  // Stage 3 ボス課題（1問）
+  // ----------------------------------------------------
+  {
+    id: "s3-boss",
+    stage: 3,
+    title: "ボス課題：顧客別売上レポート",
+    marumochiMsg: "Stage 3 最終決戦！受託開発の現場で定番の「顧客別売上集計表」を作ろう！",
+    explain: "【Stage 3 ボス課題】\n実務では「全顧客を対象に、注文件数と売上金額を計算してランキング化してほしい」という依頼が頻繁にあります。\n注文のない顧客も漏らさず0件・0円として表示するレポートクエリを自力で組み立ててみましょう！\n\n💡 ヒント：NULL を 0 に変換するには COALESCE(値, 0) を使います。",
+    example: {
+      sql: "SELECT c.name, COUNT(o.id), COALESCE(SUM(p.price * o.qty), 0) FROM customers c LEFT JOIN orders o ON o.customer_id = c.id LEFT JOIN products p ON o.product_id = p.id GROUP BY c.id, c.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC;",
+      note: "全顧客の注文件数と売上合計を金額降順で集計（全6行）"
+    },
+    tables: ["customers", "orders", "products"],
+    type: "sql",
+    question: "全顧客について、顧客名（c.name）、注文件数（COUNT(o.id)）、売上合計金額（COALESCE(SUM(p.price * o.qty), 0)）を、売上合計金額の大きい順（DESC）に並べて取り出してください。注文のない顧客も件数0・金額0で表示されるようにしましょう。（GROUP BY c.id, c.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC）",
+    answerSql: "SELECT c.name, COUNT(o.id), COALESCE(SUM(p.price * o.qty), 0) FROM customers c LEFT JOIN orders o ON o.customer_id = c.id LEFT JOIN products p ON o.product_id = p.id GROUP BY c.id, c.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC;",
+    orderMatters: true,
+    hint1: "customers を起点に、orders と products を両方 LEFT JOIN でつなごう。",
+    hint2: "金額の合計は COALESCE(SUM(p.price * o.qty), 0) で NULL を 0 に変換するよ。",
+    hint3: "「SELECT c.name, COUNT(o.id), COALESCE(SUM(p.price * o.qty), 0) FROM customers c LEFT JOIN orders o ON o.customer_id = c.id LEFT JOIN products p ON o.product_id = p.id GROUP BY c.id, c.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC;」",
+    afterNote: "🎉 ボス撃破おめでとうございます！！！\n受託開発の現場でよくある「顧客別の売上集計レポート」そのもののクエリを見事に完成させました！\nLEFT JOIN で未購入者（じろうさん＝0件・0円）を落とさず、COALESCE で NULL を綺麗に 0 に整え、IDでグループ化して同名（さくらさん）を区別する——実務のプロが使う結合の神髄がすべてここに詰まっています！Stage 3 結合編を見事に完全制覇しました！"
   }
     ];
 
@@ -2887,18 +3202,20 @@
 
         const tableName = lesson.tables[0];
         try {
-          const res = this.db.exec(`SELECT * FROM ${tableName} LIMIT 5;`);
+          const res = this.db.exec(`SELECT * FROM ${tableName};`);
           if (res.length > 0) {
             tableCard.style.display = "block";
             const cols = res[0].columns;
             const values = res[0].values;
+            const totalRows = values.length;
 
-            // テーブル名とスキーマピルの更新
+            // テーブル名と見出しラベルの更新
             const nameEl = document.getElementById("table-preview-name");
             if (nameEl) nameEl.textContent = tableName;
 
-            const countRes = this.db.exec(`SELECT COUNT(*) FROM ${tableName};`);
-            const totalRows = countRes.length > 0 ? countRes[0].values[0][0] : values.length;
+            const labelEl = document.getElementById("table-preview-label");
+            if (labelEl) labelEl.textContent = `テーブル（全${totalRows}行）`;
+
             const infoEl = document.getElementById("table-schema-info");
             if (infoEl) infoEl.textContent = `${cols.length}列・全${totalRows}行`;
 
