@@ -1476,7 +1476,7 @@
     <div class="progress-bar-card">
       <div class="progress-header">
         <span>全体の進捗状況</span>
-        <span id="progress-text">0 / 42 完了 (0%)</span>
+        <span id="progress-text">0 / 55 完了 (0%)</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
@@ -1618,6 +1618,13 @@
             <button type="button" class="btn-kw" onclick="app.insertKeyword('SUM(')">SUM( )</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('AVG(')">AVG( )</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('COALESCE(')">COALESCE( )</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('CASE ')">CASE</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('WHEN ')">WHEN</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('THEN ')">THEN</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('ELSE ')">ELSE</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('END ')">END</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('EXISTS (')">EXISTS ( )</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('WITH ')">WITH</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('DISTINCT ')">DISTINCT</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('ORDER BY ')">ORDER BY</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('DESC ')">DESC</button>
@@ -1833,6 +1840,15 @@
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('COUNT(')">COUNT( )</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('SUM(')">SUM( )</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('AVG(')">AVG( )</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('COALESCE(')">COALESCE( )</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('IN (')">IN ( )</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('CASE ')">CASE</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('WHEN ')">WHEN</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('THEN ')">THEN</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ELSE ')">ELSE</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('END ')">END</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('EXISTS (')">EXISTS ( )</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('WITH ')">WITH</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ORDER BY ')">ORDER BY</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('LIMIT ')">LIMIT</button>
         </div>
@@ -1987,7 +2003,7 @@
     `;
 
     /* ==========================================================================
-       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問)
+       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問, Stage 4 13問 全55問)
        ========================================================================== */
     const LESSON_STAGES = [
       { id: "prologue", stageNum: -1, name: "プロローグ: 超入門", desc: "そもそもSQLって何？専門用語ゼロでイメージをつかむ章" },
@@ -1995,7 +2011,7 @@
       { id: "stage1", stageNum: 1, name: "Stage 1: 入門：取り出す（基礎文法）", desc: "SELECT / WHERE / LIKE / ORDER BY など基本の抽出" },
       { id: "stage2", stageNum: 2, name: "Stage 2: 集計：数える・合計する", desc: "COUNT / SUM / AVG / GROUP BY / HAVING などの集計文法" },
       { id: "stage3", stageNum: 3, name: "Stage 3: 結合：テーブルをつなぐ", desc: "INNER JOIN / LEFT JOIN / 複数結合などの結合文法" },
-      { id: "stage4", stageNum: 4, name: "Stage 4: 応用文法：入れ子と分岐", desc: "サブクエリ / CASE式 / WITH句（近日公開）", locked: true },
+      { id: "stage4", stageNum: 4, name: "Stage 4: 応用文法：入れ子と分岐", desc: "サブクエリ / CASE式 / WITH句などの応用文法" },
       { id: "stage5", stageNum: 5, name: "Stage 5: 実務操作：データを変える", desc: "INSERT / UPDATE / DELETE / 安全の型（近日公開）", locked: true },
       { id: "stage6", stageNum: 6, name: "Stage 6: 上級：分析と速さ", desc: "ウィンドウ関数 / インデックス / 実行計画（近日公開）", locked: true },
       { id: "stage7", stageNum: 7, name: "Stage 7: 実務再現：卒業編", desc: "仕様書から自力で書く総合演習（近日公開）", locked: true }
@@ -2873,6 +2889,308 @@
     hint2: "金額の合計は COALESCE(SUM(p.price * o.qty), 0) で NULL を 0 に変換するよ。",
     hint3: "「SELECT c.name, COUNT(o.id), COALESCE(SUM(p.price * o.qty), 0) FROM customers c LEFT JOIN orders o ON o.customer_id = c.id LEFT JOIN products p ON o.product_id = p.id GROUP BY c.id, c.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC;」",
     afterNote: "🎉 ボス撃破おめでとうございます！！！\n受託開発の現場でよくある「顧客別の売上集計レポート」そのもののクエリを見事に完成させました！\nLEFT JOIN で未購入者（じろうさん＝0件・0円）を落とさず、COALESCE で NULL を綺麗に 0 に整え、IDでグループ化して同名（さくらさん）を区別する——実務のプロが使う結合の神髄がすべてここに詰まっています！Stage 3 結合編を見事に完全制覇しました！"
+  },
+
+  // ----------------------------------------------------
+  // Stage 4 応用文法：入れ子と条件分岐（9レッスン + 確認テスト3 + ボス1 = 全13問）
+  // ----------------------------------------------------
+  {
+    "id": "s4-01",
+    "stage": 4,
+    "title": "サブクエリとは",
+    "marumochiMsg": "SQLの中に別のSQL！？内側から順番に解いていこう！",
+    "explain": "サブクエリ（副問合せ）とは、SQLの中に別の「SELECT文」をカッコ ( ) で囲んで入れ子にするテクニックです。\n\nたとえば「平均金額より高い売上だけを出したい」とき、普通はまず平均を求めてから、その数値を使って絞り込みますよね。\nサブクエリを使うと、カッコの中の (SELECT AVG(amount) FROM stamp_sales) が先に計算されて1つの値になり、その結果を使って外側の WHERE 条件が自動判定されます！",
+    "example": {
+      "sql": "SELECT stamp_name, amount FROM stamp_sales WHERE amount >= (SELECT AVG(amount) FROM stamp_sales) ORDER BY amount DESC;",
+      "note": "平均金額以上の売上データを金額降順で抽出"
+    },
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "stamp_sales テーブルから、平均金額（AVG(amount)）より高い（>）売上について、スタンプ名（stamp_name）と金額（amount）を、金額の大きい順（ORDER BY amount DESC）に取り出してください。",
+    "answerSql": "SELECT stamp_name, amount FROM stamp_sales WHERE amount > (SELECT AVG(amount) FROM stamp_sales) ORDER BY amount DESC;",
+    "orderMatters": true,
+    "hint1": "WHERE amount > (SELECT AVG(amount) FROM stamp_sales) のようにカッコの中に平均を求めるSELECT文を書こう。",
+    "hint2": "並び順は ORDER BY amount DESC を末尾に付けます。",
+    "hint3": "「SELECT stamp_name, amount FROM stamp_sales WHERE amount > (SELECT AVG(amount) FROM stamp_sales) ORDER BY amount DESC;」と書いてみよう！",
+    "afterNote": "お見事！カッコの内側のサブクエリが先に計算され、その結果を使って外側の条件判定が行われました。2回に分けてSQLを実行しなくても1回で完結するのがサブクエリの強力なメリットです。"
+  },
+  {
+    "id": "s4-02",
+    "stage": 4,
+    "title": "IN＋サブクエリ",
+    "marumochiMsg": "リスト指定の IN とサブクエリが合体！注文歴のある顧客を探そう！",
+    "explain": "Stage 1 で学んだ `WHERE 列 IN (値1, 値2...)` のカッコの中に、サブクエリを入れることができます！\n\nたとえば「注文履歴（orders）にある customer_id の一覧」をサブクエリで取り出し、それを IN の中に入れると、「これまでに1回以上注文したことがある顧客」だけを customers テーブルから一発で抽出できます。\n\n書き方：\nSELECT 列 FROM 表 WHERE 列 IN (SELECT 列 FROM 別の表);",
+    "example": {
+      "sql": "SELECT name FROM customers WHERE id IN (SELECT customer_id FROM orders);",
+      "note": "注文したことのある顧客の名前を抽出"
+    },
+    "tables": [
+      "customers",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "customers テーブルから、注文したことのある顧客の名前（name）を、顧客ID（id）の昇順（ORDER BY id）で取り出してください（orders テーブルの customer_id をサブクエリで指定します）。",
+    "answerSql": "SELECT name FROM customers WHERE id IN (SELECT customer_id FROM orders) ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "WHERE id IN (SELECT customer_id FROM orders) と書こう。",
+    "hint2": "ORDER BY id を最後に忘れずに付けよう。",
+    "hint3": "「SELECT name FROM customers WHERE id IN (SELECT customer_id FROM orders) ORDER BY id;」と書いてみよう！",
+    "afterNote": "大正解！注文履歴のない「じろう」さん以外の5件が正しく取得できました。IN＋サブクエリは「ある一覧の中に含まれるかどうか」を判定する王道パターンです。"
+  },
+  {
+    "id": "s4-03",
+    "stage": 4,
+    "title": "EXISTS",
+    "marumochiMsg": "「存在するかどうか」だけをスマートにチェックする EXISTS！",
+    "explain": "EXISTS（イグジスツ）は、サブクエリが「1件でもデータを返すかどうか（存在するか）」を判定するキーワードです。\n\n書き方：\nWHERE EXISTS (SELECT 1 FROM 表B WHERE 条件)\n\n条件に合う行が1件でも見つかれば即座に真（合格）になります。取り出す中身は何でもよいので、慣習として `SELECT 1` と書きます。",
+    "example": {
+      "sql": "SELECT name FROM products WHERE EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id);",
+      "note": "注文された実績が1件でもある商品名を抽出"
+    },
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "products テーブルから、注文のある商品の名前（name）を、商品ID（id）の昇順（ORDER BY id）で取り出してください（EXISTS と orders テーブルを使用）。",
+    "answerSql": "SELECT name FROM products WHERE EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id) ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "WHERE EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id) と書こう。",
+    "hint2": "ORDER BY id を最後に付けます。",
+    "hint3": "「SELECT name FROM products WHERE EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id) ORDER BY id;」",
+    "afterNote": "正解です！IN との違いとして、IN はサブクエリの結果をすべてリストアップして比較しますが、EXISTS は「条件に合う行が1件でもあるかないか」だけを見るため、データが膨大になったときに非常に高速に動きます。"
+  },
+  {
+    "id": "s4-04",
+    "stage": 4,
+    "title": "スカラーサブクエリ",
+    "marumochiMsg": "SELECT句の中にサブクエリ！1行1列の数値をピタッとはめ込もう！",
+    "explain": "サブクエリは WHERE 句だけでなく、SELECT 句の「列の1つ」としても書くことができます。\n1行1列（1つのマス）の値を返すサブクエリを「スカラーサブクエリ」と呼びます。\n\nたとえば、商品一覧（products）を表示しながら、各商品の注文件数を orders テーブルからカウントして横に並べたいときに便利です。\n\n書き方：\nSELECT name, (SELECT COUNT(*) FROM orders WHERE orders.product_id = products.id) FROM products;",
+    "example": {
+      "sql": "SELECT name, (SELECT COUNT(*) FROM orders WHERE orders.product_id = products.id) FROM products ORDER BY id;",
+      "note": "商品名と各商品の注文件数を並べて表示"
+    },
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "products テーブルの各商品について、商品名（name）と注文件数（SELECT COUNT(*) FROM orders WHERE orders.product_id = products.id）を、商品ID（id）の昇順（ORDER BY id）で取り出してください。",
+    "answerSql": "SELECT name, (SELECT COUNT(*) FROM orders WHERE orders.product_id = products.id) FROM products ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "SELECT name, (SELECT COUNT(*) FROM orders WHERE orders.product_id = products.id) とSELECTの列としてカッコを書こう。",
+    "hint2": "FROM products ORDER BY id を続けよう。",
+    "hint3": "「SELECT name, (SELECT COUNT(*) FROM orders WHERE orders.product_id = products.id) FROM products ORDER BY id;」",
+    "afterNote": "素晴らしい！JOIN を使わなくても、SELECT句の中にサブクエリを埋め込むことで、注文のない「まるもち絵本」も 0 件として綺麗に集計できました。"
+  },
+  {
+    "id": "s4-05",
+    "stage": 4,
+    "title": "FROM句のサブクエリ（派生テーブル）",
+    "marumochiMsg": "FROMの中にSELECT！？一時的な仮想テーブルを作っちゃおう！",
+    "explain": "サブクエリは FROM 句の中に書いて、「一時的な仮想テーブル（派生テーブル / インラインビュー）」として扱うこともできます！\n\n複雑な集計をあらかじめカッコの中で計算しておき、その結果に別名（AS t など）を付けて外側のクエリで結合したり WHERE で絞り込んだりします。\n\n書き方：\nSELECT 列 FROM 表A INNER JOIN (SELECT ... FROM 表B GROUP BY ...) t ON 表A.id = t.id;",
+    "example": {
+      "sql": "SELECT c.name, t.total FROM customers c INNER JOIN (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) t ON c.id = t.cid ORDER BY t.total DESC;",
+      "note": "集計サブクエリを一時テーブルとして結合し合計降順で表示"
+    },
+    "tables": [
+      "customers",
+      "orders",
+      "products"
+    ],
+    "type": "sql",
+    "question": "顧客ごとの合計金額が500円以上の顧客について、顧客名（c.name）と合計金額（t.total）を合計金額の大きい順（ORDER BY t.total DESC）に取り出してください。\nFROM句の中で orders と products を結合・集計したサブクエリを一時テーブル t（customer_id を cid、合計を total）として customers c に結合し、WHERE t.total >= 500 で絞り込みます。",
+    "answerSql": "SELECT c.name, t.total FROM customers c INNER JOIN (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) t ON c.id = t.cid WHERE t.total >= 500 ORDER BY t.total DESC;",
+    "orderMatters": true,
+    "hint1": "FROM customers c INNER JOIN (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) t ON c.id = t.cid と書こう。",
+    "hint2": "末尾に WHERE t.total >= 500 ORDER BY t.total DESC を付けます。",
+    "hint3": "「SELECT c.name, t.total FROM customers c INNER JOIN (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) t ON c.id = t.cid WHERE t.total >= 500 ORDER BY t.total DESC;」",
+    "afterNote": "バッチリです！集計結果を一度テーブルに見立ててから結合するテクニックは、実務の複雑なデータパイプラインでも頻繁に使われます。"
+  },
+  {
+    "id": "s4-06",
+    "stage": 4,
+    "title": "CASE式",
+    "marumochiMsg": "条件に応じて値をチェンジ！SQLの世界の if 文、それが CASE式！",
+    "explain": "SQLで条件分岐を行いたいときは `CASE式` を使います。プログラミング言語の if-else 文と同じ役割です。\n\n書き方：\nCASE\n  WHEN 条件1 THEN 値1\n  WHEN 条件2 THEN 値2\n  ELSE それ以外の値\nEND\n\n上から順に条件が判定され、最初に当てはまった WHEN の THEN の値が返されます。最後の `END` を忘れずに！",
+    "example": {
+      "sql": "SELECT stamp_name, amount, CASE WHEN amount >= 300 THEN '高額' ELSE 'お手頃' END FROM stamp_sales ORDER BY amount DESC;",
+      "note": "金額が300円以上なら「高額」、それ以外なら「お手頃」と判定"
+    },
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "stamp_sales テーブルから、スタンプ名（stamp_name）、金額（amount）、および金額の大きさ（500円以上は「大きい」、200円以上は「ふつう」、それ以外は「小さい」）を、金額の大きい順（ORDER BY amount DESC）に取り出してください。",
+    "answerSql": "SELECT stamp_name, amount, CASE WHEN amount >= 500 THEN '大きい' WHEN amount >= 200 THEN 'ふつう' ELSE '小さい' END FROM stamp_sales ORDER BY amount DESC;",
+    "orderMatters": true,
+    "hint1": "CASE WHEN amount >= 500 THEN '大きい' WHEN amount >= 200 THEN 'ふつう' ELSE '小さい' END と書こう。",
+    "hint2": "SELECT stamp_name, amount, CASE ... END FROM stamp_sales ORDER BY amount DESC; の形です。",
+    "hint3": "「SELECT stamp_name, amount, CASE WHEN amount >= 500 THEN '大きい' WHEN amount >= 200 THEN 'ふつう' ELSE '小さい' END FROM stamp_sales ORDER BY amount DESC;」",
+    "afterNote": "完璧です！CASE式を使えば、数値データを「大きい／ふつう／小さい」のようなわかりやすいラベルやカテゴリに変換できます。"
+  },
+  {
+    "id": "s4-07",
+    "stage": 4,
+    "title": "CASE＋集計",
+    "marumochiMsg": "CASE式で作ったグループごとに COUNT！一歩進んだ集計技！",
+    "explain": "CASE式で振り分けた結果をそのまま `GROUP BY` でまとめることができます！\n\nなお、SQLでは `GROUP BY 1` のように列番号（1列目）を指定してグループ化することが許されています。`GROUP BY 1` は「SELECT句の1番目に書いた列（ここではCASE式の結果）でまとめる」という意味になります。\n\n書き方：\nSELECT (CASE式), COUNT(*) FROM 表 GROUP BY 1 ORDER BY 1;",
+    "example": {
+      "sql": "SELECT CASE WHEN EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id) THEN '注文あり' ELSE '注文なし' END, COUNT(*) FROM products GROUP BY 1 ORDER BY 1;",
+      "note": "商品を注文あり・なしに分けてそれぞれの商品数をカウント"
+    },
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "products テーブルの商品を、注文がある商品は「注文あり」、ない商品は「注文なし」に分けて（CASE と EXISTS を使用）、それぞれ何商品あるか（COUNT(*)）を数えてください。SELECT の1列目でグループ化と並び替えを行います（GROUP BY 1 ORDER BY 1）。",
+    "answerSql": "SELECT CASE WHEN EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id) THEN '注文あり' ELSE '注文なし' END, COUNT(*) FROM products GROUP BY 1 ORDER BY 1;",
+    "orderMatters": true,
+    "hint1": "SELECT CASE WHEN EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id) THEN '注文あり' ELSE '注文なし' END, COUNT(*) と書こう。",
+    "hint2": "FROM products GROUP BY 1 ORDER BY 1 を続けます。",
+    "hint3": "「SELECT CASE WHEN EXISTS (SELECT 1 FROM orders WHERE orders.product_id = products.id) THEN '注文あり' ELSE '注文なし' END, COUNT(*) FROM products GROUP BY 1 ORDER BY 1;」",
+    "afterNote": "正解です！注文あり3商品、注文なし1商品（まるもち絵本）が正しく集計できました。CASE式による分類と集計の組み合わせは、レポート作成で非常に重宝します。"
+  },
+  {
+    "id": "s4-08",
+    "stage": 4,
+    "title": "日付関数 strftime",
+    "marumochiMsg": "日付データを思い通りのフォーマットに整形しよう！",
+    "explain": "データベースの日付（'2026-11-06' など）は、そのまま表示するだけでなく「月/日」や「年-月」のように整形したい場面がよくあります。\n\nSQLite では `strftime(フォーマット, 日付列)` という関数を使います。\n・%Y: 4桁の年（2026）\n・%m: 2桁の月（11）\n・%d: 2桁の日（06）\n\n例：`strftime('%m/%d', ordered_at)` → '11/06'",
+    "example": {
+      "sql": "SELECT id, strftime('%Y年%m月', ordered_at) FROM orders ORDER BY id;",
+      "note": "注文日を年月の形式に変換して表示"
+    },
+    "tables": [
+      "orders"
+    ],
+    "type": "sql",
+    "question": "orders テーブルから、注文ID（id）と注文日を「月/日」表示（strftime('%m/%d', ordered_at)）で、注文ID（id）の昇順（ORDER BY id）に取り出してください。",
+    "answerSql": "SELECT id, strftime('%m/%d', ordered_at) FROM orders ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "strftime('%m/%d', ordered_at) を SELECT 句に指定しよう。",
+    "hint2": "SELECT id, strftime('%m/%d', ordered_at) FROM orders ORDER BY id; です。",
+    "hint3": "「SELECT id, strftime('%m/%d', ordered_at) FROM orders ORDER BY id;」と書いてみよう！",
+    "afterNote": "バッチリです！なお、日付のフォーマット関数はデータベースによって異なり、MySQL では DATE_FORMAT()、PostgreSQL や Oracle では TO_CHAR() を使います（文字列から日付への変換には CAST や TO_DATE を使います）。実務で使うDBに合わせて調べられるようになれば大丈夫です！"
+  },
+  {
+    "id": "s4-09",
+    "stage": 4,
+    "title": "WITH句（CTE）",
+    "marumochiMsg": "長いSQLを読みやすく！共通テーブル式（CTE）で整理整頓！",
+    "explain": "複雑なサブクエリが増えると、SQLがカッコだらけになって読みにくくなります。\nそこで登場するのが `WITH句（共通テーブル式 / CTE）` です！\n\nあらかじめ名前を付けた一時的な表を文頭で定義しておくことで、メインのクエリがスッキリ読みやすくなります。\n\n書き方：\nWITH 一時名 AS (\n  SELECT ...\n)\nSELECT ... FROM 一時名;",
+    "example": {
+      "sql": "WITH totals AS (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) SELECT c.name, t.total FROM customers c INNER JOIN totals t ON c.id = t.cid ORDER BY t.total DESC;",
+      "note": "WITH句で定義した totals 一時テーブルを使って顧客別売上を抽出"
+    },
+    "tables": [
+      "customers",
+      "orders",
+      "products"
+    ],
+    "type": "sql",
+    "question": "s4-05 と同じ結果（顧客ごとの合計金額が500円以上の顧客について、顧客名 c.name と合計金額 t.total、合計金額の大きい順 ORDER BY t.total DESC、3行）を、WITH句を使って取り出してください。\n文頭で WITH totals AS (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) を定義します。",
+    "answerSql": "WITH totals AS (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) SELECT c.name, t.total FROM customers c INNER JOIN totals t ON c.id = t.cid WHERE t.total >= 500 ORDER BY t.total DESC;",
+    "orderMatters": true,
+    "hint1": "文頭に WITH totals AS (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) と書こう。",
+    "hint2": "続けて SELECT c.name, t.total FROM customers c INNER JOIN totals t ON c.id = t.cid WHERE t.total >= 500 ORDER BY t.total DESC; を書きます。",
+    "hint3": "「WITH totals AS (SELECT o.customer_id AS cid, SUM(p.price * o.qty) AS total FROM orders o INNER JOIN products p ON o.product_id = p.id GROUP BY o.customer_id) SELECT c.name, t.total FROM customers c INNER JOIN totals t ON c.id = t.cid WHERE t.total >= 500 ORDER BY t.total DESC;」",
+    "afterNote": "素晴らしい！FROM句のサブクエリと同じ結果が得られましたね。結果は同じでも、読む人へのやさしさが全然違います！実務の現場では、保守性を高めるために WITH句を使うことが強く推奨されています。"
+  },
+  {
+    "id": "s4-t1",
+    "stage": 4,
+    "title": "確認テスト1：IN＋サブクエリ",
+    "marumochiMsg": "ここから確認テスト！まずは購入履歴のある商品探し！",
+    "explain": "【確認テスト 1/3】\nこれまでに1回以上注文されたことのある商品の名前（name）を、商品ID（id）の昇順で取り出してみましょう！\n\nproducts テーブルに対して、orders テーブルの product_id をサブクエリとして IN ( ) で絞り込みます（3行になります）。",
+    "example": {
+      "sql": "SELECT name FROM products WHERE id IN (SELECT product_id FROM orders) ORDER BY id;",
+      "note": "注文されたことのある商品名を商品ID昇順で抽出"
+    },
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "orders テーブルに注文履歴がある商品の名前（name）を、商品ID（id）の昇順（ORDER BY id）で取り出してみよう！（IN＋サブクエリを使用）",
+    "answerSql": "SELECT name FROM products WHERE id IN (SELECT product_id FROM orders) ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "SELECT name FROM products WHERE id IN (SELECT product_id FROM orders) と書こう。",
+    "hint2": "ORDER BY id を最後に付けます。",
+    "hint3": "「SELECT name FROM products WHERE id IN (SELECT product_id FROM orders) ORDER BY id;」",
+    "afterNote": "テスト1問目クリア！注文のある3商品が正しく取り出せました。"
+  },
+  {
+    "id": "s4-t2",
+    "stage": 4,
+    "title": "確認テスト2：CASE＋NULL",
+    "marumochiMsg": "メール未登録の人をCASEで判別！実務の通知判定に挑戦！",
+    "explain": "【確認テスト 2/3】\n全顧客について、名前（name）と連絡可否（メールアドレス email が NULL なら「連絡不可」、それ以外なら「連絡可」）を、顧客ID（id）の昇順で取り出してみましょう！（全6行）\n\n💡 ヒント：NULLの判定は `WHEN email IS NULL THEN '連絡不可'` と書きます。",
+    "example": {
+      "sql": "SELECT name, CASE WHEN email IS NULL THEN '連絡不可' ELSE '連絡可' END FROM customers ORDER BY id;",
+      "note": "顧客名と連絡可否を顧客ID順に表示"
+    },
+    "tables": [
+      "customers"
+    ],
+    "type": "sql",
+    "question": "customers テーブルから、顧客名（name）と「連絡可／連絡不可」（email が NULL なら「連絡不可」、それ以外は「連絡可」）を、顧客ID（id）の昇順（ORDER BY id）で取り出してみよう！",
+    "answerSql": "SELECT name, CASE WHEN email IS NULL THEN '連絡不可' ELSE '連絡可' END FROM customers ORDER BY id;",
+    "orderMatters": true,
+    "hint1": "CASE WHEN email IS NULL THEN '連絡不可' ELSE '連絡可' END と書こう。",
+    "hint2": "SELECT name, CASE ... END FROM customers ORDER BY id; です。",
+    "hint3": "「SELECT name, CASE WHEN email IS NULL THEN '連絡不可' ELSE '連絡可' END FROM customers ORDER BY id;」",
+    "afterNote": "テスト2問目クリア！NULLを適切に判定して、顧客ごとの連絡ステータスを綺麗に振り分けられました。"
+  },
+  {
+    "id": "s4-t3",
+    "stage": 4,
+    "title": "確認テスト3：スカラーサブクエリ＋COALESCE",
+    "marumochiMsg": "確認テスト最後！全顧客の注文合計金額をスカラーサブクエリで計算！",
+    "explain": "【確認テスト 3/3】\n全顧客（customers c）について、顧客名（c.name）と注文の合計金額を、顧客ID（c.id）の昇順で取り出してみましょう！（全6行）\n\nSELECT句のスカラーサブクエリ内で orders o と products p を結合して合計金額 `SUM(p.price * o.qty)` を計算し、注文のない顧客は `COALESCE(..., 0)` で 0 に変換してください。",
+    "example": {
+      "sql": "SELECT c.name, COALESCE((SELECT SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id WHERE o.customer_id = c.id), 0) FROM customers c ORDER BY c.id;",
+      "note": "全顧客の注文合計金額を算出（未注文者は0円）"
+    },
+    "tables": [
+      "customers",
+      "orders",
+      "products"
+    ],
+    "type": "sql",
+    "question": "全顧客（customers c）について、名前（c.name）と注文の合計金額を、顧客ID（c.id）の昇順（ORDER BY c.id）で取り出してみよう！注文のない顧客は COALESCE で 0 にしてください。",
+    "answerSql": "SELECT c.name, COALESCE((SELECT SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id WHERE o.customer_id = c.id), 0) FROM customers c ORDER BY c.id;",
+    "orderMatters": true,
+    "hint1": "COALESCE((SELECT SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id WHERE o.customer_id = c.id), 0) をSELECT句に書こう。",
+    "hint2": "FROM customers c ORDER BY c.id を続けます。",
+    "hint3": "「SELECT c.name, COALESCE((SELECT SUM(p.price * o.qty) FROM orders o INNER JOIN products p ON o.product_id = p.id WHERE o.customer_id = c.id), 0) FROM customers c ORDER BY c.id;」",
+    "afterNote": "確認テスト全問正解！スカラーサブクエリと COALESCE を組み合わせることで、未購入のじろうさんも 0 円として完璧に取得できました。"
+  },
+  {
+    "id": "s4-boss",
+    "stage": 4,
+    "title": "ボス課題：商品別売上ランクレポート",
+    "marumochiMsg": "Stage 4 最終決戦！LEFT JOIN ＋ CASE式で商品別売上ランク表を完成させよう！",
+    "explain": "【Stage 4 ボス課題】\n商品ごとに「商品名」「注文件数」「売上金額」「ランク」を計算し、売上金額の大きい順に並べた本格的な商品分析レポートを作成します！\n\n・売上金額が 1000円以上 → 「人気」\n・500円以上 → 「ふつう」\n・それ以外 → 「これから」\n\n注文のない商品（まるもち絵本）も漏らさず表示するため、products を起点に orders を `LEFT JOIN` し、売上金額は `COALESCE` で 0 に変換してください。\n（GROUP BY p.id, p.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC）",
+    "example": {
+      "sql": "SELECT p.name, COUNT(o.id), COALESCE(SUM(p.price * o.qty), 0), CASE WHEN COALESCE(SUM(p.price * o.qty), 0) >= 1000 THEN '人気' WHEN COALESCE(SUM(p.price * o.qty), 0) >= 500 THEN 'ふつう' ELSE 'これから' END FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC;",
+      "note": "全商品の注文件数・売上金額・人気ランクを売上金額降順で一覧表示（全4行）"
+    },
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "全商品について、商品名（p.name）、注文件数（COUNT(o.id)）、売上金額（COALESCE(SUM(p.price * o.qty), 0)）、および売上ランク（1000円以上は「人気」、500円以上は「ふつう」、それ以外は「これから」）を、売上金額の大きい順（DESC）に取り出してください。（GROUP BY p.id, p.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC）",
+    "answerSql": "SELECT p.name, COUNT(o.id), COALESCE(SUM(p.price * o.qty), 0), CASE WHEN COALESCE(SUM(p.price * o.qty), 0) >= 1000 THEN '人気' WHEN COALESCE(SUM(p.price * o.qty), 0) >= 500 THEN 'ふつう' ELSE 'これから' END FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC;",
+    "orderMatters": true,
+    "hint1": "FROM products p LEFT JOIN orders o ON o.product_id = p.id と書こう。",
+    "hint2": "CASE WHEN COALESCE(SUM(p.price * o.qty), 0) >= 1000 THEN '人気' WHEN COALESCE(SUM(p.price * o.qty), 0) >= 500 THEN 'ふつう' ELSE 'これから' END でランクを判定します。",
+    "hint3": "「SELECT p.name, COUNT(o.id), COALESCE(SUM(p.price * o.qty), 0), CASE WHEN COALESCE(SUM(p.price * o.qty), 0) >= 1000 THEN '人気' WHEN COALESCE(SUM(p.price * o.qty), 0) >= 500 THEN 'ふつう' ELSE 'これから' END FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name ORDER BY COALESCE(SUM(p.price * o.qty), 0) DESC;」",
+    "afterNote": "🎉 ボス撃破おめでとうございます！！！\n受託の現場でよくある「商品別の売上表」そのものの高度な集計・分析レポートクエリを見事に完成させました！\nLEFT JOIN で注文ゼロの商品も漏らさず拾い、COALESCE で NULL を 0 に補正し、CASE式でビジネス要件に合わせたステータスに分類する——現場で即戦力として重宝される応用SQLテクニックが完璧に身についています！Stage 4 応用文法編を完全制覇しました！"
   }
     ];
 
