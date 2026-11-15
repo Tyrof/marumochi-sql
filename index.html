@@ -1476,7 +1476,7 @@
     <div class="progress-bar-card">
       <div class="progress-header">
         <span>全体の進捗状況</span>
-        <span id="progress-text">0 / 68 完了 (0%)</span>
+        <span id="progress-text">0 / 81 完了 (0%)</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
@@ -1633,6 +1633,12 @@
             <button type="button" class="btn-kw" onclick="app.insertKeyword('DELETE ')">DELETE</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('BEGIN; ')">BEGIN</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('ROLLBACK; ')">ROLLBACK</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('OVER ')">OVER</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('PARTITION ')">PARTITION</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('ROW_NUMBER() ')">ROW_NUMBER</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('RANK() ')">RANK</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('LAG(')">LAG</button>
+            <button type="button" class="btn-kw" onclick="app.insertKeyword('LEAD(')">LEAD</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('DISTINCT ')">DISTINCT</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('ORDER BY ')">ORDER BY</button>
             <button type="button" class="btn-kw" onclick="app.insertKeyword('DESC ')">DESC</button>
@@ -1865,6 +1871,12 @@
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('DELETE ')">DELETE</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('BEGIN; ')">BEGIN</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ROLLBACK; ')">ROLLBACK</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('OVER ')">OVER</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('PARTITION ')">PARTITION</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ROW_NUMBER() ')">ROW_NUMBER</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('RANK() ')">RANK</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('LAG(')">LAG</button>
+          <button type="button" class="btn-kw" onclick="app.insertSandboxKw('LEAD(')">LEAD</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('ORDER BY ')">ORDER BY</button>
           <button type="button" class="btn-kw" onclick="app.insertSandboxKw('LIMIT ')">LIMIT</button>
         </div>
@@ -2019,7 +2031,7 @@
     `;
 
     /* ==========================================================================
-       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問, Stage 4 13問, Stage 5 13問 全68問)
+       2. レッスンデータ定義 (プロローグ 5問, Stage 0 3問, Stage 1 8問, Stage 2 13問, Stage 3 13問, Stage 4 13問, Stage 5 13問, Stage 6 13問 全81問)
        ========================================================================== */
     const LESSON_STAGES = [
       { id: "prologue", stageNum: -1, name: "プロローグ: 超入門", desc: "そもそもSQLって何？専門用語ゼロでイメージをつかむ章" },
@@ -2029,7 +2041,7 @@
       { id: "stage3", stageNum: 3, name: "Stage 3: 結合：テーブルをつなぐ", desc: "INNER JOIN / LEFT JOIN / 複数結合などの結合文法" },
       { id: "stage4", stageNum: 4, name: "Stage 4: 応用文法：入れ子と分岐", desc: "サブクエリ / CASE式 / WITH句などの応用文法" },
       { id: "stage5", stageNum: 5, name: "Stage 5: 実務操作：データを変える", desc: "INSERT / UPDATE / DELETE / トランザクションなどの実務操作" },
-      { id: "stage6", stageNum: 6, name: "Stage 6: 上級：分析と速さ", desc: "ウィンドウ関数 / インデックス / 実行計画（近日公開）", locked: true },
+      { id: "stage6", stageNum: 6, name: "Stage 6: 上級：分析と速さ", desc: "ウィンドウ関数 / インデックス / 実行計画などの上級文法" },
       { id: "stage7", stageNum: 7, name: "Stage 7: 実務再現：卒業編", desc: "仕様書から自力で書く総合演習（近日公開）", locked: true }
     ];
 
@@ -3511,6 +3523,298 @@
     "hint2": "続けて DELETE FROM customers WHERE id = 2; を書きます。",
     "hint3": "「DELETE FROM orders WHERE customer_id = 2; DELETE FROM customers WHERE id = 2;」",
     "afterNote": "🎉 ボス撃破おめでとうございます！！！\n実務で最も神経を使う「データの退会・削除処理」を見事に成功させました！\n親（顧客）を消す前に子（注文）から消すという「消す順番（子→親）が実務の型」であることを体得できましたね。\nデータを「見る」だけでなく「安全に変える」プロフェッショナルの技術が身につきました！Stage 5 実務操作編を見事に完全制覇しました！"
+  },
+
+  // ----------------------------------------------------
+  // Stage 6 上級：分析と速さ（9レッスン + 確認テスト3 + ボス1 = 全13問）
+  // ----------------------------------------------------
+  {
+    "id": "s6-01",
+    "stage": 6,
+    "title": "ウィンドウ関数とは",
+    "marumochiMsg": "行をまとめずに集計値を付け足す！高度な分析を可能にする魔法の関数！",
+    "explain": "Stage 2 で学んだ GROUP BY は行をギュッと1行にまとめて集計しましたが、「行をまとめずに、各行に計算結果を付け足したい」場面が実務ではよくあります。\n\nそれを実現するのが `ウィンドウ関数` です！\n`ROW_NUMBER() OVER (ORDER BY 列名 DESC)` のように書くと、指定した順序で各行に通し番号（連番）を割り振ることができます。\n\n「OVER」は「どの範囲（窓＝ウィンドウ）を見渡して計算するか」を定義するキーワードです。",
+    "example": {
+      "sql": "SELECT date, stamp_name, amount, ROW_NUMBER() OVER (ORDER BY amount DESC) FROM stamp_sales ORDER BY amount DESC;",
+      "note": "売上データに金額の大きい順で通し番号を付与"
+    },
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "stamp_sales テーブルから、日付（date）、スタンプ名（stamp_name）、金額（amount）、および「金額の大きい順の通し番号」（ROW_NUMBER() OVER (ORDER BY amount DESC)）を、金額の大きい順（ORDER BY amount DESC）に取り出してください。",
+    "answerSql": "SELECT date, stamp_name, amount, ROW_NUMBER() OVER (ORDER BY amount DESC) FROM stamp_sales ORDER BY amount DESC;",
+    "orderMatters": true,
+    "hint1": "ROW_NUMBER() OVER (ORDER BY amount DESC) を SELECT 句に指定しよう。",
+    "hint2": "末尾に ORDER BY amount DESC を付けます。",
+    "hint3": "「SELECT date, stamp_name, amount, ROW_NUMBER() OVER (ORDER BY amount DESC) FROM stamp_sales ORDER BY amount DESC;」と書いてみよう！",
+    "afterNote": "お見事！GROUP BY のように行数を減らすことなく、各行に1から5までの通し番号が綺麗に並びました。これがウィンドウ関数の基本思想です。"
+  },
+  {
+    "id": "s6-02",
+    "stage": 6,
+    "title": "RANK で順位付け",
+    "marumochiMsg": "同率順位もバッチリ！RANK 関数でランキング表を作ろう！",
+    "explain": "同率順位を扱いたいときは `RANK()` を使います。\n\n書き方：\nRANK() OVER (ORDER BY 列名 DESC)\n\n同じ値がある場合は同じ順位になり、次の順位は飛ばされます（例：1位、2位、2位、4位）。\nランキングの並び順が崩れないよう、外側のクエリでも同じ順序で ORDER BY を指定するのが実務の基本です。",
+    "example": {
+      "sql": "SELECT name, price, RANK() OVER (ORDER BY price DESC) FROM products ORDER BY price DESC, id;",
+      "note": "商品価格の高い順にランキングを算出"
+    },
+    "tables": [
+      "products"
+    ],
+    "type": "sql",
+    "question": "products テーブルから、商品名（name）、価格（price）、および価格の高い順の順位（RANK() OVER (ORDER BY price DESC)）を、価格の高い順（同じ価格のときは商品IDの昇順 ORDER BY price DESC, id）に取り出してください。",
+    "answerSql": "SELECT name, price, RANK() OVER (ORDER BY price DESC) FROM products ORDER BY price DESC, id;",
+    "orderMatters": true,
+    "hint1": "RANK() OVER (ORDER BY price DESC) と書こう。",
+    "hint2": "末尾に ORDER BY price DESC, id を付けます。",
+    "hint3": "「SELECT name, price, RANK() OVER (ORDER BY price DESC) FROM products ORDER BY price DESC, id;」",
+    "afterNote": "正解です！価格250円の2商品が同率2位となり、次の190円の商品は4位になりました。\nなお、RANK は同点の次が飛びますが（1, 2, 2, 4）、順位を飛ばしたくないときは `DENSE_RANK` を使うと（1, 2, 2, 3）のように連番で順位付けができます。"
+  },
+  {
+    "id": "s6-03",
+    "stage": 6,
+    "title": "PARTITION BY（グループ内順位）",
+    "marumochiMsg": "グループごとにリセットして順位付け！実務必須の PARTITION BY！",
+    "explain": "「商品カテゴリごと」や「スタンプごと」のように、グループごとに区切ってランキングを作りたいときは `PARTITION BY` を使います。\n\n書き方：\nRANK() OVER (PARTITION BY グループ列 ORDER BY 並び順列)\n\nPARTITION BY で指定した列が変わるたびに、順位の計算が1からリセットされます！",
+    "example": {
+      "sql": "SELECT stamp_name, date, amount, RANK() OVER (PARTITION BY stamp_name ORDER BY amount DESC) FROM stamp_sales ORDER BY stamp_name, amount DESC;",
+      "note": "スタンプ名ごとに金額の大きい順でグループ内順位を算出"
+    },
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "stamp_sales テーブルから、スタンプ名ごとに区切って金額の大きい順の順位を付け、スタンプ名（stamp_name）、日付（date）、金額（amount）、順位（RANK() OVER (PARTITION BY stamp_name ORDER BY amount DESC)）を取り出してください。並び順はスタンプ名の昇順、その中で金額の大きい順（ORDER BY stamp_name, amount DESC）とします。",
+    "answerSql": "SELECT stamp_name, date, amount, RANK() OVER (PARTITION BY stamp_name ORDER BY amount DESC) FROM stamp_sales ORDER BY stamp_name, amount DESC;",
+    "orderMatters": true,
+    "hint1": "RANK() OVER (PARTITION BY stamp_name ORDER BY amount DESC) と書こう。",
+    "hint2": "ORDER BY stamp_name, amount DESC を末尾に付けます。",
+    "hint3": "「SELECT stamp_name, date, amount, RANK() OVER (PARTITION BY stamp_name ORDER BY amount DESC) FROM stamp_sales ORDER BY stamp_name, amount DESC;」",
+    "afterNote": "バッチリです！「癒しのまるもち」の中で1〜3位が付き、「動く！」「あけおめ！」でもそれぞれ1位からリセットされて計算されました。部門別や月別のランキング作成で不可欠な技術です。"
+  },
+  {
+    "id": "s6-04",
+    "stage": 6,
+    "title": "LAG（前の行と比べる）",
+    "marumochiMsg": "前日比や前回差を一発計算！タイムトラベル関数 LAG！",
+    "explain": "「前のレコードと比べていくら増減したか？」を計算したいときは `LAG()` 関数を使います。\n\n書き方：\nLAG(列名) OVER (ORDER BY 日付列)\n\n現在の行から見て「1つ前の行の値」を引っ張ってきてくれます。最初の行には前の行がないため `NULL` になります。\n`現在の値 - LAG(現在の値) OVER (...)` と引き算することで、前日比の差分が一瞬で求まります！",
+    "example": {
+      "sql": "SELECT date, amount, amount - LAG(amount) OVER (ORDER BY date, amount) FROM stamp_sales ORDER BY date, amount;",
+      "note": "売上データについて直前の売上との金額差分を計算"
+    },
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "stamp_sales テーブルから、日付の昇順（同じ日は金額の小さい順 ORDER BY date, amount）に並べ、日付（date）、金額（amount）、および「1つ前の売上との差」（amount - LAG(amount) OVER (ORDER BY date, amount)）を取り出してください。",
+    "answerSql": "SELECT date, amount, amount - LAG(amount) OVER (ORDER BY date, amount) FROM stamp_sales ORDER BY date, amount;",
+    "orderMatters": true,
+    "hint1": "amount - LAG(amount) OVER (ORDER BY date, amount) を SELECT 句に書こう。",
+    "hint2": "末尾に ORDER BY date, amount を付けます。",
+    "hint3": "「SELECT date, amount, amount - LAG(amount) OVER (ORDER BY date, amount) FROM stamp_sales ORDER BY date, amount;」",
+    "afterNote": "素晴らしい！1行目は前がないので NULL、2行目以降は +190、-130、+320、-570 と前回の売上との差分が正確に計算できました。"
+  },
+  {
+    "id": "s6-05",
+    "stage": 6,
+    "title": "LEAD（次の行を見る）",
+    "marumochiMsg": "前の行が LAG なら、次の行は LEAD！未来の行を先取り！",
+    "explain": "LAG が「1つ前の行」を見るのに対し、`LEAD()` は「1つ次の行」の値を覗き見る関数です。\n\n書き方：\nLEAD(列名) OVER (ORDER BY 日付列)\n\n最後の行には次の行がないため `NULL` が入ります。「次回購入までの日数」や「次の注文個数」を先回りして分析するときに使われます。",
+    "example": {
+      "sql": "SELECT id, qty, LEAD(qty) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;",
+      "note": "各注文の個数と次の注文の個数を並べて表示"
+    },
+    "tables": [
+      "orders"
+    ],
+    "type": "sql",
+    "question": "orders テーブルから、注文日の昇順（ORDER BY ordered_at）に並べ、注文ID（id）、個数（qty）、および「次の注文の個数」（LEAD(qty) OVER (ORDER BY ordered_at)）を取り出してください。",
+    "answerSql": "SELECT id, qty, LEAD(qty) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;",
+    "orderMatters": true,
+    "hint1": "LEAD(qty) OVER (ORDER BY ordered_at) を指定しよう。",
+    "hint2": "SELECT id, qty, LEAD(...) FROM orders ORDER BY ordered_at; の形です。",
+    "hint3": "「SELECT id, qty, LEAD(qty) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;」",
+    "afterNote": "完璧です！最後の注文ID=8の次の個数は NULL になり、それ以外の行では次の注文の数量（2, 1, 1, 2, 3, 1, 1）が先取りして表示されました。"
+  },
+  {
+    "id": "s6-06",
+    "stage": 6,
+    "title": "累計 SUM OVER",
+    "marumochiMsg": "売上の積み上げグラフを作ろう！ウィンドウ関数で累計計算！",
+    "explain": "ウィンドウ関数の中で `SUM()` を使い、OVER 句に `ORDER BY` を指定すると、「先頭からその行までの累計（積み上げ）」を計算できます！\n\n書き方：\nSUM(列名) OVER (ORDER BY 日付列)\n\n日付順に並べながら、これまでの売上や注文件数の累計をリアルタイムに集計していく実務の定番テクニックです。",
+    "example": {
+      "sql": "SELECT ordered_at, qty, SUM(qty) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;",
+      "note": "注文日ごとに注文件数の累計を算出"
+    },
+    "tables": [
+      "orders"
+    ],
+    "type": "sql",
+    "question": "orders テーブルから、注文日の昇順（ORDER BY ordered_at）に並べ、注文日（ordered_at）、個数（qty）、および「その日までの個数の累計」（SUM(qty) OVER (ORDER BY ordered_at)）を取り出してください。",
+    "answerSql": "SELECT ordered_at, qty, SUM(qty) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;",
+    "orderMatters": true,
+    "hint1": "SUM(qty) OVER (ORDER BY ordered_at) と書こう。",
+    "hint2": "ORDER BY ordered_at を末尾に付けます。",
+    "hint3": "「SELECT ordered_at, qty, SUM(qty) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;」",
+    "afterNote": "お見事！個数が 2 → 3 → 4 → 6 → 9 → 10 → 11 → 12 と綺麗に積み上がっていく累計列が完成しました。"
+  },
+  {
+    "id": "s6-07",
+    "stage": 6,
+    "title": "移動平均（直近3件の平均）",
+    "marumochiMsg": "株価や売上のブレをなめらかに！移動平均を ROWS BETWEEN で計算！",
+    "explain": "日々の売上やアクセス数は波があるため、トレンドを掴むために「直近3日間の平均」などを計算する手法を「移動平均」と呼びます。\n\nOVER 句に `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW` を付けると、「2つ前の行（2 PRECEDING）から現在の行（CURRENT ROW）まで」の計3行を範囲として切り取って平均を計算できます！\n\n書き方：\nAVG(列名) OVER (ORDER BY 日付列 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)",
+    "example": {
+      "sql": "SELECT date, amount, AVG(amount) OVER (ORDER BY date, amount ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) FROM stamp_sales ORDER BY date, amount;",
+      "note": "直近3件の金額平均を移動平均として算出"
+    },
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "stamp_sales テーブルから、日付の昇順（同じ日は金額の小さい順 ORDER BY date, amount）に並べ、日付（date）、金額（amount）、および「その行を含む直近3件の金額の平均」（AVG(amount) OVER (ORDER BY date, amount ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)）を取り出してください。",
+    "answerSql": "SELECT date, amount, AVG(amount) OVER (ORDER BY date, amount ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) FROM stamp_sales ORDER BY date, amount;",
+    "orderMatters": true,
+    "hint1": "AVG(amount) OVER (ORDER BY date, amount ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) と書こう。",
+    "hint2": "末尾に ORDER BY date, amount を付けます。",
+    "hint3": "「SELECT date, amount, AVG(amount) OVER (ORDER BY date, amount ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) FROM stamp_sales ORDER BY date, amount;」",
+    "afterNote": "素晴らしい！1件目はその1件のみ（190.0）、2件目は直近2件の平均（285.0）、3件目以降は直近3件の平均が滑らかに計算されました。データサイエンスやマーケティング分析で頻出の構文です。"
+  },
+  {
+    "id": "s6-08",
+    "stage": 6,
+    "title": "CASE集計ピボット",
+    "marumochiMsg": "行持ちデータを列持ちへ変換！クロス集計（ピボット）テーブル！",
+    "explain": "データベースは通常「カテゴリ」を行として保存しますが、Excelの表のように「カテゴリを列として横に並べたい（ピボット集計）」ことがあります。\n\nそんなときは `SUM(CASE WHEN 条件 THEN 値 ELSE 0 END)` を列ごとに並べて集計します！\n注文データと商品データを結合し、条件に合うカテゴリの売上だけを足し合わせることで、1行の横長レポートを出力できます。",
+    "example": {
+      "sql": "SELECT SUM(CASE WHEN p.category = '静止画' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = 'アニメ' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = '季節' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = '絵本' THEN p.price * o.qty ELSE 0 END) FROM orders o INNER JOIN products p ON o.product_id = p.id;",
+      "note": "カテゴリ別の売上合計金額を横並びの4列で算出"
+    },
+    "tables": [
+      "orders",
+      "products"
+    ],
+    "type": "sql",
+    "question": "orders テーブルと products テーブルを結合し、カテゴリ別の売上金額を「静止画」「アニメ」「季節」「絵本」の4列（1行）で取り出してください。絵本のように注文がないカテゴリは 0 となるようにします。",
+    "answerSql": "SELECT SUM(CASE WHEN p.category = '静止画' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = 'アニメ' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = '季節' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = '絵本' THEN p.price * o.qty ELSE 0 END) FROM orders o INNER JOIN products p ON o.product_id = p.id;",
+    "orderMatters": false,
+    "hint1": "SUM(CASE WHEN p.category = '静止画' THEN p.price * o.qty ELSE 0 END) を4カテゴリ分並べよう。",
+    "hint2": "FROM orders o INNER JOIN products p ON o.product_id = p.id で結合します。",
+    "hint3": "「SELECT SUM(CASE WHEN p.category = '静止画' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = 'アニメ' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = '季節' THEN p.price * o.qty ELSE 0 END), SUM(CASE WHEN p.category = '絵本' THEN p.price * o.qty ELSE 0 END) FROM orders o INNER JOIN products p ON o.product_id = p.id;」",
+    "afterNote": "完璧です！静止画: 760円、アニメ: 1250円、季節: 750円、絵本: 0円 という綺麗なクロス集計表が完成しました。BIツールや月次売上レポートの元データ作成で重宝される技法です。"
+  },
+  {
+    "id": "s6-09",
+    "stage": 6,
+    "title": "インデックスとEXPLAIN",
+    "marumochiMsg": "データベースの高速化の秘密！実行計画（EXPLAIN）を覗いてみよう！",
+    "explain": "データベースは何千万件ものデータからどうやって一瞬で目的の行を探しているのでしょうか？その秘密が `インデックス（索引）` です。\nインデックスは「本の巻末の索引」と同じで、あらかじめ五十音順等に並んだ目次を作っておくことで、探す場所を先に教えてくれます。\n\nクエリの前に `EXPLAIN QUERY PLAN` を付けると、データベースがどのようにデータを探しにいくか（実行計画）を見ることができます！\n・`SCAN`: テーブルの全行を端から端までなめる（索引がない状態）\n・`SEARCH`: 索引を使ってピンポイントでジャンプして探す（高速）",
+    "example": {
+      "sql": "EXPLAIN QUERY PLAN SELECT * FROM orders WHERE customer_id = 2;",
+      "note": "orders テーブル検索時の実行計画を表示"
+    },
+    "tables": [
+      "orders"
+    ],
+    "type": "sql",
+    "question": "orders テーブルから顧客IDが 2（customer_id = 2）の注文を探すときの実行計画を表示してください（クエリの先頭に EXPLAIN QUERY PLAN を付けます）。",
+    "answerSql": "EXPLAIN QUERY PLAN SELECT * FROM orders WHERE customer_id = 2;",
+    "orderMatters": false,
+    "hint1": "EXPLAIN QUERY PLAN SELECT * FROM orders WHERE customer_id = 2; と書こう。",
+    "hint2": "SELECT文の直前に EXPLAIN QUERY PLAN を記述します。",
+    "hint3": "「EXPLAIN QUERY PLAN SELECT * FROM orders WHERE customer_id = 2;」",
+    "afterNote": "実行計画が表示されました！detail 列に「SCAN orders」と表示されていますね。customer_id 列にインデックスが作られていないため、テーブルの全行をなめて探している（フルスキャン）ことがわかります。実務でSQLが遅いときは、まず EXPLAIN QUERY PLAN で実行計画を調べ、適切なインデックスを貼るのが鉄則です。"
+  },
+  {
+    "id": "s6-t1",
+    "stage": 6,
+    "title": "確認テスト1：RANK",
+    "marumochiMsg": "ここから確認テスト！売上個数でランキングを作ろう！",
+    "explain": "【確認テスト 1/3】\nstamp_sales テーブルについて、スタンプ名（stamp_name）、個数（units）、および「個数の多い順の順位（RANK() OVER (ORDER BY units DESC)）」を取り出してみましょう！\n\n並び順は、個数の多い順、同じ個数のときは日付の昇順（ORDER BY units DESC, date）とします（全5行）。",
+    "example": {
+      "sql": "SELECT stamp_name, units, RANK() OVER (ORDER BY units DESC) FROM stamp_sales ORDER BY units DESC, date;",
+      "note": "個数の多い順に順位を算出"
+    },
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "stamp_sales テーブルから、スタンプ名（stamp_name）、個数（units）、および「個数の多い順の順位」を、個数の多い順（同じ個数は日付昇順 ORDER BY units DESC, date）に取り出してみよう！",
+    "answerSql": "SELECT stamp_name, units, RANK() OVER (ORDER BY units DESC) FROM stamp_sales ORDER BY units DESC, date;",
+    "orderMatters": true,
+    "hint1": "RANK() OVER (ORDER BY units DESC) を SELECT 句に指定しよう。",
+    "hint2": "末尾に ORDER BY units DESC, date を付けます。",
+    "hint3": "「SELECT stamp_name, units, RANK() OVER (ORDER BY units DESC) FROM stamp_sales ORDER BY units DESC, date;」",
+    "afterNote": "テスト1問目クリア！個数3個が1位、2個が2位、1個が同率3位（2行）、0個が5位と正しくランク付けできました。"
+  },
+  {
+    "id": "s6-t2",
+    "stage": 6,
+    "title": "確認テスト2：LAG＋日数差",
+    "marumochiMsg": "確認テスト2問目！注文と注文の間隔（日数）を計算しよう！",
+    "explain": "【確認テスト 2/3】\nSQLite では `julianday('2026-11-08') - julianday('2026-11-06')` のように julianday 関数を使うことで、2つの日付の間の日数を引き算できます！\n\norders テーブルを注文日の昇順（ORDER BY ordered_at）に並べ、注文日（ordered_at）と「前の注文からの日数」（julianday(ordered_at) - LAG(julianday(ordered_at)) OVER (ORDER BY ordered_at)）を取り出してみましょう！（全8行）",
+    "example": {
+      "sql": "SELECT ordered_at, julianday(ordered_at) - LAG(julianday(ordered_at)) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;",
+      "note": "前の注文からの経過日数を算出"
+    },
+    "tables": [
+      "orders"
+    ],
+    "type": "sql",
+    "question": "orders テーブルから、注文日の昇順（ORDER BY ordered_at）に並べ、注文日（ordered_at）と「前の注文からの日数」（julianday(ordered_at) - LAG(julianday(ordered_at)) OVER (ORDER BY ordered_at)）を取り出してみよう！",
+    "answerSql": "SELECT ordered_at, julianday(ordered_at) - LAG(julianday(ordered_at)) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;",
+    "orderMatters": true,
+    "hint1": "julianday(ordered_at) - LAG(julianday(ordered_at)) OVER (ORDER BY ordered_at) と書こう。",
+    "hint2": "SELECT ordered_at, ... FROM orders ORDER BY ordered_at; です。",
+    "hint3": "「SELECT ordered_at, julianday(ordered_at) - LAG(julianday(ordered_at)) OVER (ORDER BY ordered_at) FROM orders ORDER BY ordered_at;」",
+    "afterNote": "テスト2問目クリア！最初は NULL、その後は 2日、1日、1日…と注文間隔の日数が正確に計算できました。"
+  },
+  {
+    "id": "s6-t3",
+    "stage": 6,
+    "title": "確認テスト3：WITH＋RANK",
+    "marumochiMsg": "確認テスト最後！Stage 4のWITHとRANKを華麗に合体！",
+    "explain": "【確認テスト 3/3】\nStage 4 で学んだ WITH 句を使って、商品別の売上合計（total）をまとめたあと、売上金額の高い順の順位（RANK）を付けてみましょう！\n\n文頭で WITH sales AS (SELECT p.name, COALESCE(SUM(p.price * o.qty), 0) AS total FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name) を定義し、商品名（name）、売上金額（total）、順位を取り出します（全4行、売上金額の大きい順 ORDER BY total DESC）。",
+    "example": {
+      "sql": "WITH sales AS (SELECT p.name, COALESCE(SUM(p.price * o.qty), 0) AS total FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name) SELECT name, total, RANK() OVER (ORDER BY total DESC) FROM sales ORDER BY total DESC;",
+      "note": "WITHで集計した売上に売上順位を付与"
+    },
+    "tables": [
+      "products",
+      "orders"
+    ],
+    "type": "sql",
+    "question": "WITH sales AS (...) で商品ごとの売上合計を集計した一時テーブルを作り、商品名（name）、売上金額（total）、および売上金額の高い順の順位（RANK() OVER (ORDER BY total DESC)）を、売上金額の大きい順（ORDER BY total DESC）に取り出してみよう！",
+    "answerSql": "WITH sales AS (SELECT p.name, COALESCE(SUM(p.price * o.qty), 0) AS total FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name) SELECT name, total, RANK() OVER (ORDER BY total DESC) FROM sales ORDER BY total DESC;",
+    "orderMatters": true,
+    "hint1": "WITH sales AS (SELECT p.name, COALESCE(SUM(p.price * o.qty), 0) AS total FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name) と書こう。",
+    "hint2": "続けて SELECT name, total, RANK() OVER (ORDER BY total DESC) FROM sales ORDER BY total DESC; を書きます。",
+    "hint3": "「WITH sales AS (SELECT p.name, COALESCE(SUM(p.price * o.qty), 0) AS total FROM products p LEFT JOIN orders o ON o.product_id = p.id GROUP BY p.id, p.name) SELECT name, total, RANK() OVER (ORDER BY total DESC) FROM sales ORDER BY total DESC;」",
+    "afterNote": "確認テスト全問正解！動く（1250円→1位）、癒し（760円→2位）、あけおめ（750円→3位）、絵本（0円→4位）と、集計から順位付けまで完璧なクエリが書けました！"
+  },
+  {
+    "id": "s6-boss",
+    "stage": 6,
+    "title": "ボス課題：売上レポート1枚",
+    "marumochiMsg": "Stage 6 最終決戦！累計・前回差・ランキングを1つのクエリに全集結！",
+    "explain": "【Stage 6 ボス課題】\n実務で役員やクライアントに提出する「本格的な月次売上レポート」を1つのSQLで完成させましょう！\n\nstamp_sales テーブルを日付の昇順（同じ日は金額の小さい順 ORDER BY date, amount）に並べ、以下の5列を取り出します：\n① 日付（date）\n② 金額（amount）\n③ 累計金額（SUM(amount) OVER (ORDER BY date, amount ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)）\n④ 前回との差（amount - LAG(amount) OVER (ORDER BY date, amount)）\n⑤ 金額順位（RANK() OVER (ORDER BY amount DESC)）",
+    "example": {
+      "sql": "SELECT date, amount, SUM(amount) OVER (ORDER BY date, amount ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), amount - LAG(amount) OVER (ORDER BY date, amount), RANK() OVER (ORDER BY amount DESC) FROM stamp_sales ORDER BY date, amount;",
+      "note": "日付・金額・累計・前回差・順位を網羅した売上レポート（全5行）"
+    },
+    "tables": [
+      "stamp_sales"
+    ],
+    "type": "sql",
+    "question": "stamp_sales テーブルから、日付の昇順（同じ日は金額の小さい順 ORDER BY date, amount）に並べ、日付（date）、金額（amount）、累計金額、前回との差、金額順位の5列を取り出してください。（ORDER BY date, amount）",
+    "answerSql": "SELECT date, amount, SUM(amount) OVER (ORDER BY date, amount ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), amount - LAG(amount) OVER (ORDER BY date, amount), RANK() OVER (ORDER BY amount DESC) FROM stamp_sales ORDER BY date, amount;",
+    "orderMatters": true,
+    "hint1": "SUM(amount) OVER (ORDER BY date, amount ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) で累計を出そう。",
+    "hint2": "amount - LAG(amount) OVER (ORDER BY date, amount) と RANK() OVER (ORDER BY amount DESC) を続けます。",
+    "hint3": "「SELECT date, amount, SUM(amount) OVER (ORDER BY date, amount ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), amount - LAG(amount) OVER (ORDER BY date, amount), RANK() OVER (ORDER BY amount DESC) FROM stamp_sales ORDER BY date, amount;」",
+    "afterNote": "🎉 ボス撃破おめでとうございます！！！\n受託の現場でよくある「月次売上レポート」そのものの高度な分析ダッシュボードクエリを見事に完成させました！\n単なるデータの抽出にとどまらず、累計推移、前日比差分、全体ランキングをひと目で把握できるこのクエリは、実務のデータアナリストやバックエンドエンジニアが日常的に作成するレベルのクエリです。Stage 6 上級編を見事に完全制覇しました！"
   }
     ];
 
